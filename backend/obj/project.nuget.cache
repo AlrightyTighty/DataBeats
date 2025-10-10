@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/xSQtvn4VvQ=",
+  "success": true,
+  "projectFilePath": "/home/alrightytighty/Projects/DataBeats/backend/backend.csproj",
+  "expectedPackageFiles": [
+    "/home/alrightytighty/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
