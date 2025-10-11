@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "AkpZOO4Z/94=",
+  "dgSpecHash": "nB4NDfqaQks=",
   "success": true,
   "projectFilePath": "/home/alrightytighty/Projects/DataBeats/backend/backend.csproj",
   "expectedPackageFiles": [
+    "/home/alrightytighty/.nuget/packages/awssdk.core/4.0.1/awssdk.core.4.0.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/awssdk.s3/4.0.7.9/awssdk.s3.4.0.7.9.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/microsoft.bcl.asyncinterfaces/7.0.0/microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",

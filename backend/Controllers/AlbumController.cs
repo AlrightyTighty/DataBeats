@@ -11,9 +11,9 @@ namespace backend.Controllers
     [ApiController]
     public class AlbumController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly ApplicationDBContext _context;
 
-        public AlbumController(MyDbContext context)
+        public AlbumController(ApplicationDBContext context)
         {
             _context = context;
         }

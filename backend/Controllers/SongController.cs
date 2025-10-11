@@ -12,9 +12,9 @@ namespace backend.Controllers
     [ApiController]
     public class SongController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly ApplicationDBContext _context;
 
-        public SongController(MyDbContext context)
+        public SongController(ApplicationDBContext context)
         {
             _context = context;
         }

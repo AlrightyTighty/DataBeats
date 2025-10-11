@@ -9,9 +9,9 @@ namespace backend.Mappers
 {
     public static class SongMappers
     {
-        public static SongDTO ToSongDTO(this Song songModel)
+        public static SongDto ToSongDTO(this Song songModel)
         {
-            return new SongDTO
+            return new SongDto
             {
                 SongId = songModel.SongId,
                 SongName = songModel.SongName,

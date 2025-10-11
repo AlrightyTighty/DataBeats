@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace backend.DTOs.Song
 {
-    public class SongDTO
+    public class SongDto
     {
         public ulong SongId { get; set; }
 
