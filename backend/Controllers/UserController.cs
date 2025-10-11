@@ -12,8 +12,8 @@ namespace backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly MyDbContext _context;
-        public UserController(MyDbContext context)
+        private readonly ApplicationDBContext _context;
+        public UserController(ApplicationDBContext context)
         {
             _context = context;
         }

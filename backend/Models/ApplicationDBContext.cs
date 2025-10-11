@@ -5,13 +5,13 @@ using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace backend.Models;
 
-public partial class MyDbContext : DbContext
+public partial class ApplicationDBContext : DbContext
 {
-    public MyDbContext()
+    public ApplicationDBContext()
     {
     }
 
-    public MyDbContext(DbContextOptions<MyDbContext> options)
+    public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
         : base(options)
     {
     }
