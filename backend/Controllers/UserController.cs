@@ -2,11 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    public class UserController
+    [Route("api/user")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
-        
+        private readonly MyDbContext _context;
+        public UserController(MyDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Users.ToList());
+        }
     }
 }
