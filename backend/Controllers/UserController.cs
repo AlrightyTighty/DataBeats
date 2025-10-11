@@ -19,7 +19,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAllUsers()
         {
             return Ok(_context.Users.ToList());
         }
