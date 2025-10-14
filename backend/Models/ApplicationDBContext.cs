@@ -64,6 +64,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<SongProducer> SongProducers { get; set; }
 
+    public virtual DbSet<SongUpload> SongUploads { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserAttendsEvent> UserAttendsEvents { get; set; }
@@ -83,6 +85,7 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -991,7 +994,9 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.UserId, "user_id");
 
-            entity.Property(e => e.SessionId).HasColumnName("session_id");
+            entity.Property(e => e.SessionId)
+                .HasMaxLength(36)
+                .HasColumnName("session_id");
             entity.Property(e => e.ExperationTime)
                 .HasColumnType("datetime")
                 .HasColumnName("experation_time");
@@ -1225,6 +1230,18 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.SongProducerUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("song_producer_ibfk_3");
+        });
+
+        modelBuilder.Entity<SongUpload>(entity =>
+        {
+            entity.HasKey(e => e.IdSongUpload).HasName("PRIMARY");
+
+            entity.ToTable("song_upload");
+
+            entity.Property(e => e.IdSongUpload).HasColumnName("id_song_upload");
+            entity.Property(e => e.Path)
+                .HasColumnType("text")
+                .HasColumnName("path");
         });
 
         modelBuilder.Entity<User>(entity =>

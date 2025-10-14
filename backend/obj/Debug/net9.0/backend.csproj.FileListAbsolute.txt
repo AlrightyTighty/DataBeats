@@ -129,3 +129,5 @@
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/AWSSDK.Core.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/AWSSDK.S3.dll

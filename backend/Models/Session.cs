@@ -5,7 +5,7 @@ namespace backend.Models;
 
 public partial class Session
 {
-    public ulong SessionId { get; set; }
+    public string SessionId { get; set; } = null!;
 
     public ulong UserId { get; set; }
 

@@ -1,3 +1,4 @@
+using backend.Middleware;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,24 +23,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
 
 app.MapControllers();
 
