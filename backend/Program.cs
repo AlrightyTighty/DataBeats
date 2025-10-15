@@ -33,6 +33,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -48,7 +51,11 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"),
 }
 );
 
+
+
 app.MapControllers();
+
+app.UseCors();
 
 app.Run();
 

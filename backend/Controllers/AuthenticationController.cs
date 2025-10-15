@@ -6,6 +6,7 @@ using backend.DTOs.Authentication;
 using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -32,18 +33,20 @@ namespace backend.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] AuthenticationInformationRequestDto dto)
         {
-            User toLogin;
+            User? toLogin;
             List<User> foundUsers = _context.Users.Where(user => user.Username == dto.UsernameOrEmail).ToList();
             if (foundUsers.Count == 0)
             {
-                List<AuthenticationInformation> foundAuthInfo = _context.AuthenticationInformations.Where(authInfo => authInfo.Email == dto.UsernameOrEmail).ToList();
+                List<AuthenticationInformation> foundAuthInfo = _context.AuthenticationInformations.Where(authInfo => authInfo.Email == dto.UsernameOrEmail).Include(authInfo => authInfo.User).ToList();
                 if (foundAuthInfo.Count == 0)
                     return Unauthorized("Invalid login info.");
-
-                toLogin = foundAuthInfo[0].User!;
+                toLogin = foundAuthInfo[0].User;
             }
             else
                 toLogin = foundUsers[0];
+
+            if (toLogin == null)
+                return Unauthorized("Invalid login info.");
 
             Session newSession = new Session
             {
