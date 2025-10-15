@@ -23,6 +23,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+
+    options.AddPolicy(name: "AllowSpecificOrigins", builder =>
+    {
+        builder.WithOrigins("http://localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();

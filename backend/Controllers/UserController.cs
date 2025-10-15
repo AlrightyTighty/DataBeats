@@ -24,7 +24,7 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById([FromRoute] ulong id)
         {
-            User user = _context.Users.Find(id);
+            User? user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound();

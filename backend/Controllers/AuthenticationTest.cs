@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.Mappers;
 using backend.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -19,11 +20,12 @@ namespace backend.Controllers
         }
 
         [HttpGet]
+        [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> GetAccountInfo()
         {
             string? userIdString = Request.Headers["X-UserId"];
             if (userIdString == null)
-                return BadRequest("Something must've gone REALLY wrong for you to get here.");
+                return Unauthorized();
 
             ulong userId = ulong.Parse(userIdString);
             User? user = await _context.Users.FindAsync(userId);

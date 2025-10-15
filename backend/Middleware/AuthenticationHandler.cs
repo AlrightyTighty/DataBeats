@@ -18,7 +18,7 @@ namespace backend.Middleware
         public async Task InvokeAsync(HttpContext context, ApplicationDBContext dbContext)
         {
             Console.WriteLine("Middlewaring!");
-            if (!context.Request.Cookies.ContainsKey("session_id"))
+            if (!context.Request.Cookies.ContainsKey("session-id"))
             {
                 Console.WriteLine("Authentication cookie not found!");
                 context.Response.StatusCode = 401;
@@ -26,8 +26,8 @@ namespace backend.Middleware
                 return;
             }
 
-            Console.WriteLine(context.Request.Cookies["session_id"]);
-            Session? session = await dbContext.Sessions.FindAsync(context.Request.Cookies["session_id"]);
+            Console.WriteLine(context.Request.Cookies["session-id"]);
+            Session? session = await dbContext.Sessions.FindAsync(context.Request.Cookies["session-id"]);
 
             if (session == null)
             {
