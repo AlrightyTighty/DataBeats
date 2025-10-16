@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using backend.DTOs.Authentication;
 using backend.Mappers;
 using backend.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,8 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [EnableCors("AllowSpecificOrigins")]
+        [Consumes("application/json")]
         public IActionResult Login([FromBody] AuthenticationInformationRequestDto dto)
         {
             User? toLogin;
@@ -63,7 +66,7 @@ namespace backend.Controllers
             _context.Sessions.Add(newSession);
             _context.SaveChanges();
 
-            Response.Cookies.Append("session-id", newSession.SessionId, new CookieOptions { HttpOnly = true });
+            Response.Cookies.Append("session-id", newSession.SessionId, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddDays(30), SameSite = SameSiteMode.None, Secure=true});
 
             return CreatedAtAction(nameof(GetSessionById), new { id = newSession.SessionId }, newSession.ToSessionDTO());
         }

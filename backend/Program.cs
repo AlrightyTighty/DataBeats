@@ -24,9 +24,10 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy(name: "AllowSpecificOrigins", builder =>
     {
-        builder.WithOrigins("http://localhost")
+        builder.WithOrigins("http://127.0.0.1:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -41,9 +42,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors();
+
 app.UseHttpsRedirection();
-
-
 
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
 {
@@ -51,11 +52,7 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"),
 }
 );
 
-
-
 app.MapControllers();
-
-app.UseCors();
 
 app.Run();
 

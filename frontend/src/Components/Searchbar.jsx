@@ -1,0 +1,31 @@
+import React, { useEffect, useState, useRef } from "react";
+import styles from "./Searchbar.module.css";
+
+const Searchbar = () => {
+  const [typingInBar, setTypingInBar] = useState(false);
+  const searchbarRef = useRef();
+
+  const submitSearch = () => {
+    if (!searchbarRef) return;
+  };
+
+  useEffect(() => {
+    if (!typingInBar) return;
+
+    const handleKeystroke = (event) => {
+      if (event.key == "Enter") {
+        submitSearch();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeystroke);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeystroke);
+    };
+  }, [typingInBar, searchbarRef]);
+
+  return <input type="text" ref={searchbarRef} className={styles["searchbar"]} placeholder="Search for a song, playlist, artist, or event!" />;
+};
+
+export default Searchbar;

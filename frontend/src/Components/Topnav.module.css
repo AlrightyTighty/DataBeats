@@ -1,0 +1,44 @@
+.topnav {
+  width: calc(100vw + 4px);
+  height: 100px;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+  border-bottom-style: solid;
+  position: fixed;
+  top: 0;
+  padding: 20px;
+  align-items: center;
+  gap: 7.5%;
+  backdrop-filter: blur(10px);
+}
+
+.app-logo {
+  height: 80%;
+  aspect-ratio: 346 / 424;
+  width: auto;
+}
+
+.links-and-logo {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.link {
+  font-size: 24pt;
+  color: white;
+  transition: 0.25s;
+}
+
+.link:visited {
+  color: white;
+}
+
+.searchbar-container {
+  width: 40%;
+  height: 50%;
+}
