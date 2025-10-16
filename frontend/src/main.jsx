@@ -7,11 +7,13 @@ import App from "./App.jsx";
 import Login from "./Pages/Login.jsx";
 import Signup from "./Pages/Signup.jsx";
 import Authtest from "./Pages/Authtest.jsx";
+import Register from "./Pages/Register.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
 ]);
 
