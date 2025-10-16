@@ -16,7 +16,7 @@ namespace backend.Mappers
                 SongId = songModel.SongId,
                 SongName = songModel.SongName,
                 Lyrics = songModel.Lyrics,
-                FilePath = songModel.FilePath,
+                SongFileId = songModel.SongId,
                 Streams = songModel.Streams,
                 Duration = songModel.Duration,
                 ShareLink = songModel.ShareLink

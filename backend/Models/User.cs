@@ -15,8 +15,6 @@ public partial class User
 
     public string? Link { get; set; }
 
-    public string? ProfilePic { get; set; }
-
     public DateTime? TimeCreated { get; set; }
 
     public DateTime? TimeDeleted { get; set; }
@@ -26,6 +24,8 @@ public partial class User
     public ulong? MusicianId { get; set; }
 
     public ulong? AuthenticationInformationId { get; set; }
+
+    public ulong? ProfilePictureFileId { get; set; }
 
     public virtual ICollection<Admin> AdminCreatedByNavigations { get; set; } = new List<Admin>();
 
@@ -56,6 +56,8 @@ public partial class User
     public virtual ICollection<PlaylistEntry> PlaylistEntries { get; set; } = new List<PlaylistEntry>();
 
     public virtual ICollection<Playlist> PlaylistUsers { get; set; } = new List<Playlist>();
+
+    public virtual ProfilePictureFile? ProfilePictureFile { get; set; }
 
     public virtual ICollection<Review> ReviewCreatedByNavigations { get; set; } = new List<Review>();
 

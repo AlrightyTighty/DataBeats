@@ -36,6 +36,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<AlbumGenre> AlbumGenres { get; set; }
 
+    public virtual DbSet<AlbumOrSongArtFile> AlbumOrSongArtFiles { get; set; }
+
     public virtual DbSet<AuthenticationInformation> AuthenticationInformations { get; set; }
 
     public virtual DbSet<Complaint> Complaints { get; set; }
@@ -52,19 +54,21 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<PlaylistEntry> PlaylistEntries { get; set; }
 
+    public virtual DbSet<ProfilePictureFile> ProfilePictureFiles { get; set; }
+
     public virtual DbSet<Review> Reviews { get; set; }
 
     public virtual DbSet<Session> Sessions { get; set; }
 
     public virtual DbSet<Song> Songs { get; set; }
 
+    public virtual DbSet<SongFile> SongFiles { get; set; }
+
     public virtual DbSet<SongGenre> SongGenres { get; set; }
 
     public virtual DbSet<SongLyricist> SongLyricists { get; set; }
 
     public virtual DbSet<SongProducer> SongProducers { get; set; }
-
-    public virtual DbSet<SongUpload> SongUploads { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -85,7 +89,6 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -474,15 +477,13 @@ public partial class ApplicationDBContext : DbContext
             entity.HasIndex(e => e.UpdatedBy, "updated_by");
 
             entity.Property(e => e.AlbumId).HasColumnName("album_id");
+            entity.Property(e => e.AlbumOrSongArtFileId).HasColumnName("album_or_song_art_file_id");
             entity.Property(e => e.AlbumTitle)
                 .HasMaxLength(50)
                 .HasColumnName("album_title");
             entity.Property(e => e.AlbumType)
                 .HasColumnType("enum('SINGLE','EP','ALBUM')")
                 .HasColumnName("album_type");
-            entity.Property(e => e.CoverImagePath)
-                .HasColumnType("text")
-                .HasColumnName("cover_image_path");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
             entity.Property(e => e.Duration)
@@ -623,6 +624,24 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.AlbumGenreUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("album_genre_ibfk_3");
+        });
+
+        modelBuilder.Entity<AlbumOrSongArtFile>(entity =>
+        {
+            entity.HasKey(e => e.AlbumOrSongArtFileId).HasName("PRIMARY");
+
+            entity.ToTable("album_or_song_art_file");
+
+            entity.Property(e => e.AlbumOrSongArtFileId).HasColumnName("album_or_song_art_file_id");
+            entity.Property(e => e.FileData)
+                .HasColumnType("blob")
+                .HasColumnName("file_data");
+            entity.Property(e => e.FileExtension)
+                .HasMaxLength(4)
+                .HasColumnName("file_extension");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(50)
+                .HasColumnName("file_name");
         });
 
         modelBuilder.Entity<AuthenticationInformation>(entity =>
@@ -926,6 +945,24 @@ public partial class ApplicationDBContext : DbContext
                 .HasConstraintName("fk_song_id");
         });
 
+        modelBuilder.Entity<ProfilePictureFile>(entity =>
+        {
+            entity.HasKey(e => e.ProfilePictureFileId).HasName("PRIMARY");
+
+            entity.ToTable("profile_picture_file");
+
+            entity.Property(e => e.ProfilePictureFileId).HasColumnName("profile_picture_file_id");
+            entity.Property(e => e.FileData)
+                .HasColumnType("blob")
+                .HasColumnName("file_data");
+            entity.Property(e => e.FileExtension)
+                .HasMaxLength(4)
+                .HasColumnName("file_extension");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(50)
+                .HasColumnName("file_name");
+        });
+
         modelBuilder.Entity<Review>(entity =>
         {
             entity.HasKey(e => e.ReviewId).HasName("PRIMARY");
@@ -1022,28 +1059,28 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.DeletedBy, "deleted_by");
 
+            entity.HasIndex(e => e.SongFileId, "song_ibfk_4_idx");
+
+            entity.HasIndex(e => e.AlbumOrSongArtId, "song_ibfk_4_idx1");
+
             entity.HasIndex(e => e.SongId, "song_id").IsUnique();
 
             entity.HasIndex(e => e.UpdatedBy, "updated_by");
 
             entity.Property(e => e.SongId).HasColumnName("song_id");
+            entity.Property(e => e.AlbumOrSongArtId).HasColumnName("album_or_song_art_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
             entity.Property(e => e.Duration)
                 .HasColumnType("time")
                 .HasColumnName("duration");
-            entity.Property(e => e.FilePath)
-                .HasColumnType("text")
-                .HasColumnName("file_path");
-            entity.Property(e => e.FileUploadDate)
-                .HasColumnType("datetime")
-                .HasColumnName("file_upload_date");
             entity.Property(e => e.Lyrics)
                 .HasMaxLength(2000)
                 .HasColumnName("lyrics");
             entity.Property(e => e.ShareLink)
                 .HasMaxLength(100)
                 .HasColumnName("share_link");
+            entity.Property(e => e.SongFileId).HasColumnName("song_file_id");
             entity.Property(e => e.SongName)
                 .HasMaxLength(50)
                 .HasColumnName("song_name");
@@ -1059,6 +1096,11 @@ public partial class ApplicationDBContext : DbContext
                 .HasColumnName("timestamp_updated");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
+            entity.HasOne(d => d.AlbumOrSongArt).WithMany(p => p.Songs)
+                .HasForeignKey(d => d.AlbumOrSongArtId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("song_ibfk_4");
+
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.SongCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1071,6 +1113,32 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.SongUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("song_ibfk_2");
+        });
+
+        modelBuilder.Entity<SongFile>(entity =>
+        {
+            entity.HasKey(e => e.SongFileId).HasName("PRIMARY");
+
+            entity.ToTable("song_file");
+
+            entity.HasIndex(e => e.SongId, "fk_song_file_song_id_idx");
+
+            entity.Property(e => e.SongFileId).HasColumnName("song_file_id");
+            entity.Property(e => e.FileData)
+                .HasColumnType("blob")
+                .HasColumnName("file_data");
+            entity.Property(e => e.FileExtension)
+                .HasMaxLength(4)
+                .HasColumnName("file_extension");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(50)
+                .HasColumnName("file_name");
+            entity.Property(e => e.SongId).HasColumnName("song_id");
+
+            entity.HasOne(d => d.Song).WithMany(p => p.SongFiles)
+                .HasForeignKey(d => d.SongId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_song_file_song_id");
         });
 
         modelBuilder.Entity<SongGenre>(entity =>
@@ -1232,18 +1300,6 @@ public partial class ApplicationDBContext : DbContext
                 .HasConstraintName("song_producer_ibfk_3");
         });
 
-        modelBuilder.Entity<SongUpload>(entity =>
-        {
-            entity.HasKey(e => e.IdSongUpload).HasName("PRIMARY");
-
-            entity.ToTable("song_upload");
-
-            entity.Property(e => e.IdSongUpload).HasColumnName("id_song_upload");
-            entity.Property(e => e.Path)
-                .HasColumnType("text")
-                .HasColumnName("path");
-        });
-
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PRIMARY");
@@ -1251,6 +1307,8 @@ public partial class ApplicationDBContext : DbContext
             entity.ToTable("user");
 
             entity.HasIndex(e => e.AuthenticationInformationId, "authentication_information_id");
+
+            entity.HasIndex(e => e.ProfilePictureFileId, "user_ibfk_2_idx");
 
             entity.HasIndex(e => e.UserId, "user_id").IsUnique();
 
@@ -1267,9 +1325,7 @@ public partial class ApplicationDBContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("lname");
             entity.Property(e => e.MusicianId).HasColumnName("musician_id");
-            entity.Property(e => e.ProfilePic)
-                .HasColumnType("text")
-                .HasColumnName("profile_pic");
+            entity.Property(e => e.ProfilePictureFileId).HasColumnName("profile_picture_file_id");
             entity.Property(e => e.TimeCreated)
                 .HasColumnType("timestamp")
                 .HasColumnName("time_created");
@@ -1283,6 +1339,10 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.AuthenticationInformationNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.AuthenticationInformationId)
                 .HasConstraintName("user_ibfk_1");
+
+            entity.HasOne(d => d.ProfilePictureFile).WithMany(p => p.Users)
+                .HasForeignKey(d => d.ProfilePictureFileId)
+                .HasConstraintName("user_ibfk_2");
         });
 
         modelBuilder.Entity<UserAttendsEvent>(entity =>

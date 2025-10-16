@@ -29,7 +29,7 @@ const Register = () => {
 
     usernameRef.current.style.borderColor = validUsername ? defaultBorderColor : "red";
     emailRef.current.style.borderColor = validEmail ? defaultBorderColor : "red";
-    passwordRef.current.style.borderColor = validPassword ? defaultBorderColor : "red";
+    passwordRef.current.styles.borderColor = validPassword ? defaultBorderColor : "red";
 
     if (!validUsername || !validEmail || !validPassword) return;
 
@@ -51,7 +51,7 @@ const Register = () => {
 
     const loginBody = {
       UsernameOrEmail: username,
-      PassworD: password,
+      Password: password,
     };
 
     const loginResponse = await fetch("http://localhost:5062/api/authentication", {

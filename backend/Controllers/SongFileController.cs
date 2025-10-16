@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.DTOs.Song;
+using backend.Mappers;
+using backend.Models;
+using Humanizer;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -11,27 +15,56 @@ namespace backend.Controllers
     [ApiController]
     public class SongFileController : ControllerBase
     {
-      /*  [HttpPost]
-        public IActionResult CreateSongFile(IFormFile file)
+
+        private ApplicationDBContext _context;
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id, [FromQuery] bool sendFileData)
         {
+            SongFile? songFile = await _context.SongFiles.FindAsync(id);
+            if (songFile == null)
+                return NotFound();
+
+            if (sendFileData)
+                return Ok(songFile.ToDto());
+            else
+                return Ok(songFile.ToDtoExcludingData());
+        }
+
+
+        public SongFileController(ApplicationDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpPost]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> CreateSongFile(IFormFile file)
+        {
+            Console.WriteLine(file.ContentType);
             if (file.ContentType != "audio/mpeg")
                 return BadRequest();
 
-
-
-        }
-        
-        public async Task UploadBlobToS3Async(Stream blobStream, string s3Key, string contentType)
-        {
-            var putObjectRequest = new Amazon.S3.Model.PutObjectRequest
+            using (Stream stream = file.OpenReadStream())
             {
-                BucketName = ,
-                Key = s3Key,
-                InputStream = blobStream,
-                ContentType = contentType // e.g., "image/jpeg", "application/pdf"
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+                    SongFile newSongFile = new SongFile
+                    {
+                        FileName = file.FileName.Truncate(50),
+                        FileExtension = "mp3",
+                        FileData = memoryStream.ToArray(),
+                    };
+
+                    _context.SongFiles.Add(newSongFile);
+                    _context.SaveChanges();
+                    return CreatedAtAction("GetById", new {id = newSongFile.SongId, sendFileData = false}, newSongFile.ToDtoExcludingData());
+                }
             };
 
-            await _s3Client.PutObjectAsync(putObjectRequest);
-        } */
+                
+
+        }
     }
 }

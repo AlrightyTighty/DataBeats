@@ -11,10 +11,6 @@ public partial class Song
 
     public string? Lyrics { get; set; }
 
-    public string FilePath { get; set; } = null!;
-
-    public DateTime FileUploadDate { get; set; }
-
     public int Streams { get; set; }
 
     public TimeOnly Duration { get; set; }
@@ -33,9 +29,15 @@ public partial class Song
 
     public ulong? DeletedBy { get; set; }
 
+    public ulong SongFileId { get; set; }
+
+    public ulong AlbumOrSongArtId { get; set; }
+
     public virtual ICollection<AdminDeletesSong> AdminDeletesSongs { get; set; } = new List<AdminDeletesSong>();
 
     public virtual ICollection<AlbumContainsSong> AlbumContainsSongs { get; set; } = new List<AlbumContainsSong>();
+
+    public virtual AlbumOrSongArtFile AlbumOrSongArt { get; set; } = null!;
 
     public virtual Musician CreatedByNavigation { get; set; } = null!;
 
@@ -44,6 +46,8 @@ public partial class Song
     public virtual ICollection<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; } = new List<MusicianWorksOnSong>();
 
     public virtual ICollection<PlaylistEntry> PlaylistEntries { get; set; } = new List<PlaylistEntry>();
+
+    public virtual ICollection<SongFile> SongFiles { get; set; } = new List<SongFile>();
 
     public virtual ICollection<SongGenre> SongGenres { get; set; } = new List<SongGenre>();
 

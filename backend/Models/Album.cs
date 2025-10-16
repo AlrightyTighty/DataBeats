@@ -11,8 +11,6 @@ public partial class Album
 
     public DateTime ReleaseDate { get; set; }
 
-    public string CoverImagePath { get; set; } = null!;
-
     public int NumSongs { get; set; }
 
     public TimeOnly Duration { get; set; }
@@ -32,6 +30,8 @@ public partial class Album
     public DateTime? TimestampDeleted { get; set; }
 
     public ulong? DeletedBy { get; set; }
+
+    public ulong AlbumOrSongArtFileId { get; set; }
 
     public virtual ICollection<AdminDeletesAlbum> AdminDeletesAlbums { get; set; } = new List<AdminDeletesAlbum>();
 

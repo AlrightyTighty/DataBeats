@@ -13,7 +13,7 @@ namespace backend.DTOs.Song
 
         public string? Lyrics { get; set; }
 
-        public string FilePath { get; set; } = null!;
+        public ulong? SongFileId { get; set; }
 
         public int Streams { get; set; }
 
