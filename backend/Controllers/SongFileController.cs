@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.DTOs.Song;
@@ -19,7 +20,7 @@ namespace backend.Controllers
         private ApplicationDBContext _context;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id, [FromQuery] bool sendFileData)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id, [FromQuery] bool sendFileData = false)
         {
             SongFile? songFile = await _context.SongFiles.FindAsync(id);
             if (songFile == null)
@@ -58,8 +59,9 @@ namespace backend.Controllers
                     };
 
                     _context.SongFiles.Add(newSongFile);
-                    _context.SaveChanges();
-                    return CreatedAtAction("GetById", new {id = newSongFile.SongId, sendFileData = false}, newSongFile.ToDtoExcludingData());
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetById", new {id = newSongFile.SongFileId, sendFileData=false}, newSongFile.ToDtoExcludingData());
                 }
             };
 

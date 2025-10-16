@@ -10,7 +10,7 @@ namespace backend.DTOs.Album
     {
         public string AlbumTitle { get; set; } = null!;
 
-        public string CoverImagePath { get; set; } = null!;
+        public ulong AlbumOrSongArtFileId { get; set; }
 
         public int NumSongs { get; set; }
 

@@ -752,6 +752,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.ToTable("musician");
 
+            entity.HasIndex(e => e.ProfilePictureFileId, "musician_ibfk_2_idx");
+
             entity.HasIndex(e => e.MusicianId, "musician_id").IsUnique();
 
             entity.HasIndex(e => e.UserId, "user_id");
@@ -770,9 +772,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.MusicianName)
                 .HasMaxLength(50)
                 .HasColumnName("musician_name");
-            entity.Property(e => e.ProfilePic)
-                .HasColumnType("text")
-                .HasColumnName("profile_pic");
+            entity.Property(e => e.ProfilePictureFileId).HasColumnName("profile_picture_file_id");
             entity.Property(e => e.ShareLink)
                 .HasColumnType("text")
                 .HasColumnName("share_link");
@@ -783,6 +783,11 @@ public partial class ApplicationDBContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp_deleted");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.ProfilePictureFile).WithMany(p => p.Musicians)
+                .HasForeignKey(d => d.ProfilePictureFileId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("musician_ibfk_2");
 
             entity.HasOne(d => d.User).WithMany(p => p.Musicians)
                 .HasForeignKey(d => d.UserId)

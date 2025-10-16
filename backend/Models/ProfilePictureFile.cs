@@ -13,5 +13,7 @@ public partial class ProfilePictureFile
 
     public byte[] FileData { get; set; } = null!;
 
+    public virtual ICollection<Musician> Musicians { get; set; } = new List<Musician>();
+
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

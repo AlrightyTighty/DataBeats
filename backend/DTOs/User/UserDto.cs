@@ -10,7 +10,7 @@ namespace backend.DTOs.User
         public string Username { get; set; } = null!;
         public string? Fname { get; set; }
         public string? Lname { get; set; } = null!;
-        public string? ProfilePic { get; set; } = null!;
+        public ulong? ProfilePictureFileId { get; set; }
         public ulong? AdminId { get; set; }
         public ulong? MusicianId { get; set; }
     }

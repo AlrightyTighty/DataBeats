@@ -13,8 +13,6 @@ public partial class Musician
 
     public string? Bio { get; set; }
 
-    public string ProfilePic { get; set; } = null!;
-
     public string? Label { get; set; }
 
     public int FollowerCount { get; set; }
@@ -30,6 +28,8 @@ public partial class Musician
     public ulong? CreatedBy { get; set; }
 
     public ulong? DeletedBy { get; set; }
+
+    public ulong ProfilePictureFileId { get; set; }
 
     public virtual ICollection<AdminDeletesMusician> AdminDeletesMusicians { get; set; } = new List<AdminDeletesMusician>();
 
@@ -48,6 +48,8 @@ public partial class Musician
     public virtual ICollection<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; } = new List<MusicianWorksOnAlbum>();
 
     public virtual ICollection<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; } = new List<MusicianWorksOnSong>();
+
+    public virtual ProfilePictureFile ProfilePictureFile { get; set; } = null!;
 
     public virtual ICollection<Song> SongCreatedByNavigations { get; set; } = new List<Song>();
 

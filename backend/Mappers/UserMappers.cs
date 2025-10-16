@@ -34,7 +34,7 @@ namespace backend.Mappers
                 Username = user.Username,
                 Fname = user.Fname,
                 Lname = user.Lname,
-                ProfilePic = user.ProfilePic,
+                ProfilePictureFileId = user.ProfilePictureFileId,
                 AdminId = user.AdminId,
                 MusicianId = user.MusicianId
             };

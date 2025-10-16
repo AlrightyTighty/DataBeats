@@ -14,7 +14,7 @@ namespace backend.Mappers
             return new Album
             {
                 AlbumTitle = dto.AlbumTitle,
-                CoverImagePath = dto.CoverImagePath,
+                AlbumOrSongArtFileId = dto.AlbumOrSongArtFileId,
                 NumSongs = dto.NumSongs,
                 AlbumType = dto.AlbumType,
             };
