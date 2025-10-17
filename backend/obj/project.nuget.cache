@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ITMC1gzxjSg=",
+  "dgSpecHash": "RQgumPGT5Dk=",
   "success": true,
   "projectFilePath": "/home/alrightytighty/Projects/DataBeats/backend/backend.csproj",
   "expectedPackageFiles": [
@@ -38,9 +38,20 @@
     "/home/alrightytighty/.nuget/packages/microsoft.extensions.options/9.0.9/microsoft.extensions.options.9.0.9.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/microsoft.extensions.primitives/9.0.9/microsoft.extensions.primitives.9.0.9.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/microsoft.net.http.headers/2.3.0/microsoft.net.http.headers.2.3.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/microsoft.netcore.platforms/3.1.0/microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/mysqlconnector/2.4.0/mysqlconnector.2.4.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio/2.2.1/naudio.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.asio/2.2.1/naudio.asio.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.core/2.2.1/naudio.core.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.lame/2.1.0/naudio.lame.2.1.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.midi/2.2.1/naudio.midi.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.wasapi/2.2.1/naudio.wasapi.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/naudio.winmm/2.2.1/naudio.winmm.2.2.1.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/nlayer/1.16.0/nlayer.1.16.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/nlayer.naudiosupport/1.4.0/nlayer.naudiosupport.1.4.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/pomelo.entityframeworkcore.mysql/9.0.0/pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.buffers/4.6.0/system.buffers.4.6.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.codedom/6.0.0/system.codedom.6.0.0.nupkg.sha512",
@@ -54,9 +65,13 @@
     "/home/alrightytighty/.nuget/packages/system.io.pipelines/7.0.0/system.io.pipelines.7.0.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.reflection.metadata/7.0.0/system.reflection.metadata.7.0.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/system.security.accesscontrol/4.7.0/system.security.accesscontrol.4.7.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/system.security.principal.windows/4.7.0/system.security.principal.windows.4.7.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.text.encodings.web/8.0.0/system.text.encodings.web.8.0.0.nupkg.sha512",
     "/home/alrightytighty/.nuget/packages/system.text.json/9.0.9/system.text.json.9.0.9.nupkg.sha512",
-    "/home/alrightytighty/.nuget/packages/system.threading.channels/7.0.0/system.threading.channels.7.0.0.nupkg.sha512"
+    "/home/alrightytighty/.nuget/packages/system.threading.channels/7.0.0/system.threading.channels.7.0.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/ude.netstandard/1.2.0/ude.netstandard.1.2.0.nupkg.sha512",
+    "/home/alrightytighty/.nuget/packages/z440.atl.core/7.5.0/z440.atl.core.7.5.0.nupkg.sha512"
   ],
   "logs": []
 }

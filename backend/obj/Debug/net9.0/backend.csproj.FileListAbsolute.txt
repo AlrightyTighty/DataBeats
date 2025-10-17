@@ -131,3 +131,16 @@
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/AWSSDK.Core.dll
 /home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/AWSSDK.S3.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.Asio.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.Core.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.Midi.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.Wasapi.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.WinMM.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/libmp3lame.32.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/libmp3lame.64.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NAudio.Lame.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NLayer.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/NLayer.NAudioSupport.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/Ude.NetStandard.dll
+/home/alrightytighty/Projects/DataBeats/backend/bin/Debug/net9.0/ATL.dll

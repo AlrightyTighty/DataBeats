@@ -61,9 +61,29 @@
               "target": "Package",
               "version": "[9.0.9, )"
             },
+            "NAudio": {
+              "target": "Package",
+              "version": "[2.2.1, )"
+            },
+            "NAudio.Lame": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "NLayer": {
+              "target": "Package",
+              "version": "[1.16.0, )"
+            },
+            "NLayer.NAudioSupport": {
+              "target": "Package",
+              "version": "[1.4.0, )"
+            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "z440.atl.core": {
+              "target": "Package",
+              "version": "[7.5.0, )"
             }
           },
           "imports": [

@@ -52,6 +52,30 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"),
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/musician") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/song/file") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/art") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/album") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
 app.MapControllers();
 
 app.Run();
