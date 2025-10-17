@@ -89,7 +89,8 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=uma-music-db.c72imm4c0ouz.us-east-2.rds.amazonaws.com;uid=admin;pwd=Ramamusic123!;database=music_db", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1106,6 +1107,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.ToTable("song_file");
 
+            entity.HasIndex(e => e.MusicianId, "fk_song_file_1_idx");
+
             entity.Property(e => e.SongFileId).HasColumnName("song_file_id");
             entity.Property(e => e.Duration)
                 .HasColumnType("time")
@@ -1119,6 +1122,12 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.FileName)
                 .HasMaxLength(50)
                 .HasColumnName("file_name");
+            entity.Property(e => e.MusicianId).HasColumnName("musician_id");
+
+            entity.HasOne(d => d.Musician).WithMany(p => p.SongFiles)
+                .HasForeignKey(d => d.MusicianId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_song_file_1");
         });
 
         modelBuilder.Entity<SongGenre>(entity =>

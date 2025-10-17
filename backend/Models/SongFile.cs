@@ -14,4 +14,8 @@ public partial class SongFile
     public byte[] FileData { get; set; } = null!;
 
     public TimeOnly Duration { get; set; }
+
+    public ulong MusicianId { get; set; }
+
+    public virtual Musician Musician { get; set; } = null!;
 }

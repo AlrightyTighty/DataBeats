@@ -51,6 +51,8 @@ public partial class Musician
 
     public virtual ICollection<Song> SongCreatedByNavigations { get; set; } = new List<Song>();
 
+    public virtual ICollection<SongFile> SongFiles { get; set; } = new List<SongFile>();
+
     public virtual ICollection<SongGenre> SongGenreCreatedByNavigations { get; set; } = new List<SongGenre>();
 
     public virtual ICollection<SongGenre> SongGenreUpdatedByNavigations { get; set; } = new List<SongGenre>();
