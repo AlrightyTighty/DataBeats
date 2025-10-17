@@ -12,6 +12,4 @@ public partial class AlbumOrSongArtFile
     public string FileExtension { get; set; } = null!;
 
     public byte[] FileData { get; set; } = null!;
-
-    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
 }

@@ -15,8 +15,6 @@ public partial class Song
 
     public TimeOnly Duration { get; set; }
 
-    public string ShareLink { get; set; } = null!;
-
     public DateTime TimestampCreated { get; set; }
 
     public ulong CreatedBy { get; set; }
@@ -31,13 +29,9 @@ public partial class Song
 
     public ulong SongFileId { get; set; }
 
-    public ulong AlbumOrSongArtId { get; set; }
-
     public virtual ICollection<AdminDeletesSong> AdminDeletesSongs { get; set; } = new List<AdminDeletesSong>();
 
     public virtual ICollection<AlbumContainsSong> AlbumContainsSongs { get; set; } = new List<AlbumContainsSong>();
-
-    public virtual AlbumOrSongArtFile AlbumOrSongArt { get; set; } = null!;
 
     public virtual Musician CreatedByNavigation { get; set; } = null!;
 

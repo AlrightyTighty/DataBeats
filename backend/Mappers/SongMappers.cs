@@ -19,7 +19,6 @@ namespace backend.Mappers
                 SongFileId = songModel.SongId,
                 Streams = songModel.Streams,
                 Duration = songModel.Duration,
-                ShareLink = songModel.ShareLink
             };
         }
     }

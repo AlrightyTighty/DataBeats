@@ -17,8 +17,6 @@ public partial class Album
 
     public string AlbumType { get; set; } = null!;
 
-    public string ShareLink { get; set; } = null!;
-
     public DateTime TimestampCreated { get; set; }
 
     public ulong CreatedBy { get; set; }

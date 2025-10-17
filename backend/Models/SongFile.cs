@@ -13,7 +13,9 @@ public partial class SongFile
 
     public byte[] FileData { get; set; } = null!;
 
-    public ulong? SongId { get; set; }
+    public TimeOnly Duration { get; set; }
 
-    public virtual Song? Song { get; set; }
+    public ulong SongId { get; set; }
+
+    public virtual Song Song { get; set; } = null!;
 }

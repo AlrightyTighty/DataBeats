@@ -19,8 +19,6 @@ public partial class Musician
 
     public int MonthlyListenerCount { get; set; }
 
-    public string ShareLink { get; set; } = null!;
-
     public DateTime TimestampCreated { get; set; }
 
     public DateTime? TimestampDeleted { get; set; }
