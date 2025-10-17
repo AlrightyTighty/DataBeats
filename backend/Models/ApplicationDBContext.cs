@@ -1106,8 +1106,6 @@ public partial class ApplicationDBContext : DbContext
 
             entity.ToTable("song_file");
 
-            entity.HasIndex(e => e.SongId, "fk_song_file_song_id_idx");
-
             entity.Property(e => e.SongFileId).HasColumnName("song_file_id");
             entity.Property(e => e.Duration)
                 .HasColumnType("time")
@@ -1121,11 +1119,6 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.FileName)
                 .HasMaxLength(50)
                 .HasColumnName("file_name");
-            entity.Property(e => e.SongId).HasColumnName("song_id");
-
-            entity.HasOne(d => d.Song).WithMany(p => p.SongFiles)
-                .HasForeignKey(d => d.SongId)
-                .HasConstraintName("fk_song_file_song_id");
         });
 
         modelBuilder.Entity<SongGenre>(entity =>

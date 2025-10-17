@@ -41,8 +41,6 @@ public partial class Song
 
     public virtual ICollection<PlaylistEntry> PlaylistEntries { get; set; } = new List<PlaylistEntry>();
 
-    public virtual ICollection<SongFile> SongFiles { get; set; } = new List<SongFile>();
-
     public virtual ICollection<SongGenre> SongGenres { get; set; } = new List<SongGenre>();
 
     public virtual ICollection<SongLyricist> SongLyricists { get; set; } = new List<SongLyricist>();
