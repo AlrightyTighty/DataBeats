@@ -16,7 +16,6 @@ namespace backend.Mappers
                 MusicianId = dto.MusicianId,
                 Title = dto.Title,
                 EventDescription = dto.EventDescription,
-                EventPic = dto.EventPic,
                 EventTime = dto.EventTime,
                 TicketPrice = dto.TicketPrice
             };
@@ -30,7 +29,6 @@ namespace backend.Mappers
                 MusicianId = evt.MusicianId,
                 Title = evt.Title,
                 EventDescription = evt.EventDescription,
-                EventPic = evt.EventPic,
                 EventTime = evt.EventTime,
                 TicketPrice = evt.TicketPrice
             };

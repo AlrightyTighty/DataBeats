@@ -40,7 +40,7 @@ namespace backend.Controllers
 
             if (evt == null)
             {
-                return NotFound();
+                return NotFound("There is such Event with id " + id);
             }
 
             return Ok(evt.ToEventDto());
@@ -67,7 +67,7 @@ namespace backend.Controllers
             }
             evt.Title = updateDto.Title;
             evt.EventDescription = updateDto.EventDescription;
-            evt.EventPic = updateDto.EventPic;
+            evt.EventPictureFileId = updateDto.EventPictureFileId;
             evt.EventTime = updateDto.EventTime;
             evt.TicketPrice = updateDto.TicketPrice;
 

@@ -12,7 +12,7 @@ namespace backend.DTOs.Event
 
         public string EventDescription { get; set; } = null!;
 
-        public string EventPic { get; set; } = null!;
+        public ulong EventPictureFileId { get; set; }        
         public DateTime EventTime { get; set; }
 
         public decimal TicketPrice { get; set; }
