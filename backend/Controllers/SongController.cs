@@ -22,7 +22,7 @@ namespace backend.Controllers
         [HttpGet("{song_id}")]
         public IActionResult GetSongById([FromRoute] ulong song_id)
         {
-            List<Song> foundSong = _context.Songs.Where(song => song.SongId == song_id && song.TimestampDeleted != null).ToList();
+            List<Song> foundSong = _context.Songs.Where(song => song.SongId == song_id && song.TimestampDeleted == null).ToList();
             if (foundSong.Count != 0)
                 return Ok(foundSong[0].ToSongDTO());
             else

@@ -9,7 +9,7 @@ namespace backend.Mappers
 {
     public static class EventMappers                                                                                     
     {
-        public static Event ToEvent(this CreateEventDto dto)
+        /*public static Event ToEvent(this CreateEventDto dto)
         {
             return new Event
             {
@@ -32,6 +32,6 @@ namespace backend.Mappers
                 EventTime = evt.EventTime,
                 TicketPrice = evt.TicketPrice
             };
-        }
+        }*/
     }
 }
