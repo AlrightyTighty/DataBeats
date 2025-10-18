@@ -7,10 +7,15 @@ main {
   align-items: center;
 }
 
+body {
+  background: linear-gradient(to top, rgb(14, 14, 161), rgba(14, 14, 161, 0.2));
+}
+
 .register-form {
   width: 400px;
   height: 560px;
-  background-color: #3b3b3b;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
   border-radius: 20px;
 }
 
