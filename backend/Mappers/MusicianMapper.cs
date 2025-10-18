@@ -9,6 +9,17 @@ namespace backend.Mappers
 {
     public static class MusicianMapper
     {
+        public static Musician ToMusicianFromCreateDto(this CreateMusicianDto dto)
+        {
+            return new Musician
+            {
+                UserId = dto.UserId,
+                MusicianName = dto.MusicianName,
+                Bio = dto.Bio,
+                ProfilePictureFileId = dto.ProfilePictureFileId,
+                Label = dto.Label
+            };
+        }
         public static MusicianDto ToDto(this Musician musician)
         {
             return new MusicianDto

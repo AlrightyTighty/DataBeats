@@ -31,6 +31,7 @@ namespace backend.Mappers
         {
             return new UserDto
             {
+                UserId = user.UserId,
                 Username = user.Username,
                 Fname = user.Fname,
                 Lname = user.Lname,

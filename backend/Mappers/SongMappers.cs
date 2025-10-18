@@ -18,7 +18,7 @@ namespace backend.Mappers
                 Lyrics = songModel.Lyrics,
                 SongFileId = songModel.SongId,
                 Streams = songModel.Streams,
-                Duration = songModel.Duration,
+                Duration = songModel.Duration
             };
         }
     }
