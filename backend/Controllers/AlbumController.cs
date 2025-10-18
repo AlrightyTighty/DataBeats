@@ -71,7 +71,8 @@ namespace backend.Controllers
                     Streams = 0,
                     Duration = songFile.Duration,
                     TimestampCreated = DateTime.Now,
-                    CreatedBy = userId
+                    CreatedBy = uploadingMusician.MusicianId,
+                    SongFileId = songDto.SongFileId
                 };
 
                 songs.Add(newSong);
@@ -84,8 +85,10 @@ namespace backend.Controllers
                 AlbumType = albumInfo.Songs.Count == 1 ? "SINGLE" : albumInfo.Songs.Count < 5 ? "EP" : "ALBUM",
                 ReleaseDate = DateTime.Now,
                 NumSongs = albumInfo.Songs.Count,
-                CreatedBy = userId,
-                Duration = new TimeOnly(songs.Sum(song => song.Duration.Ticks))
+                CreatedBy = uploadingMusician.MusicianId,
+                AlbumOrSongArtFileId = albumInfo.AlbumOrSongArtFileId,
+                Duration = new TimeOnly(songs.Sum(song => song.Duration.Ticks)),
+                TimestampCreated = DateTime.Now
             };
 
             foreach (Musician musician in musicians)

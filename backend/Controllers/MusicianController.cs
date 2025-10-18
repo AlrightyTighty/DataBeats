@@ -14,8 +14,8 @@ namespace backend.Controllers
     [ApiController]
     public class MusicianController : ControllerBase
     {
-        [HttpGet("{$id}")]
-        public async Task<IActionResult> GetMusicianAsync(ulong id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMusicianAsync([FromRoute] ulong id)
         {
             Musician? musician = await _context.Musicians.FindAsync(id);
             if (musician == null)
@@ -40,6 +40,9 @@ namespace backend.Controllers
 
             User user = (await _context.Users.FindAsync(userId))!;
 
+            if (user.MusicianId != null)
+                return BadRequest("You can't make a musician account if you already have one");
+
             Musician newMusician = new Musician
             {
                 UserId = userId,
@@ -52,6 +55,9 @@ namespace backend.Controllers
             };
 
             _context.Musicians.Add(newMusician);
+            await _context.SaveChangesAsync();
+
+            user.MusicianId = newMusician.MusicianId;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetMusician", new { id = newMusician.MusicianId }, newMusician.ToDto());

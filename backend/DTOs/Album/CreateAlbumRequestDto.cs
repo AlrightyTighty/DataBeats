@@ -8,15 +8,11 @@ namespace backend.DTOs.Album
 {
     public class CreateAlbumRequestDto
     {
-
-
         public string AlbumTitle { get; set; } = null!;
 
         public ulong AlbumOrSongArtFileId { get; set; }
 
         public int NumSongs { get; set; }
-
-        public string AlbumType { get; set; } = null!;
 
         public ulong[] MusicianIds { get; set; } = null!;
 
