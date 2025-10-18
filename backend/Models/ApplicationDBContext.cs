@@ -44,6 +44,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<Event> Events { get; set; }
 
+    public virtual DbSet<EventPictureFile> EventPictureFiles { get; set; }
+
     public virtual DbSet<Musician> Musicians { get; set; }
 
     public virtual DbSet<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; }
@@ -704,6 +706,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.DeletedBy, "deleted_by");
 
+            entity.HasIndex(e => e.EventPictureFileId, "event_ibfk_3_idx");
+
             entity.HasIndex(e => e.EventId, "event_id").IsUnique();
 
             entity.HasIndex(e => e.MusicianId, "musician_id");
@@ -713,9 +717,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.EventDescription)
                 .HasMaxLength(500)
                 .HasColumnName("event_description");
-            entity.Property(e => e.EventPic)
-                .HasColumnType("text")
-                .HasColumnName("event_pic");
+            entity.Property(e => e.EventPictureFileId).HasColumnName("event_picture_file_id");
             entity.Property(e => e.EventTime)
                 .HasColumnType("datetime")
                 .HasColumnName("event_time");
@@ -737,10 +739,42 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.DeletedBy)
                 .HasConstraintName("event_ibfk_2");
 
+            entity.HasOne(d => d.EventPictureFile).WithMany(p => p.Events)
+                .HasForeignKey(d => d.EventPictureFileId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("event_ibfk_3");
+
             entity.HasOne(d => d.Musician).WithMany(p => p.Events)
                 .HasForeignKey(d => d.MusicianId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("event_ibfk_1");
+        });
+
+        modelBuilder.Entity<EventPictureFile>(entity =>
+        {
+            entity.HasKey(e => e.EventPictureFileId).HasName("PRIMARY");
+
+            entity.ToTable("event_picture_file");
+
+            entity.HasIndex(e => e.EventId, "event_picture_file_fk1_idx");
+
+            entity.HasIndex(e => e.EventPictureFileId, "event_picture_file_id_UNIQUE").IsUnique();
+
+            entity.Property(e => e.EventPictureFileId).HasColumnName("event_picture_file_id");
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.FileData)
+                .HasColumnType("blob")
+                .HasColumnName("file_data");
+            entity.Property(e => e.FileExtension)
+                .HasMaxLength(4)
+                .HasColumnName("file_extension");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(50)
+                .HasColumnName("file_name");
+
+            entity.HasOne(d => d.Event).WithMany(p => p.EventPictureFiles)
+                .HasForeignKey(d => d.EventId)
+                .HasConstraintName("event_picture_file_fk1");
         });
 
         modelBuilder.Entity<Musician>(entity =>
@@ -1108,6 +1142,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.MusicianId, "fk_song_file_1_idx");
 
+            entity.HasIndex(e => e.SongId, "fk_song_file_2_idx");
+
             entity.Property(e => e.SongFileId).HasColumnName("song_file_id");
             entity.Property(e => e.Duration)
                 .HasColumnType("time")
@@ -1122,11 +1158,17 @@ public partial class ApplicationDBContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("file_name");
             entity.Property(e => e.MusicianId).HasColumnName("musician_id");
+            entity.Property(e => e.SongId).HasColumnName("song_id");
 
             entity.HasOne(d => d.Musician).WithMany(p => p.SongFiles)
                 .HasForeignKey(d => d.MusicianId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_song_file_1");
+
+            entity.HasOne(d => d.Song).WithMany(p => p.SongFiles)
+                .HasForeignKey(d => d.SongId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_song_file_2");
         });
 
         modelBuilder.Entity<SongGenre>(entity =>
@@ -1511,6 +1553,9 @@ public partial class ApplicationDBContext : DbContext
 
             entity.Property(e => e.UserListensToSongId).HasColumnName("user_listens_to_song_id");
             entity.Property(e => e.SongId).HasColumnName("song_id");
+            entity.Property(e => e.TimeListened)
+                .HasColumnType("datetime")
+                .HasColumnName("time_listened");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.Song).WithMany(p => p.UserListensToSongs)

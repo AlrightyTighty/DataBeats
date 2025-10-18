@@ -17,5 +17,9 @@ public partial class SongFile
 
     public ulong MusicianId { get; set; }
 
+    public ulong? SongId { get; set; }
+
     public virtual Musician Musician { get; set; } = null!;
+
+    public virtual Song? Song { get; set; }
 }

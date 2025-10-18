@@ -13,7 +13,7 @@ public partial class Event
 
     public string EventDescription { get; set; } = null!;
 
-    public string EventPic { get; set; } = null!;
+    public ulong EventPictureFileId { get; set; }
 
     public DateTime EventTime { get; set; }
 
@@ -26,6 +26,10 @@ public partial class Event
     public ulong? DeletedBy { get; set; }
 
     public virtual User? DeletedByNavigation { get; set; }
+
+    public virtual EventPictureFile EventPictureFile { get; set; } = null!;
+
+    public virtual ICollection<EventPictureFile> EventPictureFiles { get; set; } = new List<EventPictureFile>();
 
     public virtual Musician Musician { get; set; } = null!;
 

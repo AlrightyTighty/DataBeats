@@ -76,6 +76,13 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/album") && 
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/stream") && context.Request.Method == "PATCH", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+
 app.MapControllers();
 
 app.Run();
