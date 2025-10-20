@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using backend.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,14 +33,39 @@ namespace backend.Controllers
             return Ok(eventFile);
         }
 
+        [HttpGet("view/{id}")]
+        public async Task<IActionResult> ViewImage(ulong id)
+        {
+            var picture = await _context.EventPictureFiles.FindAsync(id);
+            if (picture == null)
+                return NotFound("No such art file found with id " + id);
+
+            var ext = picture.FileExtension?.TrimStart('.')?.ToLowerInvariant();
+            string contentType = ext switch
+            {
+                "png"  => "image/png",
+                "jpg"  => "image/jpeg",
+                "jpeg" => "image/jpeg",
+                "gif"  => "image/gif",
+                "webp" => "image/webp",
+                _      => "application/octet-stream"
+            };
+
+            return File(picture.FileData, contentType, picture.FileName);
+        }
+
         [HttpPost]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> UploadEventAsync(IFormFile file)
+        public async Task<IActionResult> UploadEventAsync([FromForm] IFormFile file)
         {
-            string userIdString = Request.Headers["X-UserId"]!;
-            ulong userId = ulong.Parse(userIdString);
+            if (!Request.Headers.TryGetValue("X-UserId", out var headerVals) ||
+            string.IsNullOrEmpty(headerVals.FirstOrDefault()) ||
+            !ulong.TryParse(headerVals.FirstOrDefault(), out var userId))
+            {
+                return BadRequest("Missing or invalid X-UserId header.");
+            }
 
-            Musician? musician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.UserId == userId);
+            var musician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.UserId == userId);
 
             if (musician == null)
                 return Unauthorized("This user does not have an associated musician account. Create one before trying to upload songs.");
@@ -49,10 +76,12 @@ namespace backend.Controllers
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
 
+            var ext = Path.GetExtension(file.FileName)?.TrimStart('.').ToLower() ?? "";
+
             var picture = new EventPictureFile
             {
                 FileName = file.FileName.Truncate(50),
-                FileExtension = "png",
+                FileExtension = ext,
                 FileData = memoryStream.ToArray()
             };
 

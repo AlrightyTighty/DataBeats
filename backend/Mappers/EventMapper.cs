@@ -9,7 +9,7 @@ namespace backend.Mappers
 {
     public static class EventMappers                                                                                     
     {
-        /*public static Event ToEvent(this CreateEventDto dto)
+        public static Event ToEvent(this CreateEventDto dto)
         {
             return new Event
             {
@@ -17,7 +17,8 @@ namespace backend.Mappers
                 Title = dto.Title,
                 EventDescription = dto.EventDescription,
                 EventTime = dto.EventTime,
-                TicketPrice = dto.TicketPrice
+                TicketPrice = dto.TicketPrice,
+                EventPictureFileId = dto.EventPictureFileId
             };
         }
         
@@ -30,8 +31,14 @@ namespace backend.Mappers
                 Title = evt.Title,
                 EventDescription = evt.EventDescription,
                 EventTime = evt.EventTime,
-                TicketPrice = evt.TicketPrice
+                TicketPrice = evt.TicketPrice,
+                EventPictureFileId = evt.EventPictureFileId,
+                ImageBase64 = evt.EventPictureFile?.FileData != null
+                ? Convert.ToBase64String(evt.EventPictureFile.FileData)
+                : null,
+                ImageFileName = evt.EventPictureFile?.FileName,
+                ImageFileExtension = evt.EventPictureFile?.FileExtension
             };
-        }*/
+        }
     }
 }
