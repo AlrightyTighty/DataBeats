@@ -21,5 +21,13 @@ namespace backend.DTOs.Song
 
         public string ShareLink { get; set; } = null!;
 
+        public ulong AlbumId { get; set; }
+
+        public string AlbumName { get; set; } = null!;
+
+        public string[] ArtistNames { get; set; } = null!;
+
+        public ulong[] ArtistIds { get; set; } = null!;
+
     }
 }

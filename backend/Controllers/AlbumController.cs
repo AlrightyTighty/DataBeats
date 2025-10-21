@@ -28,7 +28,7 @@ namespace backend.Controllers
         {
             Album? album = await _context.Albums.FindAsync(id);
             if (album == null)
-                return NotFound("There is such album with id " + id);
+                return NotFound("There is no such album with id " + id);
 
             return Ok(album.ToDTO());
         }
@@ -56,6 +56,8 @@ namespace backend.Controllers
 
             List<Song> songs = new List<Song>();
 
+            int i = 0;
+
             foreach (CreateSongDto songDto in albumInfo.Songs)
             {
 
@@ -72,11 +74,23 @@ namespace backend.Controllers
                     Duration = songFile.Duration,
                     TimestampCreated = DateTime.Now,
                     CreatedBy = uploadingMusician.MusicianId,
-                    SongFileId = songDto.SongFileId
+                    SongFileId = songDto.SongFileId,
                 };
 
+                ulong[] musicianIds = albumInfo.MusicianIdsPerSong[i];
+
+                foreach (ulong musicianId in musicianIds)
+                {
+                    MusicianWorksOnSong musicianWorksOnSong = new MusicianWorksOnSong
+                    {
+                        MusicianId = musicianId,
+                        Song = newSong
+                    };
+                    await _context.MusicianWorksOnSongs.AddAsync(musicianWorksOnSong);
+                }
+
                 songs.Add(newSong);
-                _context.Songs.Add(newSong);
+                await _context.Songs.AddAsync(newSong);
             }
 
             Album newAlbum = new Album
@@ -90,6 +104,11 @@ namespace backend.Controllers
                 Duration = new TimeOnly(songs.Sum(song => song.Duration.Ticks)),
                 TimestampCreated = DateTime.Now
             };
+
+            foreach (Song song in songs)
+            {
+                song.Album = newAlbum;
+            }
 
             foreach (Musician musician in musicians)
             {

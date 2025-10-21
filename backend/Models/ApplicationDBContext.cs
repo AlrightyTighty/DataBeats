@@ -1091,11 +1091,14 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.SongFileId, "song_ibfk_4_idx");
 
+            entity.HasIndex(e => e.AlbumId, "song_ibfk_4_idx1");
+
             entity.HasIndex(e => e.SongId, "song_id").IsUnique();
 
             entity.HasIndex(e => e.UpdatedBy, "updated_by");
 
             entity.Property(e => e.SongId).HasColumnName("song_id");
+            entity.Property(e => e.AlbumId).HasColumnName("album_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
             entity.Property(e => e.Duration)
@@ -1119,6 +1122,11 @@ public partial class ApplicationDBContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp_updated");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+
+            entity.HasOne(d => d.Album).WithMany(p => p.Songs)
+                .HasForeignKey(d => d.AlbumId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("song_ibfk_4");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.SongCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
@@ -1149,7 +1157,7 @@ public partial class ApplicationDBContext : DbContext
                 .HasColumnType("time")
                 .HasColumnName("duration");
             entity.Property(e => e.FileData)
-                .HasColumnType("blob")
+                .HasColumnType("mediumblob")
                 .HasColumnName("file_data");
             entity.Property(e => e.FileExtension)
                 .HasMaxLength(4)

@@ -71,7 +71,7 @@ const Register = () => {
   return (
     <>
       <Topnav />
-      <main>
+      <main id={styles["main"]}>
         <form onSubmit={onRegister} className={styles["register-form"]}>
           <label id={styles["form-title"]}>REGISTER</label>
           <label className={styles["form-label"]} htmlFor="username">

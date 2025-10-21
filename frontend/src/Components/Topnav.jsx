@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import Searchbar from "./Searchbar";
 
 const Topnav = () => {
-  console.log(styles);
+  // console.log(styles);
   return (
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>

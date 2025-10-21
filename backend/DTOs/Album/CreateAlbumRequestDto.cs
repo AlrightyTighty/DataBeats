@@ -16,6 +16,8 @@ namespace backend.DTOs.Album
 
         public ulong[] MusicianIds { get; set; } = null!;
 
+        public ulong[][] MusicianIdsPerSong { get; set; } = null!;
+
         public List<CreateSongDto> Songs { get; set; } = null!;
     
     }

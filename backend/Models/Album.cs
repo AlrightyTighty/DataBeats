@@ -43,5 +43,7 @@ public partial class Album
 
     public virtual ICollection<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; } = new List<MusicianWorksOnAlbum>();
 
+    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
+
     public virtual Musician? UpdatedByNavigation { get; set; }
 }

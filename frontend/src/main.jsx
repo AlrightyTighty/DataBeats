@@ -9,6 +9,7 @@ import Signup from "./Pages/Signup.jsx";
 import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
+import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
+  { path: "/streamtest", element: <StreamPopupTest /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

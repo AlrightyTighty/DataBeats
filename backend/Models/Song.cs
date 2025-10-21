@@ -29,7 +29,11 @@ public partial class Song
 
     public ulong SongFileId { get; set; }
 
+    public ulong AlbumId { get; set; }
+
     public virtual ICollection<AdminDeletesSong> AdminDeletesSongs { get; set; } = new List<AdminDeletesSong>();
+
+    public virtual Album Album { get; set; } = null!;
 
     public virtual ICollection<AlbumContainsSong> AlbumContainsSongs { get; set; } = new List<AlbumContainsSong>();
 
