@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Topnav from "../Components/Topnav";
 import { useParams } from "react-router";
+import styles from "./Stream.module.css"
 
 const Stream = () => {
   const [songInfo, setSongInfo] = useState(null);
@@ -45,7 +46,14 @@ const Stream = () => {
   return (
     <>
       <Topnav />
-      {songData && <audio controls autoPlay src={`data:audio/mpeg;base64,${songData.fileData}`}></audio>}
+      <main>
+        <div id={styles['song-info']}>
+          {/*<img src={}/>*/}
+            {songData && <audio controls src={`data:audio/mpeg;base64,${songData.fileData}`}></audio>}
+        </div>
+        
+      </main>
+      
     </>
   );
 };

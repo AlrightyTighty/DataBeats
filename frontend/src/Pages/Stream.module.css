@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    width: 100vw;
+    height: calc(100vh - 140px);
+    margin-top: 140px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+@media (max-width: 1000px)
+{
+    #song-info {
+        width: 100%
+    }
+}
+
+@media (min-width: 1001px)
+{
+    #song-info {
+        width: 940px
+    }
+}
+
+#song-info {
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 540px;
+    padding: 30px;
+    border-radius: 50px;
+}
