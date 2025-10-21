@@ -10,6 +10,7 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
+import Artist from "./Pages/Artist.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
+  { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
 ]);
 
