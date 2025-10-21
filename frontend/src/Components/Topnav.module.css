@@ -8,6 +8,7 @@
   border-bottom-style: solid;
   position: fixed;
   top: 0;
+  z-index: 1000;
   padding: 20px;
   align-items: center;
   gap: 7.5%;
