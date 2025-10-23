@@ -13,15 +13,11 @@ public partial class Musician
 
     public string? Bio { get; set; }
 
-    public string ProfilePic { get; set; } = null!;
-
     public string? Label { get; set; }
 
     public int FollowerCount { get; set; }
 
     public int MonthlyListenerCount { get; set; }
-
-    public string ShareLink { get; set; } = null!;
 
     public DateTime TimestampCreated { get; set; }
 
@@ -30,6 +26,8 @@ public partial class Musician
     public ulong? CreatedBy { get; set; }
 
     public ulong? DeletedBy { get; set; }
+
+    public ulong ProfilePictureFileId { get; set; }
 
     public virtual ICollection<AdminDeletesMusician> AdminDeletesMusicians { get; set; } = new List<AdminDeletesMusician>();
 
@@ -49,7 +47,11 @@ public partial class Musician
 
     public virtual ICollection<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; } = new List<MusicianWorksOnSong>();
 
+    public virtual ProfilePictureFile ProfilePictureFile { get; set; } = null!;
+
     public virtual ICollection<Song> SongCreatedByNavigations { get; set; } = new List<Song>();
+
+    public virtual ICollection<SongFile> SongFiles { get; set; } = new List<SongFile>();
 
     public virtual ICollection<SongGenre> SongGenreCreatedByNavigations { get; set; } = new List<SongGenre>();
 

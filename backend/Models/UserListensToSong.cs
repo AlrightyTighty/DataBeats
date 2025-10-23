@@ -11,6 +11,8 @@ public partial class UserListensToSong
 
     public ulong SongId { get; set; }
 
+    public DateTime TimeListened { get; set; }
+
     public virtual Song Song { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

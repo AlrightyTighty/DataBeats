@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -20,11 +21,15 @@ namespace backend.Controllers
         }
 
         [HttpGet("{song_id}")]
-        public IActionResult GetSongById([FromRoute] ulong song_id)
+        public async Task<IActionResult> GetSongById([FromRoute] ulong song_id)
         {
-            List<Song> foundSong = _context.Songs.Where(song => song.SongId == song_id && song.TimestampDeleted != null).ToList();
-            if (foundSong.Count != 0)
-                return Ok(foundSong[0].ToSongDTO());
+            Song? foundSong = await _context.Songs.Include(song => song.Album)
+                                                  .Include(song => song.MusicianWorksOnSongs)
+                                                        .ThenInclude(worksOn => worksOn.Musician)
+                                                  .FirstOrDefaultAsync(song => song.SongId == song_id);
+            
+            if (foundSong != null)
+                return Ok(foundSong.ToSongDTOIncludeArtists(foundSong.Album.AlbumTitle));
             else
                 return NotFound();
         }

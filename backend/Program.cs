@@ -48,11 +48,42 @@
 
     //app.UseHttpsRedirection();
 
-    app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
-    {
-        appBuilder.UseMiddleware<AuthenticationHandler>();
-    }
-    );
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/musician") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/song/file") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/art") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/album") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/stream") && context.Request.Method == "PATCH", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
 
     app.MapControllers();
 

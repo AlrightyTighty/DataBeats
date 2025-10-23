@@ -48,7 +48,7 @@ const Login = () => {
   return (
     <>
       <Topnav />
-      <main>
+      <main id={styles["main"]}>
         <form onSubmit={onLogin} className={styles["login-form"]}>
           <label id={styles["form-title"]}>LOGIN</label>
           <label className={styles["form-label"]} htmlFor="usernameOrEmail">

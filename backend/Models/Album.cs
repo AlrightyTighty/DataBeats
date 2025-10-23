@@ -11,15 +11,11 @@ public partial class Album
 
     public DateTime ReleaseDate { get; set; }
 
-    public string CoverImagePath { get; set; } = null!;
-
     public int NumSongs { get; set; }
 
     public TimeOnly Duration { get; set; }
 
     public string AlbumType { get; set; } = null!;
-
-    public string ShareLink { get; set; } = null!;
 
     public DateTime TimestampCreated { get; set; }
 
@@ -33,6 +29,8 @@ public partial class Album
 
     public ulong? DeletedBy { get; set; }
 
+    public ulong AlbumOrSongArtFileId { get; set; }
+
     public virtual ICollection<AdminDeletesAlbum> AdminDeletesAlbums { get; set; } = new List<AdminDeletesAlbum>();
 
     public virtual ICollection<AlbumContainsSong> AlbumContainsSongs { get; set; } = new List<AlbumContainsSong>();
@@ -44,6 +42,8 @@ public partial class Album
     public virtual User? DeletedByNavigation { get; set; }
 
     public virtual ICollection<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; } = new List<MusicianWorksOnAlbum>();
+
+    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
 
     public virtual Musician? UpdatedByNavigation { get; set; }
 }

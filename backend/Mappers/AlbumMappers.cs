@@ -9,14 +9,16 @@ namespace backend.Mappers
 {
     public static class AlbumMappers
     {
-        public static Album ToAlbumFromCreateDto(this CreateAlbumRequestDto dto)
+        public static AlbumDto ToDTO(this Album album)
         {
-            return new Album
+            return new AlbumDto
             {
-                AlbumTitle = dto.AlbumTitle,
-                CoverImagePath = dto.CoverImagePath,
-                NumSongs = dto.NumSongs,
-                AlbumType = dto.AlbumType,
+                AlbumId = album.AlbumId,
+                AlbumTitle = album.AlbumTitle,
+                ReleaseDate = album.ReleaseDate,
+                NumSongs = album.NumSongs,
+                Duration = album.Duration,
+                AlbumType = album.AlbumType
             };
         }
     }

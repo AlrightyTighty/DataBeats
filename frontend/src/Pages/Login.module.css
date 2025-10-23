@@ -1,4 +1,4 @@
-main {
+#main {
   width: 100vw;
   margin-top: 141px;
   height: (100vh-141px);
@@ -7,10 +7,14 @@ main {
   align-items: center;
 }
 
+body {
+  background: linear-gradient(to top, rgb(14, 14, 161), rgba(14, 14, 161, 0.2));
+}
+
 .login-form {
   width: 400px;
   height: 470px;
-  background-color: #3b3b3b;
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 20px;
 }
 

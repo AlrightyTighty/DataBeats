@@ -17,8 +17,6 @@ public partial class Playlist
 
     public string Access { get; set; } = null!;
 
-    public string ShareLink { get; set; } = null!;
-
     public int NumOfSongs { get; set; }
 
     public TimeOnly Duration { get; set; }
