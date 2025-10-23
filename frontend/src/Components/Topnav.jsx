@@ -16,6 +16,9 @@ const Topnav = () => {
         <Link className={styles["link"]} to="/account">
           Account
         </Link>
+        <Link className={styles["link"]} to="/events">
+          Events
+        </Link>
       </div>
       <div className={styles["searchbar-container"]}>
         <Searchbar />

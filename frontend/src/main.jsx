@@ -8,6 +8,7 @@ import Login from "./Pages/Login.jsx";
 import Signup from "./Pages/Signup.jsx";
 import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
+import Events from "./Pages/Events.jsx"; 
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
+  { path: "/events", element: <Events />}
 ]);
 
 createRoot(document.getElementById("root")).render(
