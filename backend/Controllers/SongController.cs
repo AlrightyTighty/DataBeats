@@ -29,7 +29,7 @@ namespace backend.Controllers
                                                   .FirstOrDefaultAsync(song => song.SongId == song_id);
             
             if (foundSong != null)
-                return Ok(foundSong.ToSongDTOIncludeArtists(foundSong.Album.AlbumTitle));
+                return Ok(foundSong.ToSongDTOForStreaming(foundSong.Album.AlbumOrSongArtFileId, foundSong.Album.AlbumTitle));
             else
                 return NotFound();
         }

@@ -5,7 +5,7 @@ const Authtest = () => {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:5062/api/authtest", {
+      const response = await fetch("http://localhost:5062/api/me", {
         method: "GET",
         credentials: "include",
       });

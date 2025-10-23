@@ -25,6 +25,8 @@ namespace backend.DTOs.Song
 
         public string AlbumName { get; set; } = null!;
 
+        public ulong AlbumArtId { get; set; }
+
         public string[] ArtistNames { get; set; } = null!;
 
         public ulong[] ArtistIds { get; set; } = null!;

@@ -12,8 +12,6 @@ namespace backend.DTOs.Album
 
         public ulong AlbumOrSongArtFileId { get; set; }
 
-        public int NumSongs { get; set; }
-
         public ulong[] MusicianIds { get; set; } = null!;
 
         public ulong[][] MusicianIdsPerSong { get; set; } = null!;

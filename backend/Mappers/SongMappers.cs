@@ -24,7 +24,7 @@ namespace backend.Mappers
             };
         }
         
-        public static SongDto ToSongDTOIncludeArtists(this Song songModel, string albumName="")
+        public static SongDto ToSongDTOForStreaming(this Song songModel, ulong albumArtId, string albumName="")
         {
             return new SongDto
             {
@@ -37,7 +37,8 @@ namespace backend.Mappers
                 AlbumId = songModel.AlbumId,
                 AlbumName = albumName,
                 ArtistIds = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.MusicianId).ToArray(),
-                ArtistNames = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.Musician.MusicianName).ToArray()
+                ArtistNames = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.Musician.MusicianName).ToArray(),
+                AlbumArtId = albumArtId
             };
         }
     }

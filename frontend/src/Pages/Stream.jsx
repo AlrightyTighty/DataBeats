@@ -11,6 +11,7 @@ import pauseButton from "../assets/graphics/pause button.png";
 const Stream = () => {
   const [songInfo, setSongInfo] = useState(null);
   const [songData, setSongData] = useState(null);
+  const [albumCover, setAlbumCover] = useState(null);
 
   const [paused, setPaused] = useState(true);
 
@@ -44,8 +45,15 @@ const Stream = () => {
 
       if (!songInfoResponse.ok || !songDataResponse.ok) return;
 
-      setSongInfo(await songInfoResponse.json());
-      setSongData(await songDataResponse.json());
+      const songInfo = await songInfoResponse.json();
+      const songData = await songDataResponse.json();
+
+      setSongInfo(songInfo);
+      setSongData(songData);
+
+      const albumArtResponse = await fetch(`http://localhost:5062/api/art/${songInfo.albumArtId}`);
+
+      setAlbumCover((await albumArtResponse.json()).fileData);
     })();
   }, []);
 
@@ -58,7 +66,7 @@ const Stream = () => {
     //  URL.createObjectURL(audioBlob);
   }
 
-  console.log(songInfo);
+  // console.log(songInfo);
 
   const onPlayButtonPressed = async () => {
     const audioElement = audioRef.current;
@@ -82,7 +90,7 @@ const Stream = () => {
       <main id={styles["main"]}>
         {songData && (
           <div id={styles["song-info"]}>
-            <img id={styles["album-art"]} src={albumart_test} />
+            <img id={styles["album-art"]} src={`data:image/png;base64,${albumCover}`} />
             <div id={styles["song-right"]}>
               <div id={styles["song-right-text"]}>
                 <h1 id={styles["song-title"]}>{songInfo.songName}</h1>

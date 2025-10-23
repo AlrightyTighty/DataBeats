@@ -84,7 +84,8 @@ namespace backend.Controllers
                     MusicianWorksOnSong musicianWorksOnSong = new MusicianWorksOnSong
                     {
                         MusicianId = musicianId,
-                        Song = newSong
+                        Song = newSong,
+                        DateAdded = DateTime.Now
                     };
                     await _context.MusicianWorksOnSongs.AddAsync(musicianWorksOnSong);
                 }

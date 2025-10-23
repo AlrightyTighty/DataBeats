@@ -11,7 +11,8 @@ import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Artist from "./Pages/Artist.jsx";
-import Events from "./Pages/Events.jsx"; 
+import Events from "./Pages/Events.jsx";
+import CreateAlbum from "./Pages/CreateAlbum.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -22,7 +23,8 @@ const router = createBrowserRouter([
   { path: "/stream/:id", element: <Stream /> },
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
-  { path: "/events", element: <Events />}
+  { path: "/events", element: <Events /> },
+  { path: "/create-album", element: <CreateAlbum /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

@@ -1,0 +1,209 @@
+#main {
+  margin-top: 140px;
+  padding: 20px 480px;
+}
+
+#album-info {
+  width: calc(100% - 40px);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 20px;
+}
+
+.h1 {
+  font-weight: normal;
+}
+
+.h2 {
+  font-weight: normal;
+}
+
+#album-art-select {
+  width: 100%;
+  display: flex;
+  gap: 30px;
+}
+
+#album-art-image {
+  width: 200px;
+  height: 200px;
+}
+
+#album-art-file-input {
+  flex-grow: 1;
+  flex-shrink: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  height: fit-content;
+  padding: 10px 10px;
+  border-radius: 15px;
+  display: flex;
+  font-size: 16pt;
+}
+
+#album-art-file-input::file-selector-button {
+  background-color: transparent;
+  border-width: 0;
+}
+
+#album-art-image {
+  border-radius: 20px;
+  border: dashed 2px rgba(255, 255, 255, 0.5);
+}
+
+.album-text-input {
+  width: 300px;
+  height: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  font-size: 16pt;
+}
+
+.artist-ids {
+  margin: 10px 0;
+  width: 300px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+.artist-ids div {
+  min-width: 30px;
+  width: fit-content;
+  height: fit-content;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 5px;
+}
+
+.artist-ids div:hover {
+  text-decoration: line-through;
+}
+
+#songs-list {
+  margin-top: 25px;
+  width: calc(100% - 40px);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 20px;
+  height: 500px;
+  overflow-y: auto;
+}
+
+#no-song-info {
+  width: 100%;
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#no-song-info h1 {
+  margin: 0;
+}
+
+#no-song-info h2 {
+  margin: 10px;
+}
+
+#no-song-info img {
+  width: 300px;
+  height: 300px;
+}
+
+#songs-list-header {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#songs-list-header button {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 20pt;
+  transition: 0.25s;
+}
+
+#songs-list-header button:hover {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.3);
+  font-size: 20pt;
+}
+
+#songs-list-body {
+  width: 100%;
+  height: calc(100% - 80px);
+  padding: 20px 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.songs-list-entry {
+  width: calc(100% - 42px);
+  margin-bottom: 20px;
+  height: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.songs-list-entry h2 {
+  margin: 0;
+}
+
+.song-text-input {
+  width: calc(100% - 22px);
+  height: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  font-size: 16pt;
+}
+
+.lyric-area {
+  width: calc(100% - 22px);
+  height: 150px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  font-size: 16pt;
+  resize: none;
+}
+
+.song-file-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  height: fit-content;
+  padding: 10px 10px;
+  border-radius: 15px;
+  font-size: 16pt;
+  width: calc(100% - 22px);
+}
+
+.song-file-input::file-selector-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  height: fit-content;
+  padding: 5px 5px;
+  border-radius: 15px;
+  transition: 0.5s;
+}
+
+.song-file-input::file-selector-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}

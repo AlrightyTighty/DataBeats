@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    [Route("/api/authtest")]
+    [Route("/api/me")]
     [ApiController]
     public class AuthenticationTest : ControllerBase
     {

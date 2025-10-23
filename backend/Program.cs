@@ -24,14 +24,14 @@
                 .AllowAnyMethod();
         });
 
-        options.AddPolicy(name: "AllowSpecificOrigins", builder =>
-        {
-            builder.WithOrigins("http://127.0.0.1:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
+    options.AddPolicy(name: "AllowSpecificOrigins", builder =>
+    {
+        builder.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
+});
 
     var app = builder.Build();
 
@@ -48,7 +48,7 @@
 
     //app.UseHttpsRedirection();
 
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/authtest"), appBuilder =>
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/me"), appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();
 }
