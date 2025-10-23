@@ -3234,19 +3234,19 @@
     ]
   },
   "packageFolders": {
-    "/home/alrightytighty/.nuget/packages/": {}
+    "/home/daniel/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/alrightytighty/Projects/DataBeats/backend/backend.csproj",
+      "projectUniqueName": "/mnt/c/Users/dgarc/DataBeats/backend/backend.csproj",
       "projectName": "backend",
-      "projectPath": "/home/alrightytighty/Projects/DataBeats/backend/backend.csproj",
-      "packagesPath": "/home/alrightytighty/.nuget/packages/",
-      "outputPath": "/home/alrightytighty/Projects/DataBeats/backend/obj/",
+      "projectPath": "/mnt/c/Users/dgarc/DataBeats/backend/backend.csproj",
+      "packagesPath": "/home/daniel/.nuget/packages/",
+      "outputPath": "/mnt/c/Users/dgarc/DataBeats/backend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/alrightytighty/.nuget/NuGet/NuGet.Config"
+        "/home/daniel/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -3317,7 +3317,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.110/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.111/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

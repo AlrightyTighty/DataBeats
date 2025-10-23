@@ -1,0 +1,5 @@
+
+# local extras
+*.zip
+backend/bin/
+backend/obj/
