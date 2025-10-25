@@ -124,7 +124,7 @@ namespace backend.Controllers
             await _context.Albums.AddAsync(newAlbum);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetById", new { newAlbum.AlbumId }, newAlbum.ToDTO());
+            return CreatedAtAction("GetById", new {id = newAlbum.AlbumId}, newAlbum.ToDTO());
 
         }
 

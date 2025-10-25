@@ -84,8 +84,14 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/stream") &&
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/rating") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
 
-    app.MapControllers();
+
+app.MapControllers();
 
     
 

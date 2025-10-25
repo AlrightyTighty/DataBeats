@@ -58,7 +58,7 @@ public class EventsController : ControllerBase
         var items = await q
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToEventDto()    
+            .Select(e => e.ToEventDto())    
             .ToListAsync();
 
         return Ok(new { total, page, pageSize, items });

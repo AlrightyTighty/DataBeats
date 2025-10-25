@@ -5,6 +5,9 @@ import styles from "./Stream.module.css";
 
 import albumart_test from "../assets/albumart.png";
 
+import filledStar from "../assets/graphics/filled_star.png";
+import unfilledStar from "../assets/graphics/unfilled_star.png";
+
 import playButton from "../assets/graphics/play button.png";
 import pauseButton from "../assets/graphics/pause button.png";
 
@@ -22,6 +25,10 @@ const Stream = () => {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const ranRef = useRef(false);
+
+  const [reviews, setReviews] = useState([{ user_id: 7, user_name: "alrightytighty", starCount: 5, comment: "Fire ass album!!! Great stuff, lvl0p. \n test \n test \n test \n test", reviewId: 1 }]);
+
+  const [reviewPage, setReviewPage] = useState(1);
 
   useEffect(() => {
     if (ranRef.current) return;
@@ -54,19 +61,13 @@ const Stream = () => {
       const albumArtResponse = await fetch(`http://localhost:5062/api/art/${songInfo.albumArtId}`);
 
       setAlbumCover((await albumArtResponse.json()).fileData);
+
+      const reviews = await (await fetch(`http://localhost:5062/api/rating/song/${id}?page=${reviewPage}&count=5`)).json();
+      console.log(reviews);
+
+      setReviews(reviews);
     })();
   }, []);
-
-  let audioBlob = null;
-
-  if (songData != null) {
-    //    console.log(songData.fileData);
-    //    console.log(Uint8Array.fromBase64(songData.fileData));
-    //   audioBlob = new Blob(Uint8Array.fromBase64(songData.fileData), { type: "audio/mpeg" });
-    //  URL.createObjectURL(audioBlob);
-  }
-
-  // console.log(songInfo);
 
   const onPlayButtonPressed = async () => {
     const audioElement = audioRef.current;
@@ -87,28 +88,75 @@ const Stream = () => {
 
   return (
     <>
+      <Topnav />
       <main id={styles["main"]}>
-        {songData && (
-          <div id={styles["song-info"]}>
-            <img id={styles["album-art"]} src={`data:image/png;base64,${albumCover}`} />
-            <div id={styles["song-right"]}>
-              <div id={styles["song-right-text"]}>
-                <h1 id={styles["song-title"]}>{songInfo.songName}</h1>
-                <p className={styles["song-text-info-item"]}>From the album: {songInfo.albumName}</p>
-                <p className={styles["song-text-info-item"]}>Artist: {songInfo.artistNames[0]}</p>
-                <p className={styles["song-text-info-item"]}>Duration: {songInfo.duration}</p>
+        <div id={styles["left-half"]}>
+          {(songData && (
+            <>
+              <div id={styles["song-info"]}>
+                <img id={styles["album-art"]} src={`data:image/png;base64,${albumCover}`} />
+                <div id={styles["song-right"]}>
+                  <div id={styles["song-right-text"]}>
+                    <h1 id={styles["song-title"]}>{songInfo.songName}</h1>
+                    <p className={styles["song-text-info-item"]}>From the album: {songInfo.albumName}</p>
+                    <p className={styles["song-text-info-item"]}>Artist: {songInfo.artistNames[0]}</p>
+                    <p className={styles["song-text-info-item"]}>Duration: {songInfo.duration}</p>
+                  </div>
+                  <div id={styles["player-controls"]}>
+                    <button onClick={onPlayButtonPressed} id={styles["play-button"]}>
+                      <img style={{ display: paused ? "block" : "none" }} src={playButton} />
+                      <img style={{ display: !paused ? "block" : "none" }} src={pauseButton} />
+                    </button>
+                    <div id={styles["play-bar"]}>
+                      <div style={{ height: "100%", width: `${progressPercent}%` }} />
+                    </div>
+                  </div>
+                </div>
+                <audio
+                  autoPlay
+                  onTimeUpdate={updateProgress}
+                  onPause={() => setPaused(true)}
+                  onPlay={() => setPaused(false)}
+                  ref={audioRef}
+                  src={`data:audio/mpeg;base64,${songData.fileData}`}
+                ></audio>
               </div>
-              <div id={styles["player-controls"]}>
-                <button onClick={onPlayButtonPressed} id={styles["play-button"]}>
-                  <img style={{ display: paused ? "block" : "none" }} src={playButton} />
-                  <img style={{ display: !paused ? "block" : "none" }} src={pauseButton} />
-                </button>
-                <div id={styles["play-bar"]}>
-                  <div style={{ height: "100%", width: `${progressPercent}%` }} />
+              <div id={styles["review-section"]}>
+                <button id={styles["create-review-button"]}>+ Add Review</button>
+                <h1>Reviews</h1>
+                <div id={styles["reviews"]}>
+                  {reviews.map((review) => {
+                    return (
+                      <div className={styles["review"]}>
+                        <div className={styles["review-header"]}>
+                          <h2>{review.username}</h2>
+                          <div className={styles["review-stars"]}>
+                            {Array.from({ length: review.starCount }).map((_, index) => {
+                              return <img key={index} className={styles["review-star"]} src={filledStar} />;
+                            })}
+                            {Array.from({ length: 5 - review.starCount }).map((_, index) => {
+                              return <img key={index + review.starCount} className={styles["review-star"]} src={unfilledStar} />;
+                            })}
+                          </div>
+                        </div>
+                        <div className={styles["review-content"]}>{review.comment}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
+            </>
+          )) || (
+            <div id={styles["song-info"]}>
+              <h1 style={{ margin: "auto", fontSize: "32pt", textAlign: "center" }}>Loading song info</h1>
+              <div className="loader"></div>
             </div>
-            <audio autoPlay onTimeUpdate={updateProgress} onPause={() => setPaused(true)} onPlay={() => setPaused(false)} ref={audioRef} src={`data:audio/mpeg;base64,${songData.fileData}`}></audio>
+          )}
+        </div>
+        {songInfo && (
+          <div id={styles["lyrics-section"]}>
+            <h1>Lyrics</h1>
+            <div id={styles["lyrics"]}>{songInfo.lyrics}</div>
           </div>
         )}
       </main>
