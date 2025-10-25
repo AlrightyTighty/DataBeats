@@ -37,7 +37,8 @@ namespace backend.Mappers
                 ? Convert.ToBase64String(evt.EventPictureFile.FileData)
                 : null,
                 ImageFileName = evt.EventPictureFile?.FileName,
-                ImageFileExtension = evt.EventPictureFile?.FileExtension
+                ImageFileExtension = evt.EventPictureFile?.FileExtension,
+                MusicianName = evt.Musician?.MusicianName
             };
         }
     }

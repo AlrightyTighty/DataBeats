@@ -17,6 +17,7 @@ namespace backend.DTOs.Event
 
         public decimal TicketPrice { get; set; }
         public ulong MusicianId { get; set; }
+    public string? MusicianName { get; set; }
         public string? ImageBase64 { get; set; }
         public string? ImageFileName { get; set; }
         public string? ImageFileExtension { get; set; }

@@ -1,0 +1,72 @@
+/* Events list styles: card grid similar to the provided mock */
+
+.events-page {
+  padding: 24px;
+  margin-top: 120px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.events-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.event-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04);
+  overflow: hidden;
+  border: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card .media {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.event-card .media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.event-card .body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.event-meta {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.event-price {
+  color: #111827;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.event-desc {
+  color: #374151;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+@media (min-width: 900px) {
+  .events-grid { gap: 24px; }
+  .event-card .media { height: 160px; }
+}
