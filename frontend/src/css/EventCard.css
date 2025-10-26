@@ -1,4 +1,4 @@
-.event-card {
+.event {
     width: 75%;
     height: auto;
     border: 3px solid white;
@@ -10,11 +10,11 @@
     margin-right: 10%;
 }
 
-.event-card:hover {
+.event:hover {
     border-color: cadetblue;
 }
 
-.event-card h3, p {
+.event h3, p {
     margin-left: 5%;
     margin-right: 5%;
 }

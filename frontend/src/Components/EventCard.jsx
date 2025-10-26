@@ -1,7 +1,7 @@
 import '../css/EventCard.css'
 
 export default function EventCard({event}) {
-    return <div className="event-card">
+    return <div className="event">
         <h3>{event.name}</h3>
         <p>
             <b>{event.location}</b>

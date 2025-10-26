@@ -1,7 +1,7 @@
 import '../css/AlbumCard.css'
 
 function AlbumCard({album}) {
-    return <div className="album-card">                     {/* jsx className keyword defines css classes */}
+    return <div className="album">                     {/* jsx className keyword defines css classes */}
         <div className="album-cover">
             <img src={album.url} alt={album.title}/>        {/* variables enclosed in braces {} */}
         </div>

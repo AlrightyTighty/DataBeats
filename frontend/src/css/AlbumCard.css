@@ -1,4 +1,4 @@
-.album-card {
+.album {
     width: 75%;
     height: 75%;
     border: 3px solid white;        /* width | style | color */
@@ -11,7 +11,7 @@
     padding-bottom: 3%;
 }
 
-.album-card:hover {
+.album:hover {
     border-color: cadetblue;
 }
 
