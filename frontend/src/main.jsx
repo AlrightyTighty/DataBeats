@@ -9,6 +9,7 @@ import Signup from "./Pages/Signup.jsx";
 import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
+import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Artist from "./Pages/Artist.jsx";
 import Events from "./Pages/Events.jsx";
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
+  { path: "/musician-dashboard", element: <MusicianDashboard />},
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },

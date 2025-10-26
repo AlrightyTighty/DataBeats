@@ -1,6 +1,6 @@
 .topnav {
   width: calc(100vw + 4px);
-  height: 100px;
+  height: 6vh;
   display: flex;
   background-color: rgba(0, 0, 0, 0.2);
   border-bottom-width: 1px;

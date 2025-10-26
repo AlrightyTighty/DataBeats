@@ -1,0 +1,38 @@
+.album-card {
+    width: 75%;
+    height: 75%;
+    border: 3px solid white;        /* width | style | color */
+    border-radius: 20px;
+    overflow: auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
+    padding-bottom: 3%;
+}
+
+.album-card:hover {
+    border-color: cadetblue;
+}
+
+.album-cover {
+    width: 100%;
+    height: 70%;
+    aspect-ratio: 1/1;                /* width-height ratio - keep square */
+    overflow: hidden;
+}
+
+.album-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;                /* preserve aspect ratio so image fills container + cut overflowing content if needed */
+}
+
+.album-info {
+    text-align: center;
+    line-height: 0.3;
+}
+
+.album-info h3 {
+    line-height: 1.0;
+}
