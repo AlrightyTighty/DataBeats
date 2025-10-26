@@ -87,7 +87,16 @@ namespace backend.Controllers
 
             await _context.EventPictureFiles.AddAsync(picture);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = picture.EventPictureFileId }, picture);
+
+            var dto = new backend.DTOs.EventPictureFileDto(
+                picture.EventPictureFileId,
+                picture.FileName ?? string.Empty,
+                picture.FileExtension ?? string.Empty,
+                picture.FileData?.LongLength ?? 0L
+            );
+
+            return Created($"/api/event/file/{picture.EventPictureFileId}", dto);
+
         }
     }
 }
