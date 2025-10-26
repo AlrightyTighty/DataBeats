@@ -2,6 +2,7 @@
     width: 100%;
     height: 100%;
     position: relative;
+    border: 3px dashed red;
 }
 
 .pic-name img {
@@ -12,6 +13,7 @@
     top: 0vh;
     border: 3px solid white;
     border-radius: 20px;
+    border: 3px dashed orange;
 }
 
 .pic-name img:hover {
@@ -19,12 +21,16 @@
 }
 
 .pic-name h1 {
+    width: 98%;
+    height: 20%;
+    margin: 0;
     font-size: 4.8vw;
     color: white;
     position: absolute;
     left: 1vh;
-    bottom: -7vh;
+    bottom: 0;
     letter-spacing: 0.3vw;
+    border: 3px dashed yellow;
 }
 
 .pic-name h1:hover {
