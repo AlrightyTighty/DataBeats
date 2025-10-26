@@ -143,6 +143,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 0;
 }
 
 #review-section h1 {
@@ -154,6 +155,9 @@ body {
   position: absolute;
   top: 30px;
   right: 30px;
+}
+
+.review-button {
   height: 50px;
   width: 200px;
   border-radius: 20px;
@@ -163,7 +167,7 @@ body {
   transition: 0.25s;
 }
 
-#create-review-button:hover {
+.review-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -173,9 +177,11 @@ body {
   padding: 30px;
   box-sizing: border-box;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .review {
+  margin-bottom: 20px;
   width: 100%;
   border-radius: 20px;
   height: fit-content;
@@ -216,4 +222,25 @@ body {
   overflow-y: auto;
   white-space: pre-line;
   box-sizing: border-box;
+}
+
+#create-review {
+  width: 100%;
+  height: fit-content;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#create-review-comment {
+  width: 100%;
+  height: 90px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 20pt;
+  resize: none;
 }

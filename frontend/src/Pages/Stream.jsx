@@ -30,6 +30,13 @@ const Stream = () => {
 
   const [reviewPage, setReviewPage] = useState(1);
 
+  const [creatingReview, setCreatingReview] = useState(false);
+
+  const [createReviewStars, setCreateReviewStars] = useState(0);
+  const [createReviewTempStars, setCreateReviewTempStars] = useState(null);
+
+  const createReviewCommentRef = useRef(null);
+
   useEffect(() => {
     if (ranRef.current) return;
 
@@ -62,7 +69,7 @@ const Stream = () => {
 
       setAlbumCover((await albumArtResponse.json()).fileData);
 
-      const reviews = await (await fetch(`http://localhost:5062/api/rating/song/${id}?page=${reviewPage}&count=5`)).json();
+      const reviews = await (await fetch(`http://localhost:5062/api/rating/song/${id}?page=${reviewPage}&count=50`)).json();
       console.log(reviews);
 
       setReviews(reviews);
@@ -85,6 +92,41 @@ const Stream = () => {
     const percent = (audio.currentTime / audio.duration) * 100;
     setProgressPercent(isNaN(percent) ? 0 : percent);
   };
+
+  const starHover = (index) => {
+    setCreateReviewTempStars(index + 1);
+  };
+
+  const starUnhover = (index) => {
+    if (createReviewTempStars == index + 1) {
+      setCreateReviewTempStars(null);
+    }
+  };
+
+  const starSelect = (index) => {
+    setCreateReviewStars(index + 1);
+  };
+
+  const publishReview = async () => {
+    if (createReviewStars == 0) return;
+    const comment = createReviewCommentRef.current.value;
+    const response = await fetch("http://localhost:5062/api/rating", {
+      method: "POST",
+      body: JSON.stringify({ songId: id, starCount: createReviewStars, comment: comment }),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) setCreatingReview(false);
+    else return;
+
+    reviews.push(await response.json());
+
+    setReviews(reviews.slice());
+  };
+
+  const createStarCount = createReviewTempStars ?? createReviewStars ?? 0;
 
   return (
     <>
@@ -122,28 +164,74 @@ const Stream = () => {
                 ></audio>
               </div>
               <div id={styles["review-section"]}>
-                <button id={styles["create-review-button"]}>+ Add Review</button>
+                <button
+                  onClick={() => {
+                    setCreatingReview(!creatingReview);
+                  }}
+                  class={styles["review-button"]}
+                  id={styles["create-review-button"]}
+                >
+                  {creatingReview ? "- Cancel" : "+ Add Review"}
+                </button>
                 <h1>Reviews</h1>
-                <div id={styles["reviews"]}>
-                  {reviews.map((review) => {
-                    return (
-                      <div className={styles["review"]}>
-                        <div className={styles["review-header"]}>
-                          <h2>{review.username}</h2>
-                          <div className={styles["review-stars"]}>
-                            {Array.from({ length: review.starCount }).map((_, index) => {
-                              return <img key={index} className={styles["review-star"]} src={filledStar} />;
-                            })}
-                            {Array.from({ length: 5 - review.starCount }).map((_, index) => {
-                              return <img key={index + review.starCount} className={styles["review-star"]} src={unfilledStar} />;
-                            })}
-                          </div>
-                        </div>
-                        <div className={styles["review-content"]}>{review.comment}</div>
+                {(creatingReview && (
+                  <div id={styles["create-review"]}>
+                    <div className={styles["review-header"]}>
+                      <h2>Create Review</h2>
+                      <div className={styles["review-stars"]}>
+                        {Array.from({ length: createStarCount }).map((_, index) => {
+                          return (
+                            <img
+                              onClick={() => starSelect(index)}
+                              onMouseLeave={() => starUnhover(index)}
+                              onMouseEnter={() => starHover(index)}
+                              key={index}
+                              className={styles["review-star"]}
+                              src={filledStar}
+                            />
+                          );
+                        })}
+                        {Array.from({ length: 5 - createStarCount }).map((_, index) => {
+                          return (
+                            <img
+                              onClick={() => starSelect(index + createStarCount)}
+                              onMouseLeave={() => starUnhover(index + createStarCount)}
+                              onMouseEnter={() => starHover(index + createStarCount)}
+                              key={index + createStarCount}
+                              className={styles["review-star"]}
+                              src={unfilledStar}
+                            />
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                    <textarea maxLength={100} ref={createReviewCommentRef} id={styles["create-review-comment"]} placeholder="Enter Review Text" />
+                    <button onClick={publishReview} className={styles["review-button"]}>
+                      Publish
+                    </button>
+                  </div>
+                )) || (
+                  <div id={styles["reviews"]}>
+                    {reviews.map((review) => {
+                      return (
+                        <div className={styles["review"]}>
+                          <div className={styles["review-header"]}>
+                            <h2>{review.username}</h2>
+                            <div className={styles["review-stars"]}>
+                              {Array.from({ length: review.starCount }).map((_, index) => {
+                                return <img key={index} className={styles["review-star"]} src={filledStar} />;
+                              })}
+                              {Array.from({ length: 5 - review.starCount }).map((_, index) => {
+                                return <img key={index + review.starCount} className={styles["review-star"]} src={unfilledStar} />;
+                              })}
+                            </div>
+                          </div>
+                          <div className={styles["review-content"]}>{review.comment}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </>
           )) || (
