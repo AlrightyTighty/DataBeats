@@ -9,19 +9,21 @@
 }
 
 .bio h2 {
-    font-size: 2vw;
+    font-size: 4.5vh;
     color: white;
     position: absolute;
     top: -2vh;
-    left: 1vh;
+    margin-left: 1vh;
 }
 
 .bio p {
     width: 96%;
+    height: 60%;
+    font-size: 2vh;
     color: white;
     position: absolute;
     top: 7vh;
-    left: -3.5vh;
+    margin-left: 1vh;
     overflow: scroll;
     /* border: 3px dashed orange; */
 }

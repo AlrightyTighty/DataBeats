@@ -1,0 +1,23 @@
+.icon {
+    display: flex;
+    width: 4%;
+    aspect-ratio: 1/1;
+    position: absolute;
+    top: 1.5%;
+    right: 1%;
+    margin: 0;
+    align-items: center;            /* vertical alignment */
+    justify-content: center;        /* horizontal alignment */
+    text-align: center;
+    transform: scale(-1, 1);        /* mirror char w horizontal flip */
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.icon:hover {
+    color: cadetblue;
+    border-color: cadetblue;
+    cursor: pointer;
+}

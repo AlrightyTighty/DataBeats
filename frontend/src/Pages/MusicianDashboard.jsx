@@ -4,6 +4,7 @@ import AlbumCard from '../Components/AlbumCard';
 import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName'
 import Bio from '../Components/Bio'
+import EditButton from '../Components/EditButton'
 
 // pull from db
 import mickey from '../dummy-data-imgs/mickey.png'
@@ -15,6 +16,7 @@ function MusicianDashboard() {
 
     // pull from db
     const musician = {
+        id: 1234567890,
         pfp: mickey,
         name: "Mickey Mouse",
         label: "WeeWoo Studios",
@@ -52,7 +54,7 @@ function MusicianDashboard() {
             blah blah bleh bleh blah bleh blah bleh
             blah blah bleh bleh blah bleh blah bleh
         `,
-        share_link: "https://yadiyadiya.com/share?link=woiga9wf22894109rwhpfv",
+        share_id: "woiga9wf22894109rwhpfv",
     };
 
     // pull from db
@@ -90,7 +92,7 @@ function MusicianDashboard() {
                     </div>
                     <div className="album-cards">
                         {albums.map((album) => {
-                            return <AlbumCard album={album} key={album.id} />;
+                            return <AlbumCard album={album}/>;
                         })}
                     </div>
                 </div>
@@ -100,7 +102,7 @@ function MusicianDashboard() {
                     </div>
                     <div className="event-cards">
                         {events.map((event) => {
-                            return <EventCard event={event} key={event.id} />;
+                            return <EventCard event={event}/>;
                         })}
                     </div>
                 </div>
@@ -116,7 +118,7 @@ function MusicianDashboard() {
                     <Bio musician={musician} />
                 </div>
                 <div className="share">
-                    <h3>{musician.share_link}</h3>
+                    <a href={`https://yadiyadiya.com/share?link=${musician.share_id}`}>https://yadiyadiya.com/share?link={musician.share_id}</a>
                 </div>
             </div>
         </div>

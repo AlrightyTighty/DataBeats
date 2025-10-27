@@ -1,4 +1,7 @@
 .album {
+    all: unset;                       /* reset all of element's properties to inherited values if the property inherits by default (color, font details), or to initial (default) CSS values for non-inherited properties (width, height, margin, padding, border) - removes default button styling */
+    display: block;                   /* display element as a block element like <p> ... starts on new line, takes up whole width - eliminates horizontal scroll */
+    box-sizing: border-box;           /* includes padding and border in calculation of element's total width and height */
     width: 75%;
     height: 75%;
     border: 3px solid white;        /* width | style | color */
@@ -13,6 +16,7 @@
 
 .album:hover {
     border-color: cadetblue;
+    cursor: pointer;
 }
 
 .album-cover {
