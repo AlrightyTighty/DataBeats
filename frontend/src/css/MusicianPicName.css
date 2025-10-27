@@ -1,0 +1,32 @@
+.pic-name {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    /* border: 3px dashed red; */
+}
+
+.pic-name img {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    position: absolute;
+    top: 0vh;
+    border: 3px solid white;
+    border-radius: 20px;
+}
+
+.pic-name h1 {
+    width: 98%;
+    height: 20%;
+    margin: 0;
+    font-size: 8.5vh;
+    color: white;
+    position: absolute;
+    left: 1vh;
+    bottom: 0;
+    letter-spacing: 0.3vw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    /* border: 3px dashed yellow; */
+}

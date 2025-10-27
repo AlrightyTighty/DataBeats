@@ -1,0 +1,22 @@
+.event {
+    all: unset;                             /* resets element's properties to initial since none of those properties are inheritable, but since rules that appear later in the code override earlier rules (if both have the same specificity), the properties 'redefined' below override the initial given by unset */
+    width: 75%;
+    height: auto;
+    border: 3px solid white;
+    border-radius: 20px;
+    overflow: auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.event:hover {
+    border-color: cadetblue;
+    cursor: pointer;
+}
+
+.event h3, p {
+    margin-left: 5%;
+    margin-right: 5%;
+}
