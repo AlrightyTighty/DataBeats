@@ -11,8 +11,6 @@ public partial class Playlist
 
     public string PlaylistName { get; set; } = null!;
 
-    public string PlaylistPic { get; set; } = null!;
-
     public string? PlaylistDescription { get; set; }
 
     public string Access { get; set; } = null!;
@@ -27,11 +25,15 @@ public partial class Playlist
 
     public ulong? DeletedBy { get; set; }
 
+    public ulong PlaylistPictureFileId { get; set; }
+
     public virtual ICollection<AdminDeletesPlaylist> AdminDeletesPlaylists { get; set; } = new List<AdminDeletesPlaylist>();
 
     public virtual User? DeletedByNavigation { get; set; }
 
     public virtual ICollection<PlaylistEntry> PlaylistEntries { get; set; } = new List<PlaylistEntry>();
+
+    public virtual PlaylistPictureFile PlaylistPictureFile { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 

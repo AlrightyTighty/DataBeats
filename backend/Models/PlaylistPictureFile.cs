@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace backend.Models;
 
-public partial class AlbumOrSongArtFile
+public partial class PlaylistPictureFile
 {
-    public ulong AlbumOrSongArtFileId { get; set; }
+    public ulong PlaylistPictureFileId { get; set; }
 
     public string FileName { get; set; } = null!;
 
@@ -13,5 +13,5 @@ public partial class AlbumOrSongArtFile
 
     public byte[] FileData { get; set; } = null!;
 
-    public virtual ICollection<Album> Albums { get; set; } = new List<Album>();
+    public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
 }

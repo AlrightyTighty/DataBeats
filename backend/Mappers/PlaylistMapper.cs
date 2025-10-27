@@ -16,19 +16,19 @@ namespace backend.Mappers
             {
                 UserId = dto.UserId,
                 PlaylistName = dto.PlaylistName,
-                PlaylistPic = dto.PlaylistPic ?? "default_pic_url_or_empty_string",
+                //PlaylistPic = dto.PlaylistPic ?? "default_pic_url_or_empty_string",
                 PlaylistDescription = dto.PlaylistDescription,
                 Access = dto.Access ?? "Private"
             };
         }
-        
+
         public static PlaylistDto ToPlaylistDto(this Playlist playlist)
         {
             return new PlaylistDto
             {
                 PlaylistId = playlist.PlaylistId,
                 PlaylistName = playlist.PlaylistName,
-                PlaylistPic = playlist.PlaylistPic,
+                //PlaylistPic = playlist.PlaylistPic,
                 PlaylistDescription = playlist.PlaylistDescription,
                 NumOfSongs = playlist.NumOfSongs,
                 Duration = playlist.Duration,

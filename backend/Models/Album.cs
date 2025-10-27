@@ -37,6 +37,8 @@ public partial class Album
 
     public virtual ICollection<AlbumGenre> AlbumGenres { get; set; } = new List<AlbumGenre>();
 
+    public virtual AlbumOrSongArtFile AlbumOrSongArtFile { get; set; } = null!;
+
     public virtual Musician CreatedByNavigation { get; set; } = null!;
 
     public virtual User? DeletedByNavigation { get; set; }

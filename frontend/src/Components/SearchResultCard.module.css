@@ -1,0 +1,46 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.image {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  background-color: #f0f0f0;
+}
+
+.imageSquare {
+  border-radius: 8px;
+}
+
+.imageCircle {
+  border-radius: 50%;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

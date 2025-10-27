@@ -56,6 +56,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<PlaylistEntry> PlaylistEntries { get; set; }
 
+    public virtual DbSet<PlaylistPictureFile> PlaylistPictureFiles { get; set; }
+
     public virtual DbSet<ProfilePictureFile> ProfilePictureFiles { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
@@ -470,6 +472,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.ToTable("album");
 
+            entity.HasIndex(e => e.AlbumOrSongArtFileId, "album_ibfk_4_idx");
+
             entity.HasIndex(e => e.AlbumId, "album_id").IsUnique();
 
             entity.HasIndex(e => e.CreatedBy, "created_by");
@@ -505,6 +509,11 @@ public partial class ApplicationDBContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp_updated");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+
+            entity.HasOne(d => d.AlbumOrSongArtFile).WithMany(p => p.Albums)
+                .HasForeignKey(d => d.AlbumOrSongArtFileId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("album_ibfk_4");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.AlbumCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
@@ -633,7 +642,7 @@ public partial class ApplicationDBContext : DbContext
 
             entity.Property(e => e.AlbumOrSongArtFileId).HasColumnName("album_or_song_art_file_id");
             entity.Property(e => e.FileData)
-                .HasColumnType("blob")
+                .HasColumnType("mediumblob")
                 .HasColumnName("file_data");
             entity.Property(e => e.FileExtension)
                 .HasMaxLength(4)
@@ -763,7 +772,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.EventPictureFileId).HasColumnName("event_picture_file_id");
             entity.Property(e => e.EventId).HasColumnName("event_id");
             entity.Property(e => e.FileData)
-                .HasColumnType("blob")
+                .HasColumnType("mediumblob")
                 .HasColumnName("file_data");
             entity.Property(e => e.FileExtension)
                 .HasMaxLength(4)
@@ -895,6 +904,8 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.UserId, "fk_user_id_idx");
 
+            entity.HasIndex(e => e.PlaylistPictureFileId, "playlist_ibfk_3_idx");
+
             entity.HasIndex(e => e.PlaylistId, "playlist_id").IsUnique();
 
             entity.Property(e => e.PlaylistId).HasColumnName("playlist_id");
@@ -912,9 +923,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.PlaylistName)
                 .HasMaxLength(100)
                 .HasColumnName("playlist_name");
-            entity.Property(e => e.PlaylistPic)
-                .HasColumnType("text")
-                .HasColumnName("playlist_pic");
+            entity.Property(e => e.PlaylistPictureFileId).HasColumnName("playlist_picture_file_id");
             entity.Property(e => e.TimestampCreated)
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp_created");
@@ -926,6 +935,11 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.PlaylistDeletedByNavigations)
                 .HasForeignKey(d => d.DeletedBy)
                 .HasConstraintName("playlist_ibfk_2");
+
+            entity.HasOne(d => d.PlaylistPictureFile).WithMany(p => p.Playlists)
+                .HasForeignKey(d => d.PlaylistPictureFileId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("playlist_ibfk_3");
 
             entity.HasOne(d => d.User).WithMany(p => p.PlaylistUsers)
                 .HasForeignKey(d => d.UserId)
@@ -973,6 +987,24 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.SongId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_song_id");
+        });
+
+        modelBuilder.Entity<PlaylistPictureFile>(entity =>
+        {
+            entity.HasKey(e => e.PlaylistPictureFileId).HasName("PRIMARY");
+
+            entity.ToTable("playlist_picture_file");
+
+            entity.Property(e => e.PlaylistPictureFileId).HasColumnName("playlist_picture_file_id");
+            entity.Property(e => e.FileData)
+                .HasColumnType("mediumblob")
+                .HasColumnName("file_data");
+            entity.Property(e => e.FileExtension)
+                .HasMaxLength(4)
+                .HasColumnName("file_extension");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(50)
+                .HasColumnName("file_name");
         });
 
         modelBuilder.Entity<ProfilePictureFile>(entity =>

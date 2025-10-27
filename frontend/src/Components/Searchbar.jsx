@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./Searchbar.module.css";
+import { useNavigate } from "react-router";
 
 const Searchbar = () => {
   const [typingInBar, setTypingInBar] = useState(false);
   const searchbarRef = useRef();
+  const navigate = useNavigate();
 
   const submitSearch = () => {
-    if (!searchbarRef) return;
+    if (!searchbarRef.current) return;
+
+    navigate(`/Search?query=${searchbarRef.current.value}`);
   };
 
   useEffect(() => {
@@ -25,7 +29,16 @@ const Searchbar = () => {
     };
   }, [typingInBar, searchbarRef]);
 
-  return <input type="text" ref={searchbarRef} className={styles["searchbar"]} placeholder="Search for a song, playlist, artist, or event!" />;
+  return (
+    <input
+      type="text"
+      onFocus={() => setTypingInBar(true)}
+      onBlur={() => setTypingInBar(false)}
+      ref={searchbarRef}
+      className={styles["searchbar"]}
+      placeholder="Search for a song, playlist, artist, or event!"
+    />
+  );
 };
 
 export default Searchbar;
