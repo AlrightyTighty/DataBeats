@@ -27,8 +27,8 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var playlists = await _context.Playlists.ToListAsync(); 
-            var playlistDtos = playlists.Select(p => p.ToPlaylistDto()); 
+            var playlists = await _context.Playlists.ToListAsync();
+            var playlistDtos = playlists.Select(p => p.ToPlaylistDto());
             return Ok(playlistDtos);
         }
 
@@ -53,7 +53,7 @@ namespace backend.Controllers
             {
                 return BadRequest("User does not exist.");
             }
-            
+
             var playlist = playlistDto.ToPlaylist();
             await _context.Playlists.AddAsync(playlist);
             await _context.SaveChangesAsync();
@@ -71,7 +71,7 @@ namespace backend.Controllers
             }
 
             playlist.PlaylistName = updateDto.PlaylistName;
-            playlist.PlaylistPic = updateDto.PlaylistPic;
+            // playlist.PlaylistPic = updateDto.PlaylistPic;
             playlist.PlaylistDescription = updateDto.PlaylistDescription;
 
             await _context.SaveChangesAsync();
@@ -124,6 +124,6 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-    
+
     }
 }

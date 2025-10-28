@@ -1,0 +1,22 @@
+.container {
+  width: fit-content;
+  min-height: 100vh;
+  margin: auto;
+  padding: 40px 60px;
+  margin-top: 140px;
+}
+
+body {
+  background: linear-gradient(to top, rgb(14, 14, 161), rgba(14, 14, 161, 0.2));
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.headerTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}

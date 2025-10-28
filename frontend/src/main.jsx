@@ -16,6 +16,7 @@ import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
 import CreateEvent from "./Pages/CreateEvent.jsx";
 import CreateAlbum from "./Pages/CreateAlbum.jsx";
+import SearchResult from "./Pages/SearchResult.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
   { path: "/event", element: <EventDetails /> },    // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
+  { path: "/search", element: <SearchResult /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
