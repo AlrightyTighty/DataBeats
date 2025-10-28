@@ -17,7 +17,9 @@ public partial class Complaint
 
     public DateTime? TimeDeleted { get; set; }
 
-    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ulong UserId { get; set; }
 
-    public virtual ICollection<UserMakesComplaint> UserMakesComplaints { get; set; } = new List<UserMakesComplaint>();
+    public string ComplaintReason { get; set; } = null!;
+
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

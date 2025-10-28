@@ -19,6 +19,8 @@ import CreateAlbum from "./Pages/CreateAlbum.jsx";
 import SearchResult from "./Pages/SearchResult.jsx";
 import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
+import Admin from "./Pages/Admin.jsx";
+import Report from "./Pages/Report.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
   { path: "/search", element: <SearchResult /> },
   { path: "/playlists", element: <Playlists /> },
   { path: "/createplaylist", element: <CreatePlaylist /> },
+  { path: "/admin", element: <Admin /> },
+  { path: "/report", element: <Report /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

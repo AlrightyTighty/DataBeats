@@ -88,8 +88,6 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<UserListensToSong> UserListensToSongs { get; set; }
 
-    public virtual DbSet<UserMakesComplaint> UserMakesComplaints { get; set; }
-
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -692,6 +690,9 @@ public partial class ApplicationDBContext : DbContext
             entity.HasIndex(e => e.ComplaintId, "complaint_id").IsUnique();
 
             entity.Property(e => e.ComplaintId).HasColumnName("complaint_id");
+            entity.Property(e => e.ComplaintReason)
+                .HasColumnType("enum('INAPPROPRIATE','HARASSMENT','DMCA','SPAM','IMPERSONATION','OTHER')")
+                .HasColumnName("complaint_reason");
             entity.Property(e => e.ComplaintTargetId).HasColumnName("complaint_target_id");
             entity.Property(e => e.ComplaintType)
                 .HasColumnType("enum('USER','MUSICIAN','SONG','EVENT','RATING','PLAYLIST','ADMIN','ALBUM')")
@@ -705,6 +706,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.UserComment)
                 .HasMaxLength(500)
                 .HasColumnName("user_comment");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
         modelBuilder.Entity<Event>(entity =>
@@ -1607,39 +1609,6 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("user_listens_to_song_ibfk_1");
-        });
-
-        modelBuilder.Entity<UserMakesComplaint>(entity =>
-        {
-            entity.HasKey(e => e.UserMakesComplaintId).HasName("PRIMARY");
-
-            entity.ToTable("user_makes_complaint");
-
-            entity.HasIndex(e => e.ComplaintId, "complaint_id");
-
-            entity.HasIndex(e => e.UserId, "user_id");
-
-            entity.HasIndex(e => e.UserMakesComplaintId, "user_makes_complaint_id").IsUnique();
-
-            entity.Property(e => e.UserMakesComplaintId).HasColumnName("user_makes_complaint_id");
-            entity.Property(e => e.ComplaintId).HasColumnName("complaint_id");
-            entity.Property(e => e.TimestampDeleted)
-                .HasColumnType("timestamp")
-                .HasColumnName("timestamp_deleted");
-            entity.Property(e => e.TimestampMade)
-                .HasColumnType("timestamp")
-                .HasColumnName("timestamp_made");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.Complaint).WithMany(p => p.UserMakesComplaints)
-                .HasForeignKey(d => d.ComplaintId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("user_makes_complaint_ibfk_1");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserMakesComplaints)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("user_makes_complaint_ibfk_2");
         });
 
         modelBuilder.Entity<UserRatesSong>(entity =>

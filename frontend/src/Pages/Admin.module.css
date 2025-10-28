@@ -1,0 +1,87 @@
+.container {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+}
+
+.header {
+  background-color: #151515;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userName {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #ffffff;
+}
+
+.main {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.topSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.activitySection,
+.reportsSection {
+  min-height: 400px;
+}
+
+.chartSection {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .topSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}

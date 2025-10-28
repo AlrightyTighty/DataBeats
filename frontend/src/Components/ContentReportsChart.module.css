@@ -1,0 +1,133 @@
+.container {
+  background-color: #151515;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.statIndicator {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.chartContainer {
+  padding: 1.5rem;
+}
+
+.customTooltip {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.tooltipLabel {
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+}
+
+.tooltipItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tooltipItem:last-child {
+  margin-bottom: 0;
+}
+
+.tooltipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltipName {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  min-width: 100px;
+}
+
+.tooltipValue {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1200px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .chartContainer {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

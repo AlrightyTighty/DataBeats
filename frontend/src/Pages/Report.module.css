@@ -1,0 +1,118 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.formCard {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.title {
+  margin-bottom: 30px;
+  text-align: center;
+  color: white;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.inputDisabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.select option {
+  color: black;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  resize: none;
+  min-height: 120px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.charCount {
+  text-align: right;
+  margin-top: 4px;
+  color: #999;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #357abd;
+}
+
+.submitButton:active {
+  background-color: #2a5f99;
+}

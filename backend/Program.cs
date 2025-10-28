@@ -102,6 +102,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/playlist") 
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
 app.MapControllers();
 
 
