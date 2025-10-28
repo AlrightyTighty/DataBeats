@@ -4,7 +4,6 @@ import AlbumCard from '../Components/AlbumCard';
 import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName'
 import Bio from '../Components/Bio'
-import EditButton from '../Components/EditButton'
 
 // pull from db
 import mickey from '../dummy-data-imgs/mickey.png'

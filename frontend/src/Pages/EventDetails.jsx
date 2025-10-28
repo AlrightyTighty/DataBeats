@@ -1,5 +1,6 @@
-import '../css/EventDetails.css'
 import Topnav from '../Components/Topnav';
+import EditButton from '../Components/EditButton'
+import '../css/EventDetails.css'
 
 // pull from db
 import promoImg from '../dummy-data-imgs/eventcover.jpg'
@@ -22,6 +23,7 @@ export default function EventDetails() {
         <div className="banner">
             <img src={promoImg} alt="concertpromo" />
             <h1>{event.name}</h1>
+            <EditButton />
         </div>
         <div className="info">
             <h3 className="event-type">{event.type}</h3>
@@ -35,6 +37,7 @@ export default function EventDetails() {
                     ${event.ticket_price}
                 </h2>
             </div>
+            <EditButton />
             <div className="share-link">
                 <a href={`https://yadiyadiya.com/share?link=${event.id}`}>https://yadiyadiya.com/share?link={event.id}</a>
             </div>
