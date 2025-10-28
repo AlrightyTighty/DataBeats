@@ -75,13 +75,36 @@
 
 .place-time-price {
     position: absolute;
-    bottom: 0;
+    top: 15%;
     box-sizing: border-box;
     width: 100%;
-    height: 85%;
+    height: 75%;
     margin: 0;
     padding: 0;
     padding-left: 1vw;
     font-size: 3vh;
     /* border: 3px dashed hotpink; */
+}
+
+.share-link {
+    position: absolute;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 10%;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    display: flex;
+    align-items: center;
+    /* border: 3px dashed brown; */
+}
+
+a {
+    font-size: 2vh;
+    color: white;
+}
+
+a:hover {
+    color: cadetblue;
 }

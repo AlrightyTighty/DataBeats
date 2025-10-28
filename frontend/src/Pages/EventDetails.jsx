@@ -8,7 +8,7 @@ export default function EventDetails() {
 
     // pull from db
     const event = {
-        id: 'aiobveaegwboive',                              // UNUSED
+        id: 'aiobveaegwboive',
         img: promoImg,
         name: 'Another Concert Teeheehehehehehehhe',
         type: 'Concert',
@@ -34,6 +34,9 @@ export default function EventDetails() {
                     <br></br>
                     ${event.ticket_price}
                 </h2>
+            </div>
+            <div className="share-link">
+                <a href={`https://yadiyadiya.com/share?link=${event.id}`}>https://yadiyadiya.com/share?link={event.id}</a>
             </div>
         </div>
     </div>
