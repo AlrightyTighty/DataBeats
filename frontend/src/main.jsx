@@ -13,6 +13,7 @@ import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Artist from "./Pages/Artist.jsx";
 import Events from "./Pages/Events.jsx";
+import EventDetails from "./Pages/EventDetails.jsx";
 import CreateEvent from "./Pages/CreateEvent.jsx";
 import CreateAlbum from "./Pages/CreateAlbum.jsx";
 import SearchResult from "./Pages/SearchResult.jsx";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
+  { path: "/event", element: <EventDetails /> },    // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
   { path: "/search", element: <SearchResult /> },
