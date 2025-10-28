@@ -43,6 +43,8 @@ public partial class Musician
 
     public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 
+    public virtual ICollection<MusicianHostsEvent> MusicianHostsEvents { get; set; } = new List<MusicianHostsEvent>();
+
     public virtual ICollection<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; } = new List<MusicianWorksOnAlbum>();
 
     public virtual ICollection<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; } = new List<MusicianWorksOnSong>();

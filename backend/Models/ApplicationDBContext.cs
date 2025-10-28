@@ -48,6 +48,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<Musician> Musicians { get; set; }
 
+    public virtual DbSet<MusicianHostsEvent> MusicianHostsEvents { get; set; }
+
     public virtual DbSet<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; }
 
     public virtual DbSet<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; }
@@ -802,7 +804,7 @@ public partial class ApplicationDBContext : DbContext
 
             entity.Property(e => e.MusicianId).HasColumnName("musician_id");
             entity.Property(e => e.Bio)
-                .HasMaxLength(200)
+                .HasMaxLength(700)
                 .HasColumnName("bio");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
@@ -832,6 +834,34 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("musician_ibfk_1");
+        });
+
+        modelBuilder.Entity<MusicianHostsEvent>(entity =>
+        {
+            entity.HasKey(e => e.MusicianHostsEventId).HasName("PRIMARY");
+
+            entity.ToTable("musician_hosts_event");
+
+            entity.HasIndex(e => e.MusicianId, "musician_hosts_event_ibfk1_idx");
+
+            entity.HasIndex(e => e.EventId, "musician_hosts_event_ibfk2_idx");
+
+            entity.Property(e => e.MusicianHostsEventId).HasColumnName("musician_hosts_event_id");
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.MusicianId).HasColumnName("musician_id");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+
+            entity.HasOne(d => d.Event).WithMany(p => p.MusicianHostsEvents)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("musician_hosts_event_ibfk2");
+
+            entity.HasOne(d => d.Musician).WithMany(p => p.MusicianHostsEvents)
+                .HasForeignKey(d => d.MusicianId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("musician_hosts_event_ibfk1");
         });
 
         modelBuilder.Entity<MusicianWorksOnAlbum>(entity =>

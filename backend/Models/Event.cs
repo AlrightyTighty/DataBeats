@@ -33,5 +33,7 @@ public partial class Event
 
     public virtual Musician Musician { get; set; } = null!;
 
+    public virtual ICollection<MusicianHostsEvent> MusicianHostsEvents { get; set; } = new List<MusicianHostsEvent>();
+
     public virtual ICollection<UserAttendsEvent> UserAttendsEvents { get; set; } = new List<UserAttendsEvent>();
 }
