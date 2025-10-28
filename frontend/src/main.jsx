@@ -29,7 +29,7 @@ const router = createBrowserRouter([
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
-  { path: "/event", element: <EventDetails /> },    // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
+  { path: "/event/:id", element: <EventDetails /> },
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
   { path: "/search", element: <SearchResult /> },

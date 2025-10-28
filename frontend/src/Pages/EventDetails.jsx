@@ -9,7 +9,7 @@ export default function EventDetails() {
 
     // pull from db
     const event = {
-        id: 'aiobveaegwboive',
+        id: 4,
         img: promoImg,
         name: 'Another Concert Teeheehehehehehehhe',
         type: 'Concert',

@@ -65,9 +65,9 @@ function MusicianDashboard() {
     // pull from db
     const events = [
         {id: 1, name: "Concert Weeeeee", location: "Houston, TX", date_time: "August 13, 2023 @ 7:00pm"},
-        {id: 1, name: "Fan Meet & Greet", location: "Salt Lake City, UT", date_time: "May 6, 2025 @ 3:00pm"},
-        {id: 1, name: "Collab Event", location: "Glenwood Springs, CO", date_time: "December 15, 2026 @ 6:00pm"},
-        {id: 1, name: "Another Concert Teeheehehehehehehhe", location: "New York City, NY", date_time: "February 12, 2024 @ 7:00pm"},
+        {id: 2, name: "Fan Meet & Greet", location: "Salt Lake City, UT", date_time: "May 6, 2025 @ 3:00pm"},
+        {id: 3, name: "Collab Event", location: "Glenwood Springs, CO", date_time: "December 15, 2026 @ 6:00pm"},
+        {id: 4, name: "Another Concert Teeheehehehehehehhe", location: "New York City, NY", date_time: "February 12, 2024 @ 7:00pm"},
     ]
 
     return (
