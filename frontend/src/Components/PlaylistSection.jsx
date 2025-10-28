@@ -8,7 +8,7 @@ export function PlaylistSection({ title, playlists }) {
       <h2 className={styles.title}>{title}</h2>
       <div className={styles.grid}>
         {playlists.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
+          <PlaylistCard key={playlist.playlistId} playlist={playlist} />
         ))}
       </div>
     </section>

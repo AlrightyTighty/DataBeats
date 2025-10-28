@@ -26,6 +26,8 @@ export default function Playlists() {
 
   const loaded = useRef(false);
 
+  console.log(playlistInfo);
+
   useEffect(() => {
     if (loaded.current) return;
 
