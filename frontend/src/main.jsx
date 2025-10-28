@@ -16,6 +16,7 @@ import Events from "./Pages/Events.jsx";
 import CreateEvent from "./Pages/CreateEvent.jsx";
 import CreateAlbum from "./Pages/CreateAlbum.jsx";
 import SearchResult from "./Pages/SearchResult.jsx";
+import Playlists from "./Pages/Playlists.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -24,13 +25,14 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
-  { path: "/musician-dashboard", element: <MusicianDashboard />},
+  { path: "/musician-dashboard", element: <MusicianDashboard /> },
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
   { path: "/search", element: <SearchResult /> },
+  { path: "/playlists", element: <Playlists /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
