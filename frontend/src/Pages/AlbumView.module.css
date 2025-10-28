@@ -1,0 +1,122 @@
+.page{min-height:100vh;background:linear-gradient(180deg,#0C2E9A 6%,#0B1F5C 50%,#0A101D 100%);padding-top:140px;padding-bottom:80px;color:#fff;}
+.container{width:1300px;max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:40px;}
+.top{display:flex;gap:30px;align-items:center;}
+.cover{width:260px;height:260px;background:rgba(255,255,255,0.2);border-radius:20px;}
+.info{display:flex;flex-direction:column;gap:10px;}
+.play{background:#79D4F7;color:#0A101D;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;}
+.list{display:flex;flex-direction:column;gap:10px;}
+.row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;}
+.row button{background:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;}
+@media(max-width:900px){.top{flex-direction:column;align-items:flex-start;}}
+
+/*
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0C2E9A 6%, #0B1F5C 50%, #0A101D 100%);
+  padding-top: 140px;
+  padding-bottom: 80px;
+  color: #fff;
+}
+
+.container {
+  width: 1300px;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.centerText {
+  text-align: center;
+  opacity: 0.9;
+  font-size: 18px;
+}
+
+.top {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.cover {
+  width: 280px;
+  height: 280px;
+  border-radius: 20px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info h1 {
+  font-size: 40px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.play {
+  background: #79D4F7;
+  color: #0A101D;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  transition: background 0.2s;
+}
+
+.play:hover {
+  background: #6ac2e1;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: background 0.2s;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.row button {
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+
+.row button:hover {
+  background: #79D4F7;
+  color: #0A101D;
+}
+
+@media (max-width: 900px) {
+  .top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cover {
+    width: 220px;
+    height: 220px;
+  }
+}
+*/
