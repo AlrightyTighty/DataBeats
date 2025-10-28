@@ -1,0 +1,87 @@
+.event-details {
+    position: relative;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    /* border: 3px dashed red; */
+}
+
+.banner {
+    position: absolute;
+    top: 11vh;
+    box-sizing: border-box;
+    width: 100%;
+    height: 40%;
+    margin: 0;
+    padding: 0;
+    /* border: 3px dashed orange; */
+}
+
+.banner img {
+    position: absolute;
+    top: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    object-fit: fill;
+    /* border: 3px dashed yellow; */
+}
+
+.banner h1 {
+    position: absolute;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    font-size: 9vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    /* border: 3px dashed green; */
+}
+
+.info {
+    position: absolute;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 50%;
+    margin: 0;
+    padding: 0;
+    /* border: 3px dashed blue; */
+}
+
+.event-type {
+    position: absolute;
+    top: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 15%;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    display: flex;
+    font-size: 3.25vh;
+    align-items: center;
+    /* border: 3px dashed purple; */
+}
+
+.place-time-price {
+    position: absolute;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 85%;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    font-size: 3vh;
+    /* border: 3px dashed hotpink; */
+}

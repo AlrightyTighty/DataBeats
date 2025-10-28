@@ -16,7 +16,7 @@ function MusicianDashboard() {
 
     // pull from db
     const musician = {
-        id: 1234567890,
+        id: "woiga9wf22894109rwhpfv",
         pfp: mickey,
         name: "Mickey Mouse",
         label: "WeeWoo Studios",
@@ -54,7 +54,6 @@ function MusicianDashboard() {
             blah blah bleh bleh blah bleh blah bleh
             blah blah bleh bleh blah bleh blah bleh
         `,
-        share_id: "woiga9wf22894109rwhpfv",
     };
 
     // pull from db
@@ -118,7 +117,7 @@ function MusicianDashboard() {
                     <Bio musician={musician} />
                 </div>
                 <div className="share">
-                    <a href={`https://yadiyadiya.com/share?link=${musician.share_id}`}>https://yadiyadiya.com/share?link={musician.share_id}</a>
+                    <a href={`https://yadiyadiya.com/share?link=${musician.id}`}>https://yadiyadiya.com/share?link={musician.id}</a>
                 </div>
             </div>
         </div>
