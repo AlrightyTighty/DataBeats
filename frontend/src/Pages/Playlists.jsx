@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PlaylistSection } from "../Components/PlaylistSection";
 import styles from "./Playlists.module.css";
+import Topnav from "../Components/Topnav";
+import { useNavigate } from "react-router";
 
 // Mock data for playlists
 /*const ownedPlaylists = [
@@ -16,11 +18,11 @@ import styles from "./Playlists.module.css";
 ] */
 
 export default function Playlists() {
-  const [playlistInfo, setPlaylistInfo] = useState({ ownedPlaylists: [], contributorPlaylists: [], followingPlaylists: [] });
+  const [playlistInfo, setPlaylistInfo] = useState({ ownedPlaylists: [], contributorPlaylists: [] });
 
   const ownedPlaylists = playlistInfo.ownedPlaylists;
   const contributorPlaylists = playlistInfo.contributorPlaylists;
-  const followingPlaylists = playlistInfo.followingPlaylists;
+  const navigate = useNavigate();
 
   const loaded = useRef(false);
 
@@ -29,7 +31,7 @@ export default function Playlists() {
 
     loaded.current = true;
     (async () => {
-      const playlists = await fetch("http://localhost:5062/api/playlists/me", {
+      const playlists = await fetch("http://localhost:5062/api/playlist/me", {
         method: "GET",
         credentials: "include",
       });
@@ -39,19 +41,21 @@ export default function Playlists() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.appTitle}>Your Library</h1>
-        <p className={styles.subtitle}>Manage and explore your playlists</p>
-      </header>
+    <>
+      <Topnav />
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h1 className={styles.appTitle}>Your Library</h1>
+          <p className={styles.subtitle}>Manage and explore your playlists</p>
+        </header>
 
-      <main className={styles.content}>
-        <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
+        <main className={styles.content}>
+          <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
 
-        <PlaylistSection title="Collaborative Playlists" playlists={contributorPlaylists} />
-
-        <PlaylistSection title="Following" playlists={followingPlaylists} />
-      </main>
-    </div>
+          <PlaylistSection title="Collaborative Playlists" playlists={contributorPlaylists} />
+          <button onClick={() => navigate("/createplaylist")}> New Playlist </button>
+        </main>
+      </div>
+    </>
   );
 }

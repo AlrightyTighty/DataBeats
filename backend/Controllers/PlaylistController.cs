@@ -141,5 +141,40 @@ namespace backend.Controllers
             return NoContent();
         }
 
+        [Route("me")]
+        [HttpGet]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetUserPlaylistsAsync([FromRoute] ulong id)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            UserPlaylistInformation[] userPlaylists = await _context.Playlists
+                                                        .Where(playlist => playlist.UserId == userId)
+                                                        .Include(playList => playList.PlaylistPictureFile)
+                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
+                                                        .ToArrayAsync();
+
+            UserPlaylistInformation[] collaboratorPlaylists = await _context.Playlists
+                                                        .Include(playlist => playlist.UserIsCollaboratorOfPlaylists)
+                                                        .Where(playlist => playlist.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId))
+                                                        .Include(playList => playList.PlaylistPictureFile)
+                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
+                                                        .ToArrayAsync();
+
+            return Ok(new { OwnedPlaylists = userPlaylists, ContributorPlaylists = collaboratorPlaylists });
+        }
+    }
+
+    public class UserPlaylistInformation
+    {
+        public ulong PlaylistId { get; set; }
+        public string PlaylistTitle { get; set; } = null!;
+        public byte[] PlaylistImage { get; set; } = null!;
+
+        public UserPlaylistInformation(ulong id, string title, byte[] image)
+        {
+            this.PlaylistId = id;
+            this.PlaylistTitle = title;
+            this.PlaylistImage = image;
+        }
     }
 }
