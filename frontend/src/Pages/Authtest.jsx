@@ -15,7 +15,7 @@ const Authtest = () => {
       const info = await response.json();
 
       if (info.adminId != null) navigate("/admin");
-      else if (info.musicianId != null) navigate("/musician-dashboard");
+      else if (info.musicianId != null) navigate("/musician-dashboard/" + info.musicianId);
       else navigate("/dashboard");
     })();
   }, []);

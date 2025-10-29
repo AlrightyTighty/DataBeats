@@ -21,7 +21,6 @@ import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
-import Dashboard from "./Pages/Dashboard.jsx";
 
 import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
@@ -40,7 +39,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
-  { path: "/musician-dashboard/:id", element: <MusicianDashboard />},
+  { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },

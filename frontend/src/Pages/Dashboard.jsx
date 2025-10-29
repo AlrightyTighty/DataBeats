@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./Dashboard.module.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,16 +15,16 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API}/api/authtest`, {
+        const res = await fetch(`${API}/api/me`, {
           credentials: "include",
         });
         if (res.ok) {
           const data = await res.json();
           setUserId(data.userId);
-        } else navigate("/login");
+        } // else navigate("/login");
       } catch (err) {
         console.error("Auth check failed:", err);
-        navigate("/login");
+        // navigate("/login");
       }
     })();
   }, [navigate]);
@@ -32,10 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
-        const [resPlaylists, resEvents] = await Promise.all([
-          fetch(`${API}/api/playlist`, { credentials: "include" }),
-          fetch(`${API}/api/event`, { credentials: "include" }),
-        ]);
+        const [resPlaylists, resEvents] = await Promise.all([fetch(`${API}/api/playlist/me`, { credentials: "include" }), fetch(`${API}/api/event`, { credentials: "include" })]);
 
         const playlistsData = resPlaylists.ok ? await resPlaylists.json() : [];
         const eventsData = resEvents.ok ? await resEvents.json() : [];
@@ -66,11 +63,7 @@ export default function Dashboard() {
             <span>Playlist</span>
           </button>
 
-          <button
-            onClick={() => userId && navigate(`/following/${userId}`)}
-            disabled={!userId}
-            className={styles.btn}
-          >
+          <button onClick={() => userId && navigate(`/following/${userId}`)} disabled={!userId} className={styles.btn}>
             <div className={styles.btnHighlight}></div>
             <span>Artist</span>
           </button>
@@ -90,10 +83,7 @@ export default function Dashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Playlists</h2>
-            <span
-              onClick={() => navigate("/playlists")}
-              className={styles.viewAll}
-            >
+            <span onClick={() => navigate("/playlists")} className={styles.viewAll}>
               View All
             </span>
           </div>
@@ -105,13 +95,9 @@ export default function Dashboard() {
           ) : (
             <div className={styles.cardGrid}>
               {playlists.map((p) => (
-                <div
-                  key={p.playlistId}
-                  className={styles.card}
-                  onClick={() => navigate(`/playlist/${p.playlistId}`)}
-                >
+                <div key={p.playlistId} className={styles.card} onClick={() => navigate(`/playlist/${p.playlistId}`)}>
                   <div className={styles.cardImage}></div>
-                  <h3>{p.playlistName}</h3>
+                  <h3>{p.playlistTitle}</h3>
                   <p>{p.playlistDescription || "No description"}</p>
                 </div>
               ))}
@@ -123,10 +109,7 @@ export default function Dashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Events</h2>
-            <span
-              onClick={() => navigate("/events")}
-              className={styles.viewAll}
-            >
+            <span onClick={() => navigate("/events")} className={styles.viewAll}>
               View All
             </span>
           </div>
@@ -138,11 +121,7 @@ export default function Dashboard() {
           ) : (
             <div className={styles.cardGrid}>
               {events.map((e) => (
-                <div
-                  key={e.eventId}
-                  className={styles.card}
-                  onClick={() => navigate(`/event/${e.eventId}`)}
-                >
+                <div key={e.eventId} className={styles.card} onClick={() => navigate(`/event/${e.eventId}`)}>
                   <div className={styles.cardImage}></div>
                   <h3>{e.eventTitle}</h3>
                   <p>{e.location || e.date || "No details"}</p>
