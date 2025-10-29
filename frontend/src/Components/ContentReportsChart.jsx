@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import styles from "./ContentReportsChart.module.css";
+import { useState, useRef, useEffect } from "react";
 
 const chartData = [
   {
@@ -96,7 +97,7 @@ export function ContentReportsChart() {
     loaded.current = true;
 
     (async () => {
-      const response = await fetch("http://localhost:5062/api/admin/reports", {
+      const response = await fetch("http://localhost:5062/api/admin/stats", {
         method: "GET",
         credentials: "include",
       });
@@ -106,53 +107,44 @@ export function ContentReportsChart() {
     loaded.current = false;
   }, []);
 
-  const totalReports = chartData[chartData.length - 1];
-  const total = totalReports.spam + totalReports.harassment + totalReports.inappropriate + totalReports.hateSpeech + totalReports.impersonation;
-
-  const stats = [
-    { label: "Spam", value: totalReports.spam, color: "#f59e0b" },
-    { label: "Harassment", value: totalReports.harassment, color: "#ef4444" },
-    { label: "Inappropriate", value: totalReports.inappropriate, color: "#8b5cf6" },
-    { label: "Hate Speech", value: totalReports.hateSpeech, color: "#dc2626" },
-    { label: "Impersonation", value: totalReports.impersonation, color: "#3b82f6" },
-  ];
+  const chartData = reportsStats.map((day) => {
+    return {
+      date: day.header,
+      spam: day.spam,
+      harassment: day.harassment,
+      dmca: day.dmca,
+      inappropriate: day.inappropriate,
+      impersonation: day.impersonation,
+    };
+  });
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
           <h2 className={styles.title}>Content Reports Over Time</h2>
-          <p className={styles.subtitle}>Last 7 days • Total: {total} reports</p>
-        </div>
-        <div className={styles.statsGrid}>
-          {stats.map((stat) => (
-            <div key={stat.label} className={styles.statItem}>
-              <div className={styles.statIndicator} style={{ backgroundColor: stat.color }}></div>
-              <div className={styles.statInfo}>
-                <span className={styles.statValue}>{stat.value}</span>
-                <span className={styles.statLabel}>{stat.label}</span>
-              </div>
-            </div>
-          ))}
+          <p className={styles.subtitle}>Last 7 days</p>
         </div>
       </div>
 
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-            <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: "0.875rem" }} />
-            <YAxis stroke="#6b7280" style={{ fontSize: "0.875rem" }} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ paddingTop: "20px", fontSize: "0.875rem" }} iconType="line" />
-            <Line type="monotone" dataKey="spam" stroke="#f59e0b" strokeWidth={2} dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} name="Spam" />
-            <Line type="monotone" dataKey="harassment" stroke="#ef4444" strokeWidth={2} dot={{ fill: "#ef4444", r: 4 }} activeDot={{ r: 6 }} name="Harassment" />
-            <Line type="monotone" dataKey="inappropriate" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: "#8b5cf6", r: 4 }} activeDot={{ r: 6 }} name="Inappropriate" />
-            <Line type="monotone" dataKey="hateSpeech" stroke="#dc2626" strokeWidth={2} dot={{ fill: "#dc2626", r: 4 }} activeDot={{ r: 6 }} name="Hate Speech" />
-            <Line type="monotone" dataKey="impersonation" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} activeDot={{ r: 6 }} name="Impersonation" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {chartData != null && (
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+              <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: "0.875rem" }} />
+              <YAxis stroke="#6b7280" style={{ fontSize: "0.875rem" }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ paddingTop: "20px", fontSize: "0.875rem" }} iconType="line" />
+              <Line type="monotone" dataKey="spam" stroke="#f59e0b" strokeWidth={2} dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} name="Spam" />
+              <Line type="monotone" dataKey="harassment" stroke="#ef4444" strokeWidth={2} dot={{ fill: "#ef4444", r: 4 }} activeDot={{ r: 6 }} name="Harassment" />
+              <Line type="monotone" dataKey="inappropriate" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: "#8b5cf6", r: 4 }} activeDot={{ r: 6 }} name="Inappropriate" />
+              <Line type="monotone" dataKey="dmca" stroke="#dc2626" strokeWidth={2} dot={{ fill: "#dc2626", r: 4 }} activeDot={{ r: 6 }} name="DMCA" />
+              <Line type="monotone" dataKey="impersonation" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} activeDot={{ r: 6 }} name="Impersonation" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

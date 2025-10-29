@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./UserReports.module.css";
 
 const reportsData = [
@@ -77,13 +77,13 @@ const getStatusStyle = (status) => {
   }
 };
 
-const getPriorityStyle = (priority) => {
-  switch (priority) {
-    case "high":
+const getReasonStyle = (priority) => {
+  switch (priority.toUpperCase()) {
+    case "INAPPROPRIATE":
       return { bg: "#7f1d1d", color: "#f87171" };
-    case "medium":
+    case "DMCA":
       return { bg: "#78350f", color: "#fb923c" };
-    case "low":
+    case "HARASSMENT":
       return { bg: "#374151", color: "#9ca3af" };
     default:
       return { bg: "#374151", color: "#9ca3af" };
@@ -107,22 +107,36 @@ export function UserReports() {
         credentials: "include",
       });
 
-      setReports(await response.json());
+      setReports(
+        (await response.json()).map((report) => {
+          return {
+            id: report.complaintId,
+            description: report.userComment,
+            reporter: report.userId,
+            entityType: report.complaintType,
+            reason: report.complaintReason,
+            timeStamp: report.timeCreated,
+            reported: report.complaintTargetId,
+          };
+        })
+      );
     })();
     loaded.current = false;
   }, []);
+
+  const resolveReport = async (reportId) => {};
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>User Reports</h2>
-        <span className={styles.count}>{reportsData.length} pending</span>
+        <span className={styles.count}>{reports.length} pending</span>
       </div>
 
       <div className={styles.reportsList}>
-        {reportsData.map((report) => {
+        {reports.map((report) => {
           const statusStyle = getStatusStyle(report.status);
-          const priorityStyle = getPriorityStyle(report.priority);
+          const reasonStyle = getReasonStyle(report.reason);
 
           return (
             <div key={report.id} className={styles.reportItem} onClick={() => setSelectedReport(report.id === selectedReport ? null : report.id)}>
@@ -132,32 +146,33 @@ export function UserReports() {
                   <span
                     className={styles.priority}
                     style={{
-                      backgroundColor: priorityStyle.bg,
-                      color: priorityStyle.color,
+                      backgroundColor: reasonStyle.bg,
+                      color: reasonStyle.color,
                     }}
                   >
-                    {report.priority}
+                    {report.reason}
+                  </span>
+                  <button onClick={() => {}}>Resolve</button>
+                  <span
+                    className={styles.status}
+                    style={{
+                      backgroundColor: reasonStyle.bg,
+                      color: reasonStyle.color,
+                    }}
+                  >
+                    {report.type}
                   </span>
                 </div>
-                <span
-                  className={styles.status}
-                  style={{
-                    backgroundColor: statusStyle.bg,
-                    color: statusStyle.color,
-                  }}
-                >
-                  {report.status}
-                </span>
               </div>
 
               <div className={styles.reportContent}>
                 <div className={styles.reportReason}>{report.reason}</div>
                 <div className={styles.reportTargets}>
-                  <span className={styles.label}>Reporter:</span>
+                  <span className={styles.label}>Reporter: User</span>
                   <span className={styles.username}>{report.reporter}</span>
                   <span className={styles.separator}>→</span>
                   <span className={styles.label}>Reported:</span>
-                  <span className={styles.username}>{report.reported}</span>
+                  <span className={styles.username}>{report.entityType + " " + report.reported}</span>
                 </div>
                 {selectedReport === report.id && <div className={styles.reportDescription}>{report.description}</div>}
               </div>

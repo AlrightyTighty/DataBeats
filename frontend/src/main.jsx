@@ -20,6 +20,7 @@ import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
+import Dashboard from "./Pages/Dashboard.jsx";
 
 import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
@@ -32,7 +33,7 @@ import Settings from "./Pages/Settings.jsx";
 import NewReleases from "./Pages/NewReleases.jsx";
 
 const router = createBrowserRouter([
-  { path: "/", element: <App /> },
+  { path: "/", element: <Login /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/register", element: <Register /> },
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
   { path: "/artist-events/:id", element: <ArtistEvents /> },
   { path: "/settings", element: <Settings /> },
   { path: "/new", element: <NewReleases /> },
+  { path: "/dashboard", element: <Dashboard /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
