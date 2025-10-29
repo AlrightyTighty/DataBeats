@@ -29,7 +29,6 @@ const router = createBrowserRouter([
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
   { path: "/musician-dashboard", element: <MusicianDashboard /> },
-  { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
   { path: "/event", element: <EventDetails /> }, // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
