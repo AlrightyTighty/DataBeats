@@ -1,11 +1,12 @@
 .icon {
     display: flex;
-    width: 4%;
+    width: min(2.5vw, 5.5vh);
     aspect-ratio: 1/1;
     position: absolute;
     top: 1.5%;
     right: 1%;
     margin: 0;
+    padding: 0;
     align-items: center;            /* vertical alignment */
     justify-content: center;        /* horizontal alignment */
     text-align: center;

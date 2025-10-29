@@ -10,6 +10,7 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
+import Artist from "./Pages/ArtistProfileUser.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
@@ -39,10 +40,11 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
-  { path: "/musician-dashboard", element: <MusicianDashboard /> },
+  { path: "/musician-dashboard/:id", element: <MusicianDashboard />},
+  { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
-  { path: "/event", element: <EventDetails /> }, // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
+  { path: "/event/:id", element: <EventDetails /> },
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
   { path: "/search", element: <SearchResult /> },
