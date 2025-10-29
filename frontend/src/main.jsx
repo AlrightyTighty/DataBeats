@@ -21,6 +21,16 @@ import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
 
+import ListenerMe from "./Pages/ListenerMe.jsx";
+import ListenerPublic from "./Pages/ListenerPublic.jsx";
+import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
+import Dashboard from "./Pages/Dashboard.jsx";
+import Followers from "./Pages/Followers.jsx";
+import Following from "./Pages/Following.jsx";
+import ArtistEvents from "./Pages/ArtistEvents.jsx";
+import Settings from "./Pages/Settings.jsx";
+import NewReleases from "./Pages/NewReleases.jsx";
+
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
@@ -29,7 +39,6 @@ const router = createBrowserRouter([
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
   { path: "/musician-dashboard", element: <MusicianDashboard /> },
-  { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
   { path: "/event", element: <EventDetails /> }, // !!! AFTER DB LINK CHANGE PATH TO "/event/:id"
@@ -40,6 +49,16 @@ const router = createBrowserRouter([
   { path: "/createplaylist", element: <CreatePlaylist /> },
   { path: "/admin", element: <Admin /> },
   { path: "/report", element: <Report /> },
+
+  { path: "/dashboard", element: <Dashboard /> },
+  { path: "/me", element: <ListenerMe /> },
+  { path: "/user/:id", element: <ListenerPublic /> },
+  { path: "/artist-user/:id", element: <ArtistProfileUser /> },
+  { path: "/followers/:id", element: <Followers /> },
+  { path: "/following/:id", element: <Following /> },
+  { path: "/artist-events/:id", element: <ArtistEvents /> },
+  { path: "/settings", element: <Settings /> },
+  { path: "/new", element: <NewReleases /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
