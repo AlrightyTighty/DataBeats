@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./AlbumView.module.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function AlbumView() {
   const { id } = useParams();

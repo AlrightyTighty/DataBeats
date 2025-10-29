@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Topnav from "../Components/Topnav";
 import styles from "./Settings.module.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 const CURRENT_USER_ID = 1;
 
 export default function Settings() {
