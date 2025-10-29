@@ -1,2 +1,2 @@
-const API = "http://localhost:5062";
+const API = process.env.API;
 export default API;

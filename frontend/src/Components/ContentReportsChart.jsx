@@ -1,6 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import styles from "./ContentReportsChart.module.css";
 import { useState, useRef, useEffect } from "react";
+import API from "../lib/api";
 
 const chartData = [
   {
@@ -97,7 +98,7 @@ export function ContentReportsChart() {
     loaded.current = true;
 
     (async () => {
-      const response = await fetch("http://localhost:5062/api/admin/stats", {
+      const response = await fetch(`${API}/api/admin/stats`, {
         method: "GET",
         credentials: "include",
       });

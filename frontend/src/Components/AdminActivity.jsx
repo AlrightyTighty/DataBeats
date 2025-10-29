@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./AdminActivity.module.css";
+import API from "../lib/api";
 
 const activityData = [
   {
@@ -99,7 +100,7 @@ export function AdminActivity() {
     loaded.current = true;
 
     (async () => {
-      const response = await fetch("http://localhost:5062/api/admin/actions", {
+      const response = await fetch(`${API}/api/admin/actions`, {
         method: "GET",
         credentials: "include",
       });

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import API from "../lib/api";
 
 const Authtest = () => {
   const [info, setInfo] = useState(null);
@@ -7,7 +8,7 @@ const Authtest = () => {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:5062/api/me", {
+      const response = await fetch(`${API}/api/me`, {
         method: "GET",
         credentials: "include",
       });
