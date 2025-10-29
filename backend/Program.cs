@@ -108,6 +108,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin"), ap
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/report") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
 app.MapControllers();
 
 

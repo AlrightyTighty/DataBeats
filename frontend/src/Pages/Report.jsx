@@ -1,30 +1,44 @@
 import { useState } from "react";
 import styles from "./Report.module.css";
+import { useSearchParams } from "react-router";
 
 export default function Report() {
   const [comment, setComment] = useState("");
   const [reportReason, setReportReason] = useState("");
 
-  // These would be filled in by the site itself
-  const entityType = "post";
-  const entityId = "12345";
+  const [params, setParams] = useSearchParams();
 
-  const handleSubmit = (e) => {
+  // These would be filled in by the site itself
+  const entityType = params.get("type");
+  const entityId = params.get("id");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const reportData = {
-      entityType,
-      entityId,
-      reportReason,
-      comment,
+      ComplaintType: entityType,
+      ComplaintTargetId: entityId,
+      ComplaintReason: reportReason,
+      UserComment: comment,
     };
 
-    console.log("Report submitted:", reportData);
-    alert("Report submitted successfully!");
+    const response = await fetch("http://localhost:5062/api/report", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(reportData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    // Reset form
-    setComment("");
-    setReportReason("");
+    if (response.ok) {
+      console.log("Report submitted:", reportData);
+      alert("Report submitted successfully!");
+
+      // Reset form
+      setComment("");
+      setReportReason("");
+    }
   };
 
   const handleCommentChange = (e) => {

@@ -33,12 +33,13 @@ namespace backend.Controllers
 
             for (int i = 6; i >= 0; i--)
             {
-                stats.Append(new AdminStatPoint(DateTime.Now.AddDays(-i).Date.ToShortDateString(), 6 - i));
+                stats.Add(new AdminStatPoint(DateTime.Now.AddDays(-i).Date.ToShortDateString(), 6 - i));
             }
 
             foreach (Complaint complaint in complaints)
             {
-                int index = (DateTime.Now.Date - complaint.TimeCreated.Date).Days;
+                int index = 6 - ((DateTime.Now.Date - complaint.TimeCreated.Date).Days + 1);
+                Console.WriteLine(index);
                 if (complaint.ComplaintReason == "INAPPROPRIATE")
                     stats[index].INAPPROPRIATE++;
                 else if (complaint.ComplaintReason == "HARASSMENT")
