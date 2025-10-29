@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Topnav from "../Components/Topnav";
 import { useParams } from "react-router";
 import styles from "./Stream.module.css";
+import API from "../lib/api";
 
 import albumart_test from "../assets/albumart.png";
 
@@ -44,13 +45,13 @@ const Stream = () => {
     console.log("erm...");
     const controller = new AbortController();
     (async () => {
-      const songDataResponse = await fetch(`http://localhost:5062/api/stream/${id}`, {
+      const songDataResponse = await fetch(`${API}/api/stream/${id}`, {
         method: "PATCH",
         credentials: "include",
         signal: controller.signal,
       });
 
-      const songInfoResponse = await fetch(`http://localhost:5062/api/song/${id}`, {
+      const songInfoResponse = await fetch(`${API}/api/song/${id}`, {
         method: "GET",
         signal: controller.signal,
       });
@@ -65,11 +66,11 @@ const Stream = () => {
       setSongInfo(songInfo);
       setSongData(songData);
 
-      const albumArtResponse = await fetch(`http://localhost:5062/api/art/${songInfo.albumArtId}`);
+      const albumArtResponse = await fetch(`${API}/api/art/${songInfo.albumArtId}`);
 
       setAlbumCover((await albumArtResponse.json()).fileData);
 
-      const reviews = await (await fetch(`http://localhost:5062/api/rating/song/${id}?page=${reviewPage}&count=50`)).json();
+      const reviews = await (await fetch(`${API}/api/rating/song/${id}?page=${reviewPage}&count=50`)).json();
       console.log(reviews);
 
       setReviews(reviews);
@@ -110,7 +111,7 @@ const Stream = () => {
   const publishReview = async () => {
     if (createReviewStars == 0) return;
     const comment = createReviewCommentRef.current.value;
-    const response = await fetch("http://localhost:5062/api/rating", {
+    const response = await fetch("${API}/api/rating", {
       method: "POST",
       body: JSON.stringify({ songId: id, starCount: createReviewStars, comment: comment }),
       credentials: "include",

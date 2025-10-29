@@ -3,6 +3,7 @@ import { PlaylistSection } from "../Components/PlaylistSection";
 import styles from "./Playlists.module.css";
 import Topnav from "../Components/Topnav";
 import { useNavigate } from "react-router";
+import API from "../lib/api";
 
 // Mock data for playlists
 /*const ownedPlaylists = [
@@ -33,7 +34,7 @@ export default function Playlists() {
 
     loaded.current = true;
     (async () => {
-      const playlists = await fetch("http://localhost:5062/api/playlist/me", {
+      const playlists = await fetch(`${API}/api/playlist/me`, {
         method: "GET",
         credentials: "include",
       });

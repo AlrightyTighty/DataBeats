@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import styles from "./CreatePlaylist.module.css";
 import Topnav from "../Components/Topnav";
 import playlistArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
+import API from "../lib/api";
 
 const CreatePlaylist = () => {
   const [playlistCreatorIDs, setPlaylistCreatorIDs] = useState([]);
@@ -33,7 +34,7 @@ const CreatePlaylist = () => {
     const formData = new FormData();
     formData.set("file", file);
 
-    const response = await fetch("http://localhost:5062/api/playlist/picture", {
+    const response = await fetch(`${API}/api/playlist/picture`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -60,7 +61,7 @@ const CreatePlaylist = () => {
       Access: "private",
     });
 
-    const response = await fetch("http://localhost:5062/api/playlist", {
+    const response = await fetch(`${API}/api/playlist`, {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({
