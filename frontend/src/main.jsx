@@ -21,8 +21,6 @@ import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
-import Dashboard from "./Pages/Dashboard.jsx";
-
 import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
