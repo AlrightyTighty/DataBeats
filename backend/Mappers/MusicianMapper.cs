@@ -30,6 +30,7 @@ namespace backend.Mappers
                 Bio = musician.Bio,
                 Label = musician.Label,
                 FollowerCount = musician.FollowerCount,
+                MonthlyListenerCount = musician.MonthlyListenerCount,
                 ProfilePictureFileId = musician.ProfilePictureFileId
             };
         }

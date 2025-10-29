@@ -1,7 +1,9 @@
+import { useParams } from 'react-router'               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
+import { useState, useEffect } from 'react'            // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
 import '../css/MusicianDashboard.css'
-import Topnav from '../Components/Topnav';
-import AlbumCard from '../Components/AlbumCard';
-import EventCard from '../Components/EventCard';
+import Topnav from '../Components/Topnav'
+import AlbumCard from '../Components/AlbumCard'
+import EventCard from '../Components/EventCard'
 import MusicianPicName from '../Components/MusicianPicName'
 import Bio from '../Components/Bio'
 
@@ -11,50 +13,39 @@ import stars from '../dummy-data-imgs/stars.jpg'
 import sun from '../dummy-data-imgs/sun.jpg'
 import mountain from '../dummy-data-imgs/mountain.jpg'
 
-function MusicianDashboard() {
+export default function MusicianDashboard() {
+    // get musician id from path params - useParams returns an object containing the dynamic route parameters
+    // if route /musician-dashboard/:id is matched by /musician-dashboard/17 then useParams() will return {id: '17'}
+    const musicianId = useParams();
 
-    // pull from db
-    const musician = {
-        id: "woiga9wf22894109rwhpfv",
-        pfp: mickey,
-        name: "Mickey Mouse",
-        label: "WeeWoo Studios",
-        bio: `
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-            blah blah bleh bleh blah bleh blah bleh
-        `,
-    };
+    // api endpoint urls
+    const musicianURL = `http://localhost:5062/api/musician/${musicianId.id}`;      // access id from musicianId object returned by useParams() and append to api url
 
+    // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
+    // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
+    const [musician, setMusician] = useState({
+        musicianId: 0,
+        userId: 0,
+        musicianName: '',
+        bio: '',
+        label: '',
+        followerCount: 0,
+        monthlyListenerCount: 0,
+        profilePictureFileId: ''
+    });
+    // const [albums1, setAlbums1] = useState();
+    // const [events1, setEvents1] = useState();
+
+    // useEffect allows you to synchronize component with external system - perform side effects like fetching data, directly updating the DOM, etc. in componenets
+    // accepts two arguments, 2nd is opt - useEffect(function, dependency)
+    useEffect(() => {
+        // fetch info from db via api call with fetch(endpoint) ... endpoint routes specified in controllers
+        // fetch api fetches url and returns a Promise, need to await for it to resolve or use .then to synchronize
+        // convert server's response to json object - json method also returns a Promise; need to await or use .then
+        // finally, set values for musician based on data received
+        fetch(musicianURL).then(response => response.json()).then(data => setMusician(data));
+    }, []);                                                     // response object returned twice since async function (iife) is called inside useEffect; add empty array bracket [] so it's only called once
+    console.log(musician)
     // pull from db
     const albums = [
         {id: 1, title: "Stars", release_date: "2020", url: stars},
@@ -69,17 +60,17 @@ function MusicianDashboard() {
         {id: 3, name: "Collab Event", location: "Glenwood Springs, CO", date_time: "December 15, 2026 @ 6:00pm"},
         {id: 4, name: "Another Concert Teeheehehehehehehhe", location: "New York City, NY", date_time: "February 12, 2024 @ 7:00pm"},
     ]
-
+    
     return (
         <div className="dashboard">
             <Topnav />
             <div className="stats">
                 <div className="followers">
-                    <h1>67,676,767</h1>
+                    <h1>{musician.followerCount}</h1>
                     <p>FOLLOWERS</p>
                 </div>
                 <div className="monthly">
-                    <h1>676,767</h1>
+                    <h1>{musician.monthlyListenerCount}</h1>
                     <p>MONTHLY LISTENERS</p>
                 </div>
             </div>
@@ -116,11 +107,9 @@ function MusicianDashboard() {
                     <Bio musician={musician} />
                 </div>
                 <div className="share">
-                    <a href={`https://yadiyadiya.com/share?link=${musician.id}`}>https://yadiyadiya.com/share?link={musician.id}</a>
+                    <a href={`https://yadiyadiya.com/share?link=${musician.musicianId}`}>https://yadiyadiya.com/share?link={musician.musicianId}</a>
                 </div>
             </div>
         </div>
     )
 }
-
-export default MusicianDashboard

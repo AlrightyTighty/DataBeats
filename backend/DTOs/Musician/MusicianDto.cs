@@ -19,6 +19,8 @@ namespace backend.DTOs.Musician
 
         public int FollowerCount { get; set; }
 
+        public int MonthlyListenerCount { get; set; }
+
         public ulong ProfilePictureFileId { get; set; }
 
     }

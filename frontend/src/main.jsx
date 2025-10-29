@@ -25,7 +25,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
-  { path: "/musician-dashboard", element: <MusicianDashboard />},
+  { path: "/musician-dashboard/:id", element: <MusicianDashboard />},
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
