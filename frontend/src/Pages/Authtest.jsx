@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 const Authtest = () => {
   const [info, setInfo] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -10,7 +12,11 @@ const Authtest = () => {
         credentials: "include",
       });
 
-      setInfo(await response.json());
+      const info = await response.json();
+
+      if (info.adminId != null) navigate("/admin");
+      else if (info.musicianId != null) navigate("/musician-dashboard");
+      else navigate("/dashboard");
     })();
   }, []);
 

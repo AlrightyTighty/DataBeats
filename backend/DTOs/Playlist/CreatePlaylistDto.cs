@@ -9,7 +9,7 @@ namespace backend.DTOs.Playlist
     {
         public string PlaylistName { get; set; } = null!;
 
-        public string? PlaylistPic { get; set; }
+        public ulong PlaylistPictureId { get; set; }
 
         public string? PlaylistDescription { get; set; }
         public string? Access { get; set; }

@@ -10,16 +10,21 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
+import Artist from "./Pages/ArtistProfileUser.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
-import Artist from "./Pages/Artist.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
 import CreateEvent from "./Pages/CreateEvent.jsx";
 import CreateAlbum from "./Pages/CreateAlbum.jsx";
 import SearchResult from "./Pages/SearchResult.jsx";
+import Playlists from "./Pages/Playlists.jsx";
+import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
+import Admin from "./Pages/Admin.jsx";
+import Report from "./Pages/Report.jsx";
+import Dashboard from "./Pages/Dashboard.jsx";
 
 const router = createBrowserRouter([
-  { path: "/", element: <App /> },
+  { path: "/", element: <Login /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   { path: "/register", element: <Register /> },
@@ -33,6 +38,11 @@ const router = createBrowserRouter([
   { path: "/createevent", element: <CreateEvent /> },
   { path: "/createalbum", element: <CreateAlbum /> },
   { path: "/search", element: <SearchResult /> },
+  { path: "/playlists", element: <Playlists /> },
+  { path: "/createplaylist", element: <CreatePlaylist /> },
+  { path: "/admin", element: <Admin /> },
+  { path: "/report", element: <Report /> },
+  { path: "/dashboard", element: <Dashboard /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
