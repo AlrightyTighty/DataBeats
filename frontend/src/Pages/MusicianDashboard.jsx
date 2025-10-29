@@ -107,7 +107,7 @@ export default function MusicianDashboard() {
                     <Bio musician={musician} />
                 </div>
                 <div className="share">
-                    <a href={`https://yadiyadiya.com/share?link=${musician.musicianId}`}>https://yadiyadiya.com/share?link={musician.musicianId}</a>
+                    <a href={`http://localhost:5173/musician-dashboard/${musician.musicianId}`}>http://localhost:5173/musician-dashboard/{musician.musicianId}</a>
                 </div>
             </div>
         </div>

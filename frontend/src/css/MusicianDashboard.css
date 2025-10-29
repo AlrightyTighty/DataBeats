@@ -97,6 +97,9 @@
     top: 0vh;
     right: 0vw;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: right;
     font-size: 8vh;
     letter-spacing: 0.5vw;
     /* border: 3px dashed pink; */
@@ -148,16 +151,4 @@
     position: absolute;         /* position relative to nearest positioned ancestor, .albums-events */
     top: 0;
     left: 55%;
-}
-
-
-
-
-/* GET RID OF THIS */
-.test {
-    position: absolute;
-    top: 25vh;
-    left: 60vw;
-    font-size: 80px;
-    border: 5px dashed yellow;
 }
