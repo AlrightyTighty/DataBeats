@@ -1,4 +1,4 @@
-.icon {
+.edit {
     display: flex;
     width: min(2.5vw, 5.5vh);
     aspect-ratio: 1/1;
@@ -17,7 +17,7 @@
     border-radius: 50%;
 }
 
-.icon:hover {
+.edit:hover {
     color: cadetblue;
     border-color: cadetblue;
     cursor: pointer;

@@ -30,6 +30,8 @@
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
     /* border: 3px dashed yellow; */
 }
 
@@ -143,6 +145,8 @@
     border: 3px double white;
     border-radius: 20px;
     overflow: scroll;
+    margin: 0;
+    padding: 0;
 }
 
 .events {

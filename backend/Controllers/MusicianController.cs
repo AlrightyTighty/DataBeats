@@ -63,5 +63,41 @@ namespace backend.Controllers
             return CreatedAtAction("GetMusician", new { id = newMusician.MusicianId }, newMusician.ToDto());
 
         }
+
+        [HttpPut("{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> UpdateMusicianAsync([FromRoute] ulong id, [FromBody] UpdateMusicianDto dto)
+        {
+            // fetch musician drom db
+            Musician? musician = await _context.Musicians.FindAsync(id);
+            if (musician == null)
+            {
+                return NotFound();
+            }
+
+            // update stage name
+            if (!string.IsNullOrWhiteSpace(dto.MusicianName))
+            {
+                musician.MusicianName = dto.MusicianName;
+            }
+
+            // update pfp
+            if (dto.ProfilePictureFileId.HasValue)
+            {
+                musician.ProfilePictureFileId = dto.ProfilePictureFileId.Value;
+            }
+
+            // update bio if exists in dto
+            if (!string.IsNullOrWhiteSpace(dto.Bio))
+            {
+                musician.Bio = dto.Bio;
+            }
+
+            // save
+            await _context.SaveChangesAsync();
+
+            // return updated musician dto
+            return Ok(musician.ToDto());
+        }
     }
 }

@@ -8,7 +8,6 @@ import MusicianPicName from '../Components/MusicianPicName'
 import Bio from '../Components/Bio'
 
 // pull from db
-import mickey from '../dummy-data-imgs/mickey.png'
 import stars from '../dummy-data-imgs/stars.jpg'
 import sun from '../dummy-data-imgs/sun.jpg'
 import mountain from '../dummy-data-imgs/mountain.jpg'
@@ -37,15 +36,16 @@ export default function MusicianDashboard() {
     // const [events1, setEvents1] = useState();
 
     // useEffect allows you to synchronize component with external system - perform side effects like fetching data, directly updating the DOM, etc. in componenets
-    // accepts two arguments, 2nd is opt - useEffect(function, dependency)
+    // side effects run after the component has rendered and can be anything that affects something outside the scope of the current function
+    // useEffect accepts two arguments, 2nd is opt - useEffect(function, dependency)
     useEffect(() => {
         // fetch info from db via api call with fetch(endpoint) ... endpoint routes specified in controllers
         // fetch api fetches url and returns a Promise, need to await for it to resolve or use .then to synchronize
         // convert server's response to json object - json method also returns a Promise; need to await or use .then
         // finally, set values for musician based on data received
         fetch(musicianURL).then(response => response.json()).then(data => setMusician(data));
-    }, []);                                                     // response object returned twice since async function (iife) is called inside useEffect; add empty array bracket [] so it's only called once
-    console.log(musician)
+    }, []);                                                     // useEffect runs after every render by default; empty array [] as 2nd param (dependency) means it runs once after first render - i.e. run this effect only if the values in [] have changed since last render
+    
     // pull from db
     const albums = [
         {id: 1, title: "Stars", release_date: "2020", url: stars},
@@ -104,7 +104,7 @@ export default function MusicianDashboard() {
                     <h3>{musician.label}</h3>
                 </div>
                 <div className="musician-bio">
-                    <Bio musician={musician} />
+                    <Bio musician={musician} api={musicianURL}/>
                 </div>
                 <div className="share">
                     <a href={`http://localhost:5173/musician-dashboard/${musician.musicianId}`}>http://localhost:5173/musician-dashboard/{musician.musicianId}</a>

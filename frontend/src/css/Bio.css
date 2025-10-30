@@ -24,6 +24,80 @@
     position: absolute;
     top: 7vh;
     margin-left: 1vh;
-    overflow: scroll;
+    overflow: auto;
     /* border: 3px dashed orange; */
+}
+
+.modal {
+    position: relative;             /* needs to be relative since modal box is coming out of parent container and into doc body */
+    left: 12.5vw;
+    top: -70vh;
+    box-sizing: border-box;
+    width: 75vw;
+    height: 50vh;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    font-size: 3vh;
+    overflow: auto;
+    background-color: rgb(121, 121, 172);
+    border: 3px double white;
+    border-radius: 20px;
+}
+
+.modal h2 {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed red; */
+}
+
+.modal textarea {
+    width: 96%;
+    height: 60%;
+    position: absolute;
+    top: 8vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    overflow: auto;
+    resize: none;
+    font-size: 2vh;
+    color: white;
+    /* border: 3px dashed orange; */
+}
+
+.save {
+    position: absolute;
+    bottom: 8.5vh;
+    right: 2vw;
+    background-color: rgb(87, 87, 124);
+    border: none;
+    border-radius: 20px;
+    font-size: 1.5vh;
+    color: white;
+}
+
+.save:hover {
+    border: 3px solid white;
+}
+
+.close {
+    position: absolute;
+    top: 1.5%;
+    right: 1%;
+    background-color: rgb(87, 87, 124);
+    border: none;
+    border-radius: 20px;
+    font-size: 1.5vh;
+    color: white;
+}
+
+.close:hover {
+    border: 3px solid white;
 }
