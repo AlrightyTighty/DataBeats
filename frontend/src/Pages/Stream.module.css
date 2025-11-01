@@ -92,6 +92,7 @@ body {
   color: white;
   font-size: 32pt;
   margin: 0;
+  text-align: left;
 }
 
 .song-text-info-item {

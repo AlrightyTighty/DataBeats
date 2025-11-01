@@ -1,8 +1,88 @@
-.page{min-height:100vh;background:linear-gradient(180deg,#0C2E9A 6%,#0B1F5C 50%,#0A101D 100%);padding-top:140px;padding-bottom:80px;color:#fff;}
-.container{width:1300px;max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:30px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
-.card{display:flex;gap:18px;align-items:center;background:rgba(12,46,154,0.52);border-radius:18px;padding:14px;text-decoration:none;color:#fff;}
-.cover{width:100px;height:100px;border-radius: 14px;object-fit: cover;background:rgba(255,255,255,0.2);border-radius:14px;}
-.text h3{margin:0;}
-.text p{opacity:.8;font-size:14px;margin-top:4px;}
-@media(max-width:900px){.grid{grid-template-columns:1fr;}}
+.page{
+  min-height:100vh;
+  padding:140px 0 80px;
+  color:#fff;
+  background:linear-gradient(180deg,#0C2E9A 6%,#0B1F5C 50%,#0A101D 100%);
+}
+
+.container{
+  width:1300px;
+  max-width:100%;
+  margin:0 auto;
+  padding:0 24px;
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:24px;
+}
+
+.card{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:14px;
+  text-decoration:none;
+  color:#fff;
+  background:rgba(12,46,154,0.52);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+  will-change: transform;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.28);
+  background:rgba(12,46,154,0.6);
+}
+.card:focus-visible{
+  outline:2px solid #79D4F7;
+  outline-offset:3px;
+  transform:translateY(-2px);
+}
+
+.cover{
+  width:100px;
+  height:100px;
+  flex:0 0 100px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.2);
+  object-fit:cover;
+}
+
+.text{
+  min-width:0; 
+}
+.text h3{
+  margin:0;
+  font-size:18px;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.text p{
+  margin:4px 0 0;
+  font-size:14px;
+  opacity:.85;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .card{ transition:none; }
+  .card:hover{ transform:none; }
+}
+
+@media(max-width:900px){
+  .container{ padding:0 16px; }
+  .grid{ grid-template-columns:1fr; }
+  .card{ gap:14px; }
+  .cover{ width:84px; height:84px; flex:0 0 84px; }
+}

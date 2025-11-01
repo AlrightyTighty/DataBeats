@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import styles from "./CreateAlbum.module.css";
 import Topnav from "../Components/Topnav";
 import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
+import API from "../lib/api";
 
 const CreateAlbum = () => {
   const [albumArtistIDs, setAlbumArtistIDs] = useState([]);
@@ -39,7 +40,7 @@ const CreateAlbum = () => {
     const formData = new FormData();
     formData.set("file", file);
 
-    const response = await fetch("http://localhost:5062/api/art", {
+    const response = await fetch(`${API}/api/art`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -75,7 +76,7 @@ const CreateAlbum = () => {
     const formData = new FormData();
     formData.set("file", file);
 
-    const response = await fetch("http://localhost:5062/api/song/file", {
+    const response = await fetch(`${API}/api/song/file`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -112,7 +113,7 @@ const CreateAlbum = () => {
 
     console.log(createAlbumInfo);
 
-    response = await fetch("http://localhost:5062/api/album", {
+    response = await fetch(`${API}/api/album`, {
       method: "POST",
       credentials: "include",
       body: JSON.stringify(createAlbumInfo),

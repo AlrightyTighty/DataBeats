@@ -1,0 +1,175 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+  color: #ffffff;
+  padding: 60px 40px;
+  margin: 0 auto;
+}
+
+.albumHeader {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 60px;
+  align-items: flex-start;
+}
+
+.albumCover {
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.albumInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+}
+
+.albumType {
+  color: #a0a0a0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.albumTitle {
+  font-size: 72px;
+  margin: 0;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -2px;
+  text-align: left;
+}
+
+.albumArtists {
+  font-size: 24px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.albumDescription {
+  color: #b0b0b0;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-top: 8px;
+  margin: 0;
+}
+
+.songsList {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.songsHeader {
+  display: grid;
+  grid-template-columns: 60px 1fr 280px 140px;
+  gap: 20px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+  color: #a0a0a0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.headerNumber {
+  text-align: center;
+}
+
+.headerTitle {
+  text-align: left;
+}
+
+.headerArtists {
+  text-align: left;
+}
+
+.headerStreams {
+  text-align: right;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 40px 24px;
+  }
+
+  .albumHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .albumCover {
+    width: 280px;
+    height: 280px;
+  }
+
+  .albumTitle {
+    font-size: 48px;
+  }
+
+  .albumArtists {
+    font-size: 20px;
+  }
+
+  .albumDescription {
+    max-width: 100%;
+  }
+
+  .songsHeader {
+    grid-template-columns: 50px 1fr 120px;
+    gap: 12px;
+  }
+
+  .headerArtists {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .albumCover {
+    width: 240px;
+    height: 240px;
+  }
+
+  .albumTitle {
+    font-size: 36px;
+  }
+
+  .albumArtists {
+    font-size: 18px;
+  }
+
+  .songsHeader {
+    grid-template-columns: 40px 1fr 100px;
+    gap: 8px;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .songsList {
+    padding: 16px;
+  }
+}

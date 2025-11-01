@@ -21,6 +21,7 @@ import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
+
 import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
@@ -30,6 +31,7 @@ import Following from "./Pages/Following.jsx";
 import ArtistEvents from "./Pages/ArtistEvents.jsx";
 import Settings from "./Pages/Settings.jsx";
 import NewReleases from "./Pages/NewReleases.jsx";
+import Album from "./Pages/Album.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -38,7 +40,7 @@ const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
   { path: "/authtest", element: <Authtest /> },
   { path: "/stream/:id", element: <Stream /> },
-  { path: "/musician-dashboard/:id", element: <MusicianDashboard />},
+  { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
   { path: "/artist/:id", element: <Artist /> },
   { path: "/streamtest", element: <StreamPopupTest /> },
   { path: "/events", element: <Events /> },
@@ -61,6 +63,7 @@ const router = createBrowserRouter([
   { path: "/settings", element: <Settings /> },
   { path: "/new", element: <NewReleases /> },
   { path: "/dashboard", element: <Dashboard /> },
+  { path: "/album/:id", element: <Album /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

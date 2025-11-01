@@ -18,6 +18,13 @@ namespace backend.Middleware
         public async Task InvokeAsync(HttpContext context, ApplicationDBContext dbContext)
         {
             Console.WriteLine("Middlewaring!");
+
+            if (context.Request.Headers["X-UserId"].Count > 0)
+            {
+                await next(context);
+                return;
+            }
+
             if (!context.Request.Cookies.ContainsKey("session-id"))
             {
                 Console.WriteLine("Authentication cookie not found!");

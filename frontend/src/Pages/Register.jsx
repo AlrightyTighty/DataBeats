@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import Topnav from "../Components/Topnav";
 import { Link, useNavigate } from "react-router";
 import styles from "./Register.module.css";
+import API from "../lib/api";
 
 const Register = () => {
   const usernameRef = useRef();
@@ -39,7 +40,7 @@ const Register = () => {
       Password: password,
     };
 
-    const response = await fetch("http://localhost:5062/api/user", {
+    const response = await fetch(`${API}/api/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const Register = () => {
       Password: password,
     };
 
-    const loginResponse = await fetch("http://localhost:5062/api/authentication", {
+    const loginResponse = await fetch(`${API}/api/authentication`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

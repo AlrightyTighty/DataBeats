@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./UserReports.module.css";
+import API from "../lib/api";
 
 const reportsData = [
   {
@@ -102,7 +103,7 @@ export function UserReports() {
     loaded.current = true;
 
     (async () => {
-      const response = await fetch("http://localhost:5062/api/admin/reports", {
+      const response = await fetch(`${API}/api/admin/reports`, {
         method: "GET",
         credentials: "include",
       });

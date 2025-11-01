@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy(name: "AllowSpecificOrigins", builder =>
         {
-            builder.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+            builder.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173", "https://databeats-frontend-63991322723.us-south1.run.app")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -109,6 +109,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin"), ap
 );
 
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/report") && context.Request.Method == "POST", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => (context.Request.Method == "POST" && !context.Request.Path.StartsWithSegments("/api/authentication") && !context.Request.Path.StartsWithSegments("/api/user")) || context.Request.Method == "PATCH" || context.Request.Method == "PUT" || context.Request.Method == "DELETE", appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();
 }

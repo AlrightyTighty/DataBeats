@@ -28,7 +28,7 @@ namespace backend.Controllers
             if (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId) == null)
                 return NotFound();
 
-            Complaint[] complaints = await _context.Complaints.Where(complaint => complaint.TimeCreated >= DateTime.Now.AddDays(-6)).ToArrayAsync();
+            Complaint[] complaints = await _context.Complaints.Where(complaint => complaint.TimeCreated > DateTime.Now.AddDays(-6)).ToArrayAsync();
             List<AdminStatPoint> stats = new List<AdminStatPoint>();
 
             for (int i = 6; i >= 0; i--)
@@ -38,7 +38,9 @@ namespace backend.Controllers
 
             foreach (Complaint complaint in complaints)
             {
-                int index = 6 - ((DateTime.Now.Date - complaint.TimeCreated.Date).Days + 1);
+                Console.WriteLine(complaint.TimeCreated.Date);
+                Console.WriteLine((DateTime.Now.Date - complaint.TimeCreated.Date));
+                int index = 6 - ((DateTime.Now.Date - complaint.TimeCreated.Date).Days);
                 Console.WriteLine(index);
                 if (complaint.ComplaintReason == "INAPPROPRIATE")
                     stats[index].INAPPROPRIATE++;

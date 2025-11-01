@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 import bed from "../assets/graphics/test_image_bed.jpg"; // fallback if no image available
 import "./Events.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function Events() {
   const [events, setEvents] = useState([]);

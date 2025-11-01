@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import { PlaylistCard } from "../Components/PlaylistCard";
+import EventCard from "../Components/EventCard";
+import API from "../lib/api.js";
 import styles from "./Dashboard.module.css";
-
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,13 +16,22 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API}/api/authtest`, {
+        const res = await fetch(`${API}/api/me`, {
           credentials: "include",
         });
-        if (res.ok) {
-          const data = await res.json();
-          setUserId(data.userId);
-        } else navigate("/login");
+
+        if (!res.ok) {
+          navigate("/login");
+          return;
+        }
+
+        const me = await res.json();
+        if (!me?.userId) {
+          navigate("/login");
+          return;
+        }
+
+        setUserId(me.userId);
       } catch (err) {
         console.error("Auth check failed:", err);
         navigate("/login");
@@ -30,25 +40,31 @@ export default function Dashboard() {
   }, [navigate]);
 
   useEffect(() => {
+    if (!userId) return;
+
     (async () => {
       try {
-        const [resPlaylists, resEvents] = await Promise.all([
-          fetch(`${API}/api/playlist`, { credentials: "include" }),
-          fetch(`${API}/api/event`, { credentials: "include" }),
-        ]);
+        const headers = new Headers();
+        headers.append("X-UserId", userId.toString());
 
-        const playlistsData = resPlaylists.ok ? await resPlaylists.json() : [];
-        const eventsData = resEvents.ok ? await resEvents.json() : [];
+        const [resPlaylists, resEvents] = await Promise.all([fetch(`${API}/api/playlist/me`, { credentials: "include" }), fetch(`${API}/api/event`)]);
 
-        setPlaylists(playlistsData.slice(0, 5));
-        setEvents(eventsData.slice(0, 5));
+        const playlistResponse = resPlaylists.ok ? await resPlaylists.json() : {};
+        const eventsResponse = resEvents.ok ? await resEvents.json() : [];
+
+        const owned = playlistResponse.OwnedPlaylists ?? [];
+        const contrib = playlistResponse.ContributorPlaylists ?? [];
+        const combined = [...owned, ...contrib].slice(0, 5);
+
+        setPlaylists(combined);
+        setEvents(eventsResponse.slice(0, 5));
       } catch (err) {
         console.error("Error loading dashboard:", err);
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [userId]);
 
   return (
     <>
@@ -66,11 +82,7 @@ export default function Dashboard() {
             <span>Playlist</span>
           </button>
 
-          <button
-            onClick={() => userId && navigate(`/following/${userId}`)}
-            disabled={!userId}
-            className={styles.btn}
-          >
+          <button onClick={() => userId && navigate(`/following/${userId}`)} disabled={!userId} className={styles.btn}>
             <div className={styles.btnHighlight}></div>
             <span>Artist</span>
           </button>
@@ -86,14 +98,11 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Playlist Section  */}
+        {/* Playlist Section */}
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Playlists</h2>
-            <span
-              onClick={() => navigate("/playlists")}
-              className={styles.viewAll}
-            >
+            <span className={styles.viewAll} onClick={() => navigate("/playlists")}>
               View All
             </span>
           </div>
@@ -105,14 +114,8 @@ export default function Dashboard() {
           ) : (
             <div className={styles.cardGrid}>
               {playlists.map((p) => (
-                <div
-                  key={p.playlistId}
-                  className={styles.card}
-                  onClick={() => navigate(`/playlist/${p.playlistId}`)}
-                >
-                  <div className={styles.cardImage}></div>
-                  <h3>{p.playlistName}</h3>
-                  <p>{p.playlistDescription || "No description"}</p>
+                <div key={p.playlistId || p.PlaylistId} onClick={() => navigate(`/playlist/${p.PlaylistId}`)}>
+                  <PlaylistCard playlist={p} />
                 </div>
               ))}
             </div>
@@ -123,10 +126,7 @@ export default function Dashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Events</h2>
-            <span
-              onClick={() => navigate("/events")}
-              className={styles.viewAll}
-            >
+            <span className={styles.viewAll} onClick={() => navigate("/events")}>
               View All
             </span>
           </div>
@@ -138,15 +138,7 @@ export default function Dashboard() {
           ) : (
             <div className={styles.cardGrid}>
               {events.map((e) => (
-                <div
-                  key={e.eventId}
-                  className={styles.card}
-                  onClick={() => navigate(`/event/${e.eventId}`)}
-                >
-                  <div className={styles.cardImage}></div>
-                  <h3>{e.eventTitle}</h3>
-                  <p>{e.location || e.date || "No details"}</p>
-                </div>
+                <EventCard key={e.eventId} event={e} />
               ))}
             </div>
           )}
