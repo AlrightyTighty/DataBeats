@@ -27,10 +27,42 @@ namespace backend.Controllers
         public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id)
         {
             Album? album = await _context.Albums.FindAsync(id);
-            if (album == null)
+            if (album == null || album.TimestampDeleted != null)
                 return NotFound("There is no such album with id " + id);
 
             return Ok(album.ToDTO());
+        }
+
+        [HttpPost("/admin/delete/album/{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] string reason)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User deletingUser = (await _context.Users.FindAsync(userId))!;
+            Album? albumToDelete = await _context.Albums.FindAsync(id);
+            if (albumToDelete == null)
+                return NotFound();
+
+            if (deletingUser.AdminId == null)
+                return Unauthorized();
+
+            // in this case, the user is acting as an admin, and therefore the action must be logged.
+            // ALL admin deletes must be logged.
+            ulong? adminId = deletingUser.AdminId;
+
+            AdminDeletesAlbum adminAction = new AdminDeletesAlbum
+            {
+                AdminId = adminId.Value,
+                AlbumId = id,
+                DeletedAt = DateTime.Now,
+                Reason = reason
+            };
+
+            await _context.AdminDeletesAlbums.AddAsync(adminAction);
+            albumToDelete.TimestampDeleted = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return Created(uri: null as string, adminAction);
         }
 
         [HttpPost]
