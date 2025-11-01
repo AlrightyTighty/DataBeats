@@ -18,5 +18,15 @@ namespace backend.DTOs.Album
         public TimeOnly Duration { get; set; }
 
         public string AlbumType { get; set; } = null!;
+
+        public ArtistInfo[] Artists { get; set; } = null!;
+
+        public byte[]? AlbumArtImage { get; set; }
+    }
+
+    public class ArtistInfo
+    {
+        public string ArtistName { get; set; } = null!;
+        public ulong MusicianId { get; set; }
     }
 }

@@ -24,13 +24,28 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id, [FromQuery] bool includeImageData = false)
         {
-            Album? album = await _context.Albums.FindAsync(id);
+            Album? album = await _context.Albums.Include(album => album.MusicianWorksOnAlbums).ThenInclude(albumArtist => albumArtist.Musician).FirstOrDefaultAsync(album => album.AlbumId == id);
             if (album == null || album.TimestampDeleted != null)
                 return NotFound("There is no such album with id " + id);
 
+
+            if (includeImageData)
+            {
+                AlbumOrSongArtFile albumArtFile = (await _context.AlbumOrSongArtFiles.FindAsync(album.AlbumOrSongArtFileId))!;
+                return Ok(album.ToDTOWithImageData(albumArtFile.FileData));
+            }
+
             return Ok(album.ToDTO());
+        }
+
+        [HttpGet("songs/{id}")]
+        public async Task<IActionResult> GetAllSongsAsync([FromRoute] ulong id)
+        {
+            SongDto[] songs = await _context.Songs.Where(song => song.AlbumId == id).Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(songArtist => songArtist.Musician).Select(song => song.ToSongDTOForStreaming(song.Album.AlbumOrSongArtFileId, song.Album.AlbumTitle)).ToArrayAsync();
+
+            return Ok(songs);
         }
 
         [HttpPost("/admin/delete/album/{id}")]
@@ -44,7 +59,7 @@ namespace backend.Controllers
                 return NotFound();
 
             if (deletingUser.AdminId == null)
-                return Unauthorized();
+                return Forbid();
 
             // in this case, the user is acting as an admin, and therefore the action must be logged.
             // ALL admin deletes must be logged.
@@ -60,9 +75,29 @@ namespace backend.Controllers
 
             await _context.AdminDeletesAlbums.AddAsync(adminAction);
             albumToDelete.TimestampDeleted = DateTime.Now;
+            albumToDelete.DeletedBy = userId;
             await _context.SaveChangesAsync();
 
             return Created(uri: null as string, adminAction);
+        }
+
+        [HttpDelete("{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> DeleteByIdAsync([FromRoute] ulong id)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            Album? albumToDelete = await _context.Albums.FindAsync(id);
+            if (albumToDelete == null)
+                return NotFound();
+
+            if (albumToDelete.CreatedBy != userId)
+                return Forbid();
+
+            albumToDelete.TimestampDeleted = DateTime.Now;
+            albumToDelete.DeletedBy = userId;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         [HttpPost]
@@ -156,7 +191,9 @@ namespace backend.Controllers
             await _context.Albums.AddAsync(newAlbum);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetById", new {id = newAlbum.AlbumId}, newAlbum.ToDTO());
+            newAlbum = await _context.Albums.Include(album => album.MusicianWorksOnAlbums).ThenInclude(albumArtist => albumArtist.Musician).FirstAsync(album => album.AlbumId == newAlbum.AlbumId);
+
+            return CreatedAtAction("GetById", new { id = newAlbum.AlbumId }, newAlbum.ToDTO());
 
         }
 

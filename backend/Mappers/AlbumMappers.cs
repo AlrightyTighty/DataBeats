@@ -18,8 +18,23 @@ namespace backend.Mappers
                 ReleaseDate = album.ReleaseDate,
                 NumSongs = album.NumSongs,
                 Duration = album.Duration,
-                AlbumType = album.AlbumType
+                AlbumType = album.AlbumType,
+                Artists = album.MusicianWorksOnAlbums
+                                                    .Select(albumArtist => albumArtist.Musician)
+                                                    .Select(musician => new ArtistInfo
+                                                    {
+                                                        ArtistName = musician.MusicianName,
+                                                        MusicianId = musician.MusicianId
+                                                    })
+                                                    .ToArray()
             };
+        }
+
+        public static AlbumDto ToDTOWithImageData(this Album album, byte[] imageData)
+        {
+            AlbumDto dto = album.ToDTO();
+            dto.AlbumArtImage = imageData;
+            return dto;
         }
     }
 }

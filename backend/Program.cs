@@ -114,6 +114,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/report") &&
 }
 );
 
+app.UseWhen(context => context.Request.Method == "POST" || context.Request.Method == "PATCH" || context.Request.Method == "PUT" || context.Request.Method == "DELETE", appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
 app.MapControllers();
 
 

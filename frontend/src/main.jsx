@@ -31,6 +31,7 @@ import Following from "./Pages/Following.jsx";
 import ArtistEvents from "./Pages/ArtistEvents.jsx";
 import Settings from "./Pages/Settings.jsx";
 import NewReleases from "./Pages/NewReleases.jsx";
+import Album from "./Pages/Album.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
   { path: "/settings", element: <Settings /> },
   { path: "/new", element: <NewReleases /> },
   { path: "/dashboard", element: <Dashboard /> },
+  { path: "/album/:id", element: <Album /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

@@ -111,7 +111,7 @@ const Stream = () => {
   const publishReview = async () => {
     if (createReviewStars == 0) return;
     const comment = createReviewCommentRef.current.value;
-    const response = await fetch("${API}/api/rating", {
+    const response = await fetch(`${API}/api/rating`, {
       method: "POST",
       body: JSON.stringify({ songId: id, starCount: createReviewStars, comment: comment }),
       credentials: "include",
@@ -142,7 +142,7 @@ const Stream = () => {
                   <div id={styles["song-right-text"]}>
                     <h1 id={styles["song-title"]}>{songInfo.songName}</h1>
                     <p className={styles["song-text-info-item"]}>From the album: {songInfo.albumName}</p>
-                    <p className={styles["song-text-info-item"]}>Artist: {songInfo.artistNames[0]}</p>
+                    <p className={styles["song-text-info-item"]}>Artists: {songInfo.artistNames.join(", ")}</p>
                     <p className={styles["song-text-info-item"]}>Duration: {songInfo.duration}</p>
                   </div>
                   <div id={styles["player-controls"]}>
