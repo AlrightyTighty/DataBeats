@@ -12,8 +12,8 @@
     text-align: center;
     transform: scale(-1, 1);        /* mirror char w horizontal flip */
     background-color: transparent;
-    color: white;
-    border: 2px solid white;
+    color: grey;
+    border: 2px solid grey;
     border-radius: 50%;
 }
 
