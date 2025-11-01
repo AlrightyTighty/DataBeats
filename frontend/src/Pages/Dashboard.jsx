@@ -17,7 +17,7 @@ export default function Dashboard() {
     (async () => {
       try {
         const res = await fetch(`${API}/api/me`, {
-          credentials: "include",           
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -35,8 +35,6 @@ export default function Dashboard() {
       } catch (err) {
         console.error("Auth check failed:", err);
         navigate("/login");
-      } finally {
-        setLoadingAuth(false);
       }
     })();
   }, [navigate]);
@@ -49,10 +47,7 @@ export default function Dashboard() {
         const headers = new Headers();
         headers.append("X-UserId", userId.toString());
 
-        const [resPlaylists, resEvents] = await Promise.all([
-          fetch(`${API}/api/playlist/me`, { credentials: "include", headers }),
-          fetch(`${API}/api/event`, { credentials: "include" }),
-        ]);
+        const [resPlaylists, resEvents] = await Promise.all([fetch(`${API}/api/playlist/me`, { credentials: "include" }), fetch(`${API}/api/event`)]);
 
         const playlistResponse = resPlaylists.ok ? await resPlaylists.json() : {};
         const eventsResponse = resEvents.ok ? await resEvents.json() : [];
@@ -87,11 +82,7 @@ export default function Dashboard() {
             <span>Playlist</span>
           </button>
 
-          <button
-            onClick={() => userId && navigate(`/following/${userId}`)}
-            disabled={!userId}
-            className={styles.btn}
-          >
+          <button onClick={() => userId && navigate(`/following/${userId}`)} disabled={!userId} className={styles.btn}>
             <div className={styles.btnHighlight}></div>
             <span>Artist</span>
           </button>
