@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import Topnav from "../Components/Topnav";
 import styles from "./FollowPages.module.css";
@@ -18,10 +18,7 @@ export default function Followers() {
       try {
         setLoading(true);
         setErr(null);
-        const [rFriends, rPending] = await Promise.all([
-          fetch(`${API}/api/friend/friends/${id}`),
-          fetch(`${API}/api/friend/pending/${id}`),
-        ]);
+        const [rFriends, rPending] = await Promise.all([fetch(`${API}/api/friend/friends/${id}`), fetch(`${API}/api/friend/pending/${id}`)]);
         if (!rFriends.ok || !rPending.ok) throw new Error("Failed to load follows");
         setFriends(await rFriends.json());
         setPending(await rPending.json());
@@ -38,15 +35,18 @@ export default function Followers() {
       setBusyId(reqId);
       const r = await fetch(`${API}/api/friend/accept/${reqId}`, { method: "PATCH" });
       if (!r.ok) throw new Error("Accept failed");
-      const accepted = pending.find(p => p.friendsWithId === reqId);
-      setPending(pending.filter(p => p.friendsWithId !== reqId));
-      setFriends([{
-        friendsWithId: reqId,
-        friendId: accepted.frienderId,
-        username: accepted.frienderName,
-        timeFriended: accepted.timeFriended,
-        timeAccepted: new Date().toISOString()
-      }, ...friends]);
+      const accepted = pending.find((p) => p.friendsWithId === reqId);
+      setPending(pending.filter((p) => p.friendsWithId !== reqId));
+      setFriends([
+        {
+          friendsWithId: reqId,
+          friendId: accepted.frienderId,
+          username: accepted.frienderName,
+          timeFriended: accepted.timeFriended,
+          timeAccepted: new Date().toISOString(),
+        },
+        ...friends,
+      ]);
     } catch (e) {
       setErr(e.message || String(e));
     } finally {
@@ -57,7 +57,7 @@ export default function Followers() {
   async function declineRequest(reqId) {
     try {
       setBusyId(reqId);
-      setPending(pending.filter(p => p.friendsWithId !== reqId));
+      setPending(pending.filter((p) => p.friendsWithId !== reqId));
     } finally {
       setBusyId(null);
     }
@@ -77,39 +77,33 @@ export default function Followers() {
           )}
 
           <div className={styles.list}>
-            {(!loading && friends.length === 0) && (
-              <div className={styles.card} style={{ opacity: .8, justifyContent: "center" }}>
+            {!loading && friends.length === 0 && (
+              <div className={styles.card} style={{ opacity: 0.8, justifyContent: "center" }}>
                 No followers yet.
               </div>
             )}
-            {friends.map(f => (
-              <div
-                key={f.friendsWithId}
-                className={styles.card}
-                role="link"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && (location.href = `/user/${f.friendId}`)}
-              >
+            {friends.map((f) => (
+              <div key={f.friendsWithId} className={styles.card} role="link" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && (location.href = `/user/${f.friendId}`)}>
                 <div className={styles.avatar} />
                 <div className={styles.info}>
                   <h3>{f.username}</h3>
-                  <p>
-                    Friended on {new Date(f.timeAccepted ?? f.timeFriended).toLocaleDateString()}
-                  </p>
+                  <p>Friended on {new Date(f.timeAccepted ?? f.timeFriended).toLocaleDateString()}</p>
                 </div>
-                <a href={`/user/${f.friendId}`} className={styles.btn}>View Profile</a>
+                <a href={`/user/${f.friendId}`} className={styles.btn}>
+                  View Profile
+                </a>
               </div>
             ))}
           </div>
 
           <h2 style={{ marginTop: 8 }}>Pending Requests {pending.length > 0 ? `(${pending.length})` : ""}</h2>
           <div className={styles.list}>
-            {(!loading && pending.length === 0) && (
-              <div className={styles.card} style={{ opacity: .8, justifyContent: "center" }}>
+            {!loading && pending.length === 0 && (
+              <div className={styles.card} style={{ opacity: 0.8, justifyContent: "center" }}>
                 No pending requests.
               </div>
             )}
-            {pending.map(p => (
+            {pending.map((p) => (
               <div key={p.friendsWithId} className={styles.card}>
                 <div className={styles.avatar} />
                 <div className={styles.info}>
@@ -117,26 +111,16 @@ export default function Followers() {
                   <p>Requested on {new Date(p.timeFriended).toLocaleDateString()}</p>
                 </div>
                 <div style={{ display: "flex", gap: 8, minWidth: 180, justifyContent: "flex-end" }}>
-                  <button
-                    className={styles.btn}
-                    disabled={busyId === p.friendsWithId}
-                    onClick={() => acceptRequest(p.friendsWithId)}
-                  >
+                  <button className={styles.btn} disabled={busyId === p.friendsWithId} onClick={() => acceptRequest(p.friendsWithId)}>
                     Accept
                   </button>
-                  <button
-                    className={styles.btn}
-                    style={{ background: "#d07070" }}
-                    disabled={busyId === p.friendsWithId}
-                    onClick={() => declineRequest(p.friendsWithId)}
-                  >
+                  <button className={styles.btn} style={{ background: "#d07070" }} disabled={busyId === p.friendsWithId} onClick={() => declineRequest(p.friendsWithId)}>
                     Decline
                   </button>
                 </div>
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </>

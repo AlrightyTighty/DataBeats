@@ -1,8 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import Topnav from "../Components/Topnav";
 import styles from "./FollowPages.module.css";
-
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
@@ -42,31 +41,24 @@ export default function Following() {
           )}
 
           <div className={styles.list}>
-            {(!loading && friends.length === 0) && (
-              <div className={styles.card} style={{ opacity: .8, justifyContent: "center" }}>
+            {!loading && friends.length === 0 && (
+              <div className={styles.card} style={{ opacity: 0.8, justifyContent: "center" }}>
                 Not following anyone yet.
               </div>
             )}
-            {friends.map(f => (
-              <div
-                key={f.friendsWithId}
-                className={styles.card}
-                role="link"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && (location.href = `/user/${f.friendId}`)}
-              >
+            {friends.map((f) => (
+              <div key={f.friendsWithId} className={styles.card} role="link" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && (location.href = `/user/${f.friendId}`)}>
                 <div className={styles.avatar} />
                 <div className={styles.info}>
                   <h3>{f.username}</h3>
-                  <p>
-                    Friends since {new Date(f.timeAccepted ?? f.timeFriended).toLocaleDateString()}
-                  </p>
+                  <p>Friends since {new Date(f.timeAccepted ?? f.timeFriended).toLocaleDateString()}</p>
                 </div>
-                <a href={`/user/${f.friendId}`} className={styles.btn}>View Profile</a>
+                <a href={`/user/${f.friendId}`} className={styles.btn}>
+                  View Profile
+                </a>
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </>

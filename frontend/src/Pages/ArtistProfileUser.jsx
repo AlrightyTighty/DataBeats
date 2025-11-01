@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistProfileUser.module.css";
 
@@ -29,7 +29,7 @@ export default function ArtistProfileUser() {
         const friendRes = await fetch(`${API}/api/friend/friends/${CURRENT_USER_ID}`);
         if (friendRes.ok) {
           const data = await friendRes.json();
-          const friendIds = data.map(f => f.friendId);
+          const friendIds = data.map((f) => f.friendId);
           setIsFriend(friendIds.includes(Number(id)));
         }
       } catch (err) {
@@ -74,11 +74,7 @@ export default function ArtistProfileUser() {
       <div className={styles.page}>
         <div className={styles.container}>
           <div className={styles.header}>
-            {artist?.profilePic ? (
-              <img src={`${API}/api/musician/file/view/${artist.profilePic}`} alt="Artist" className={styles.pic} />
-            ) : (
-              <div className={styles.pic} />
-            )}
+            {artist?.profilePic ? <img src={`${API}/api/musician/file/view/${artist.profilePic}`} alt="Artist" className={styles.pic} /> : <div className={styles.pic} />}
 
             <div className={styles.info}>
               <h1>{artist?.musicianName || "Artist Name"}</h1>
@@ -88,10 +84,7 @@ export default function ArtistProfileUser() {
                 <span>{artist?.monthlyListeners ?? 0} Monthly Listeners</span>
               </div>
               <div className={styles.buttons}>
-                <button
-                  onClick={handleFriendToggle}
-                  className={isFriend ? styles.unfollow : styles.follow}
-                >
+                <button onClick={handleFriendToggle} className={isFriend ? styles.unfollow : styles.follow}>
                   {isFriend ? "Remove Friend" : "Add Friend"}
                 </button>
                 <a href={`/followers/${artist?.userId || 0}`}>View Friends</a>
@@ -121,15 +114,7 @@ export default function ArtistProfileUser() {
               ) : (
                 albums.map((a) => (
                   <a key={a.albumId} href={`/album/${a.albumId}`} className={styles.album}>
-                    {a.albumOrSongArtFileId ? (
-                      <img
-                        src={`${API}/api/file/view/${a.albumOrSongArtFileId}`}
-                        alt={a.albumTitle}
-                        className={styles.cover}
-                      />
-                    ) : (
-                      <div className={styles.cover} />
-                    )}
+                    {a.albumOrSongArtFileId ? <img src={`${API}/api/file/view/${a.albumOrSongArtFileId}`} alt={a.albumTitle} className={styles.cover} /> : <div className={styles.cover} />}
                     <div>
                       <h3>{a.albumTitle}</h3>
                       <p>{a.releaseDate ? new Date(a.releaseDate).getFullYear() : ""}</p>
