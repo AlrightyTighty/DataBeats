@@ -39,11 +39,22 @@ export default function MusicianDashboard() {
     // side effects run after the component has rendered and can be anything that affects something outside the scope of the current function
     // useEffect accepts two arguments, 2nd is opt - useEffect(function, dependency)
     useEffect(() => {
-        // fetch info from db via api call with fetch(endpoint) ... endpoint routes specified in controllers
-        // fetch api fetches url and returns a Promise, need to await for it to resolve or use .then to synchronize
-        // convert server's response to json object - json method also returns a Promise; need to await or use .then
-        // finally, set values for musician based on data received
-        fetch(musicianURL).then(response => response.json()).then(data => setMusician(data));
+        // useEffect cannot accept async functions bc async functions return a Promise
+        // react expects the function passed to useEffect to return either void or a cleanup function, and cleanup functions need to be sync to ensure they run at the correct time
+        // need to wrap the async function inside the effect
+        (async () => {
+            // fetch info from db via api call with fetch(endpoint) ... endpoint routes specified in controllers
+            // fetch api fetches url and returns a Promise, need to await for it to resolve or use .then to synchronize
+            const response = await fetch(musicianURL);
+            if (!response.ok) {
+                console.log("Failed to load musician data...");
+            }
+            else {
+                // convert server's response to json object - json method also returns a Promise; need to await or use .then
+                // finally, set values for musician based on data received
+                response.json().then(data => setMusician(data));
+            }
+        })();
     }, []);                                                     // useEffect runs after every render by default; empty array [] as 2nd param (dependency) means it runs once after first render - i.e. run this effect only if the values in [] have changed since last render
     
     // pull from db
@@ -98,7 +109,7 @@ export default function MusicianDashboard() {
             </div>
             <div className="artist-info">
                 <div className="name-pfp">
-                    <MusicianPicName musician={musician} />
+                    <MusicianPicName musician={musician} api={musicianURL}/>
                 </div>
                 <div className="label">
                     <h3>{musician.label}</h3>

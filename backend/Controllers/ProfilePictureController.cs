@@ -35,7 +35,7 @@ namespace backend.Controllers
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> CreateProfilePictureAsync(IFormFile file)
         {
-            if (file.ContentType != "image/png")
+            if (!file.ContentType.StartsWith("image/"))
                 return new UnsupportedMediaTypeResult();
 
 
@@ -44,10 +44,11 @@ namespace backend.Controllers
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await fileStream.CopyToAsync(memoryStream);
+                    var extension = Path.GetExtension(file.FileName)?.TrimStart('.') ?? "";
                     ProfilePictureFile newProfilePictureFile = new ProfilePictureFile
                     {
                         FileName = file.FileName,
-                        FileExtension = "png",
+                        FileExtension = extension,
                         FileData = memoryStream.ToArray()
                     };
 

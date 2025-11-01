@@ -28,7 +28,7 @@
     /* border: 3px dashed orange; */
 }
 
-.modal {
+.modal-bio {
     position: relative;             /* needs to be relative since modal box is coming out of parent container and into doc body */
     left: 12.5vw;
     top: -70vh;
@@ -45,18 +45,19 @@
     border-radius: 20px;
 }
 
-.modal h2 {
-    position: relative;
-    top: 0;
+.modal-bio h2 {
+    position: absolute;
+    top: 1vh;
     left: 0;
     margin: 0;
+    margin-left: 1vw;
     padding: 0;
     font-size: 4.5vh;
     color: white;
     /* border: 3px dashed red; */
 }
 
-.modal textarea {
+.modal-bio textarea {
     width: 96%;
     height: 60%;
     position: absolute;
@@ -72,7 +73,7 @@
     /* border: 3px dashed orange; */
 }
 
-.save {
+.modal-bio .save {
     position: absolute;
     bottom: 8.5vh;
     right: 2vw;
@@ -83,11 +84,11 @@
     color: white;
 }
 
-.save:hover {
+.modal-bio .save:hover {
     border: 3px solid white;
 }
 
-.close {
+.modal-bio .close {
     position: absolute;
     top: 1.5%;
     right: 1%;
@@ -98,6 +99,6 @@
     color: white;
 }
 
-.close:hover {
+.modal-bio .close:hover {
     border: 3px solid white;
 }

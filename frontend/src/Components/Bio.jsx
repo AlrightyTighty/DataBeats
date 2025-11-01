@@ -21,13 +21,13 @@ export default function Bio({musician, api}) {
         const response = await fetch(api, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({Bio: editBio})        // converts js value to json string, e.g. { x: 5, y: 6 } -> '{ "x": 5, "y": 6 }'
-        })
+            body: JSON.stringify({Bio: editBio})    // converts js value to json string, e.g. { x: 5, y: 6 } -> '{ "x": 5, "y": 6 }'
+        });
         if (!response.ok) {                         // ok property contains bool stating whetehr response was successful - status in range 200-299
             console.log("Error saving new bio...");
         }
         else {
-            console.log("saved!");
+            console.log("Saved!");
             setBio(editBio);
         }
     };
@@ -47,7 +47,7 @@ export default function Bio({musician, api}) {
         <h2>About</h2>
         <p>{bio}</p>
         <EditButton state={show} clickFunction={toggleModal} modal={
-            <div className="modal">
+            <div className="modal-bio">
                 <h2>About [Editing]</h2>
 
                 {/* <textarea /> is a built-in browser componenet that lets u render a multi-line text input */}
