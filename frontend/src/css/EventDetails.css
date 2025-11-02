@@ -58,7 +58,7 @@
     /* border: 3px dashed blue; */
 }
 
-.event-type {
+.event-desc {
     position: absolute;
     top: 0;
     box-sizing: border-box;
@@ -73,7 +73,7 @@
     /* border: 3px dashed purple; */
 }
 
-.place-time-price {
+.musician-time-price {
     position: absolute;
     top: 15%;
     box-sizing: border-box;

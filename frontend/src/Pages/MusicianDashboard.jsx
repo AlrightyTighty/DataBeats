@@ -22,16 +22,7 @@ export default function MusicianDashboard() {
 
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
-    const [musician, setMusician] = useState({
-        musicianId: 0,
-        userId: 0,
-        musicianName: '',
-        bio: '',
-        label: '',
-        followerCount: 0,
-        monthlyListenerCount: 0,
-        profilePictureFileId: ''
-    });
+    const [musician, setMusician] = useState('');
     // const [albums1, setAlbums1] = useState();
     // const [events1, setEvents1] = useState();
 
@@ -64,13 +55,20 @@ export default function MusicianDashboard() {
         {id: 3, title: "Mountain Mountain Mountain Mountain", release_date: "2022", url: mountain},
     ];
 
-    // pull from db
-    const events = [
-        {id: 1, name: "Concert Weeeeee", location: "Houston, TX", date_time: "August 13, 2023 @ 7:00pm"},
-        {id: 2, name: "Fan Meet & Greet", location: "Salt Lake City, UT", date_time: "May 6, 2025 @ 3:00pm"},
-        {id: 3, name: "Collab Event", location: "Glenwood Springs, CO", date_time: "December 15, 2026 @ 6:00pm"},
-        {id: 4, name: "Another Concert Teeheehehehehehehhe", location: "New York City, NY", date_time: "February 12, 2024 @ 7:00pm"},
-    ]
+    // state to store array of events hosted by a musician
+    // events is an array of Event objects, each containing the eventId, title, eventDescription, eventPictureFileId, eventTime, ticketPrice, musicianName, etc.
+    const [events, setEvents] = useState([]);
+    useEffect(() => {
+        (async () => {
+            const response = await fetch(`http://localhost:5062/api/event/by-musician/${musicianId.id}`);
+            if (!response.ok) {
+                console.log("Error fetching artist's events...");
+            }
+            else {
+                response.json().then(data => setEvents(data));
+            }
+        })();
+    }, []);
     
     return (
         <div className="dashboard">

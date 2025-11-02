@@ -27,7 +27,7 @@ export default function Bio({musician, api}) {
             console.log("Error saving new bio...");
         }
         else {
-            console.log("Saved!");
+            console.log("New bio saved!");
             setBio(editBio);
         }
     };

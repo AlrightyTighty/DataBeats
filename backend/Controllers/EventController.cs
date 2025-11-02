@@ -47,6 +47,27 @@ namespace backend.Controllers
             return Ok(evt.ToEventDto());
         }
 
+        // new HttpGet with given route template - route becomes /api/event/by-musician/{musicianId}
+        [HttpGet("by-musician/{musicianId}")]
+        public async Task<IActionResult> GetByMusician([FromRoute] ulong musicianId)
+        {
+            var events = await _context.Events                      // access Events table in db using EF core DbContext
+                .Where(e => e.MusicianId == musicianId)             // filter to only get events where event's MusicianId == route musicianId
+                .Include(e => e.EventPictureFile)                   // load event's image info
+                .Include(e => e.Musician)                           // load event's musician host
+                .ToListAsync();                                     // execute query async; var events becomes a list of Event entities after (await) db operation completes
+
+            // events list empty
+            if (!events.Any())
+                // return http status code 404 (not found) with json body { "message": "..." }
+                return NotFound(new { message = "No events found for this musician." });
+
+            // map each Event entity to an DTO (EventDto) using ToEventDto() method defined in EventMapper
+            var eventDtos = events.Select(e => e.ToEventDto());
+            // return http status code 200 (ok) response with list of event DTOs serialized as JSON
+            return Ok(eventDtos);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEventDto eventDto)
         {

@@ -2,44 +2,29 @@ import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton'
 import '../css/EventDetails.css'
 
-// pull from db
-import promoImg from '../dummy-data-imgs/eventcover.jpg'
-
-export default function EventDetails() {
-
-    // pull from db
-    const event = {
-        id: 4,
-        img: promoImg,
-        name: 'Another Concert Teeheehehehehehehhe',
-        type: 'Concert',
-        location: 'New York City, NY',
-        date_time: 'February 12, 2024 @ 7:00pm',
-        ticket_price: 80,
-    }
-
+export default function EventDetails({event}) {
     return <div className="event-details">
         <Topnav />
         <div className="banner">
-            <img src={promoImg} alt="concertpromo" />
-            <h1>{event.name}</h1>
+            <img src={event.eventPictureFileId} alt="concert promo" />
+            <h1>{event.title}</h1>
             <EditButton />
         </div>
         <div className="info">
-            <h3 className="event-type">{event.type}</h3>
-            <div className="place-time-price">
+            <h3 className="event-desc">{event.eventDescription}</h3>
+            <div className="musician-time-price">
                 <h2>
-                    {event.location}
+                    {event.musicianName}
                     <br></br>
-                    {event.date_time}
+                    {event.eventTime}
                     <br></br>
                     <br></br>
-                    ${event.ticket_price}
+                    ${event.ticketPrice}
                 </h2>
             </div>
             <EditButton />
             <div className="share-link">
-                <a href={`https://yadiyadiya.com/share?link=${event.id}`}>https://yadiyadiya.com/share?link={event.id}</a>
+                <a href={`http://localhost:5173/event/${event.eventId}`}>http://localhost:5173/event/{event.eventId}</a>
             </div>
         </div>
     </div>
