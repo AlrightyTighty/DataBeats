@@ -1,16 +1,29 @@
 import { useNavigate } from 'react-router'
+import { useState, useEffect } from 'react';
 import '../css/EventCard.css'
 
 export default function EventCard({event}) {
     const navigate = useNavigate();
+    
+    const [imgSrc, setImgSrc] = useState(null);
+    useEffect(() => {
+        if (event.eventPictureFileId) {
+            setImgSrc(`data:image/${event.imageFileExtension};base64,${event.imageBase64}`)
+        }
+    }, [event.eventPictureFileId]);
 
     return <button type="button" className="event" onClick={() => navigate(`/event/${event.eventId}`)}>
-        <h3>{event.title}</h3>
-        <p>
-            <b>Time: {event.eventTime}</b>
-            <br></br>
-            <br></br>
-            Admission: ${event.ticketPrice}
-        </p>
+        <div className="event-promo">
+            <img src={imgSrc} alt="event promo"/>
+        </div>
+        <div className="event-info">
+            <h3>{event.title}</h3>
+            <p>
+                <b>Time: {event.eventTime}</b>
+                <br></br>
+                <br></br>
+                Admission: ${event.ticketPrice}
+            </p>
+        </div>
     </button>
 }

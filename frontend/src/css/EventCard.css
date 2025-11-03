@@ -1,7 +1,9 @@
 .event {
     all: unset;                             /* resets element's properties to initial since none of those properties are inheritable, but since rules that appear later in the code override earlier rules (if both have the same specificity), the properties 'redefined' below override the initial given by unset */
+    display: block;
+    box-sizing: border-box;
     width: 75%;
-    height: auto;
+    height: 75%;
     border: 3px solid white;
     border-radius: 20px;
     overflow: auto;
@@ -9,6 +11,8 @@
     margin-bottom: 10%;
     margin-left: 10%;
     margin-right: 10%;
+    padding: 0;
+    padding-bottom: 3%;
 }
 
 .event:hover {
@@ -16,7 +20,26 @@
     cursor: pointer;
 }
 
-.event h3, p {
+.event-promo {
+    width: 100%;
+    height: 70%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    /* border: 3px dashed red; */
+}
+
+.event-promo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-info {
+    text-align: center;
+    /* border: 3px dashed orange; */
+}
+
+.event-info h3, .event-info p {
     margin-left: 5%;
     margin-right: 5%;
 }
