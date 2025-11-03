@@ -7,15 +7,16 @@ namespace backend.DTOs.Event
 {
     public class UpdateEventDto
     {
+        // values are nullable when updating
         public ulong MusicianId { get; set; }
-        public string Title { get; set; } = null!;
+        public string? Title { get; set; } = null!;
 
-        public string EventDescription { get; set; } = null!;
+        public string? EventDescription { get; set; } = null!;
 
-        public ulong EventPictureFileId { get; set; }
-        public DateTime EventTime { get; set; }
+        public ulong? EventPictureFileId { get; set; }
+        public DateTime? EventTime { get; set; }
 
-        public decimal TicketPrice { get; set; }
+        public decimal? TicketPrice { get; set; }
 
     }
 }

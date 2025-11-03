@@ -101,24 +101,39 @@ namespace backend.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] ulong id, [FromBody] UpdateEventDto updateDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var evt = await _context.Events.FirstOrDefaultAsync(x => x.EventId == id);
             if (evt == null)
                 return NotFound();
 
             // Keep current behavior: if a non-zero new picture id is provided, it must exist.
-            if (updateDto.EventPictureFileId != 0)
+            if (updateDto.EventPictureFileId.HasValue)
             {
                 var picExists = await _context.EventPictureFiles
                     .AnyAsync(p => p.EventPictureFileId == updateDto.EventPictureFileId);
                 if (!picExists)
                     return BadRequest("EventPictureFileId does not exist.");
+                evt.EventPictureFileId = updateDto.EventPictureFileId.Value;
             }
 
-            evt.Title = updateDto.Title;
-            evt.EventDescription = updateDto.EventDescription;
-            evt.EventPictureFileId = updateDto.EventPictureFileId;
-            evt.EventTime = updateDto.EventTime;
-            evt.TicketPrice = updateDto.TicketPrice;
+            if (updateDto.Title != null)
+            {
+                evt.Title = updateDto.Title;
+            }
+            if (updateDto.EventDescription != null)
+            {
+                evt.EventDescription = updateDto.EventDescription;
+            }
+            if (updateDto.EventTime != null)
+            {
+                evt.EventTime = updateDto.EventTime.Value;
+            }
+            if (updateDto.TicketPrice != null)
+            {
+                evt.TicketPrice = updateDto.TicketPrice.Value;
+            }
 
             await _context.SaveChangesAsync();
             await _context.Entry(evt).Reference(e => e.EventPictureFile).LoadAsync();

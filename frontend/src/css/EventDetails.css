@@ -44,6 +44,8 @@
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
+    display: flex;
+    justify-content: left;
     /* border: 3px dashed green; */
 }
 
@@ -60,7 +62,7 @@
 
 .event-desc {
     position: absolute;
-    top: 0;
+    top: 2vh;
     box-sizing: border-box;
     width: 100%;
     height: 15%;
@@ -68,17 +70,18 @@
     padding: 0;
     padding-left: 1vw;
     display: flex;
-    font-size: 3.25vh;
+    font-size: 2.75vh;
     align-items: center;
+    color: white;
     /* border: 3px dashed purple; */
 }
 
 .musician-time-price {
     position: absolute;
-    top: 15%;
+    top: 18%;
     box-sizing: border-box;
     width: 100%;
-    height: 75%;
+    height: 72.5%;
     margin: 0;
     padding: 0;
     padding-left: 1vw;
@@ -107,4 +110,191 @@ a {
 
 a:hover {
     color: cadetblue;
+}
+
+.modal-event {
+    position: relative;             /* needs to be relative since modal box is coming out of parent container and into doc body */
+    left: 12.5vw;
+    top: -70vh;
+    box-sizing: border-box;
+    width: 75vw;
+    height: 50vh;
+    margin: 0;
+    padding: 0;
+    padding-left: 1vw;
+    font-size: 3vh;
+    overflow: auto;
+    background-color: rgb(121, 121, 172);
+    border: 3px double white;
+    border-radius: 20px;
+}
+
+.modal-event .event-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed red; */
+}
+
+.modal-event .edit-title {
+    box-sizing: border-box;
+    width: 96%;
+    height: 8%;
+    position: absolute;
+    top: 8vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    overflow: auto;
+    resize: none;
+    font-size: 2vh;
+    color: white;
+    /* border: 3px dashed orange; */
+}
+
+.modal-event .event-promo {
+    position: absolute;
+    top: 13vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed red; */
+}
+
+.modal-event .image-upload {
+    box-sizing: border-box;
+    width: 100%;
+    height: 15%;
+    position: absolute;
+    top: 19vh;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    /* border: 3px dashed yellow; */
+}
+
+.modal-event .event-desc {
+    position: absolute;
+    top: 24.5vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed green; */
+}
+
+.modal-event .edit-description {
+    box-sizing: border-box;
+    width: 96%;
+    height: 17%;
+    position: absolute;
+    top: 32.5vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    overflow: auto;
+    resize: none;
+    font-size: 2vh;
+    color: white;
+    /* border: 3px dashed blue; */
+}
+
+.modal-event .event-time {
+    position: absolute;
+    top: 42vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed purple; */
+}
+
+.modal-event .edit-datetime {
+    box-sizing: border-box;
+    width: 96%;
+    height: 8%;
+    position: absolute;
+    top: 50vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    overflow: auto;
+    resize: none;
+    font-size: 2vh;
+    color: white;
+    /* border: 3px dashed pink; */
+}
+
+.modal-event .event-price {
+    position: absolute;
+    top: 55vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    font-size: 4.5vh;
+    color: white;
+    /* border: 3px dashed brown; */
+}
+
+.modal-event .edit-price {
+    box-sizing: border-box;
+    width: 96%;
+    height: 8%;
+    position: absolute;
+    top: 63vh;
+    left: 0;
+    margin: 0;
+    margin-left: 1vw;
+    padding: 0;
+    overflow: auto;
+    resize: none;
+    font-size: 2vh;
+    color: white;
+    /* border: 3px dashed maroon; */
+}
+
+.modal-event .save {
+    position: absolute;
+    top: 68vh;
+    right: 2vw;
+    background-color: rgb(87, 87, 124);
+    border: none;
+    border-radius: 20px;
+    font-size: 1.5vh;
+    color: white;
+}
+
+.modal-event .save:hover {
+    border: 3px solid white;
+}
+
+.modal-event .close {
+    position: absolute;
+    top: 1.5%;
+    right: 1%;
+    background-color: rgb(87, 87, 124);
+    border: none;
+    border-radius: 20px;
+    font-size: 1.5vh;
+    color: white;
+}
+
+.modal-event .close:hover {
+    border: 3px solid white;
 }

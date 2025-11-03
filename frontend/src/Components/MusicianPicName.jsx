@@ -52,7 +52,8 @@ export default function MusicianPicName({musician, api}) {
             const name_response = await fetch(api, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({musicianName: editName})
+                body: JSON.stringify({musicianName: editName}),
+                credentials: "include"
             });
             if (!name_response.ok) {
                 console.log("Error saving new name...");
@@ -71,7 +72,8 @@ export default function MusicianPicName({musician, api}) {
             const pic_response = await fetch("http://localhost:5062/api/images/profile-picture", {
                 method: "POST",
                 // never set the {"Content-Type": "multipart/form-data"} header manually for form data - let browser handle it for you since we can't add the boundary separator needed in Content-Type ourselves (browser generates and adds it to send Content-Type + boundary in header automatically)
-                body: formData
+                body: formData,
+                credentials: "include"
             });
             if (!pic_response.ok) {
                 console.log("Error uploading image file...");
@@ -83,10 +85,11 @@ export default function MusicianPicName({musician, api}) {
                 const link_response = await fetch(api, {
                     method: "PUT",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({profilePictureFileId: data.profilePictureFileId})
+                    body: JSON.stringify({profilePictureFileId: data.profilePictureFileId}),
+                    credentials: "include"
                 })
                 if (!link_response.ok) {
-                    console.log("Error linking upload to profile...")
+                    console.log("Error linking image upload to profile...")
                 }
                 else {
                     console.log("Profile picture updated!");
@@ -94,6 +97,11 @@ export default function MusicianPicName({musician, api}) {
                     setPic(data.profilePictureFileId);
                 }
             }
+        }
+
+        // no changes made
+        else {
+            console.log("Nothing to save!");
         }
     }
     
@@ -110,7 +118,7 @@ export default function MusicianPicName({musician, api}) {
         <h1>{name}</h1>            {/* element positioned last in html code is shown on top; want name (h1) to overlap above image */}
         <EditButton state={show} clickFunction={toggleModal} modal={
             <div className="modal-picname">
-                <h2 className="name-section">Name:</h2>
+                <h2 className="name-section">Name</h2>
                 <textarea
                     placeholder="What's your stage name?"
                     value={editName}

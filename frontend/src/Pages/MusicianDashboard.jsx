@@ -1,11 +1,11 @@
-import { useParams } from 'react-router'               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
-import { useState, useEffect } from 'react'            // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
-import '../css/MusicianDashboard.css'
-import Topnav from '../Components/Topnav'
-import AlbumCard from '../Components/AlbumCard'
-import EventCard from '../Components/EventCard'
-import MusicianPicName from '../Components/MusicianPicName'
-import Bio from '../Components/Bio'
+import { useParams } from 'react-router';               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
+import { useState, useEffect } from 'react';            // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
+import '../css/MusicianDashboard.css';
+import Topnav from '../Components/Topnav';
+import AlbumCard from '../Components/AlbumCard';
+import EventCard from '../Components/EventCard';
+import MusicianPicName from '../Components/MusicianPicName';
+import Bio from '../Components/Bio';
 
 // pull from db
 import stars from '../dummy-data-imgs/stars.jpg'
@@ -14,7 +14,7 @@ import mountain from '../dummy-data-imgs/mountain.jpg'
 
 export default function MusicianDashboard() {
     // get musician id from path params - useParams returns an object containing the dynamic route parameters
-    // if route /musician-dashboard/:id is matched by /musician-dashboard/17 then useParams() will return {id: '17'}
+    // if route /musician-dashboard/:id is matched by /musician-dashboard/17 then useParams() will return {id: '17'}, an object with all the route params as key-value pairs
     const musicianId = useParams();
 
     // api endpoint urls

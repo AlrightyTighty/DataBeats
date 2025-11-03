@@ -18,17 +18,23 @@ export default function Bio({musician, api}) {
 
     // function to save editBio state to original bio state and send back to db
     const save = async () => {
-        const response = await fetch(api, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({Bio: editBio})    // converts js value to json string, e.g. { x: 5, y: 6 } -> '{ "x": 5, "y": 6 }'
-        });
-        if (!response.ok) {                         // ok property contains bool stating whetehr response was successful - status in range 200-299
-            console.log("Error saving new bio...");
+        if (editBio != bio) {
+            const response = await fetch(api, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({Bio: editBio}),   // converts js value to json string, e.g. { x: 5, y: 6 } -> '{ "x": 5, "y": 6 }'
+                credentials: "include"
+            });
+            if (!response.ok) {                         // ok property contains bool stating whetehr response was successful - status in range 200-299
+                console.log("Error saving new bio...");
+            }
+            else {
+                console.log("New bio saved!");
+                setBio(editBio);
+            }
         }
         else {
-            console.log("New bio saved!");
-            setBio(editBio);
+            console.log("Nothing to save!");
         }
     };
 
