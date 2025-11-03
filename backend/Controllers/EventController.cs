@@ -55,6 +55,7 @@ namespace backend.Controllers
                 .Where(e => e.MusicianId == musicianId)             // filter to only get events where event's MusicianId == route musicianId
                 .Include(e => e.EventPictureFile)                   // load event's image info
                 .Include(e => e.Musician)                           // load event's musician host
+                .Where(e => e.TimestampDeleted == null)             // exclude deleted albums
                 .ToListAsync();                                     // execute query async; var events becomes a list of Event entities after (await) db operation completes
 
             // events list empty

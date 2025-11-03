@@ -48,6 +48,21 @@ namespace backend.Controllers
             return Ok(songs);
         }
 
+        [HttpGet("by-musician/{musicianId}")]
+        public async Task<IActionResult> GetByMusician([FromRoute] ulong musicianId)
+        {
+            var albums = await _context.Albums
+                .Where(album => album.MusicianWorksOnAlbums.Any(mwa => mwa.MusicianId == musicianId))
+                .Where(album => album.TimestampDeleted == null)
+                .ToListAsync();
+
+            if (!albums.Any())
+                return NotFound(new { message = "No albums found for this musician." });
+
+            var albumDtos = albums.Select(album => album.ToDTOWithImageData(album.AlbumOrSongArtFile?.FileData ?? Array.Empty<byte>()));
+            return Ok(albumDtos);
+        }
+
         [HttpPost("/admin/delete/album/{id}")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] string reason)

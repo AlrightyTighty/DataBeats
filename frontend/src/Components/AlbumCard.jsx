@@ -1,16 +1,35 @@
 import { useNavigate } from 'react-router'
 import '../css/AlbumCard.css'
+import { useState, useEffect } from 'react';
 
 function AlbumCard({album}) {
-    const navigate = useNavigate();         // useNavigate() function returns NavigateFunction which takes as param a string to describe the destination location
+    // useNavigate() function returns NavigateFunction which takes as param a string to describe the destination location
+    const navigate = useNavigate();
 
-    return <button type="button" className="album" onClick={() => navigate(`/createalbum/edit/:${album.id}`)}>
+    // store image source
+    const [imgSrc, setImgSrc] = useState(null);
+    useEffect(() => {
+        if (album.albumOrSongArtFileId) {
+            (async () => {
+                const response = await fetch(`http://localhost:5062/api/art/${album.albumOrSongArtFileId}`);
+                if (!response.ok) {
+                    console.log("Failed to load album art...");
+                }
+                else {
+                    const data = await response.json();
+                    setImgSrc(`data:image/${data.fileExtension};base64,${data.fileData}`);
+                }
+            })();
+        }
+    }), [album.albumOrSongArtFileId];
+
+    return <button type="button" className="album" onClick={() => navigate(`/album/${album.albumId}`)}>
         <div className="album-cover">
-            <img src={album.url} alt={album.title}/>
+            <img src={imgSrc} alt="album cover"/>
         </div>
         <div className="album-info">
-            <h3>{album.title}</h3>
-            <p>{album.release_date}</p>
+            <h3>{album.albumTitle}</h3>
+            <p>{album.releaseDate}</p>
         </div>
     </button>
 }

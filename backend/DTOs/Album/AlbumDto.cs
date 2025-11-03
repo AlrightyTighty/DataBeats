@@ -21,6 +21,8 @@ namespace backend.DTOs.Album
 
         public ArtistInfo[] Artists { get; set; } = null!;
 
+        public ulong AlbumOrSongArtFileId { get; set; }
+
         public byte[]? AlbumArtImage { get; set; }
     }
 

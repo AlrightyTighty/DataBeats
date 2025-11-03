@@ -7,11 +7,6 @@ import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName';
 import Bio from '../Components/Bio';
 
-// pull from db
-import stars from '../dummy-data-imgs/stars.jpg'
-import sun from '../dummy-data-imgs/sun.jpg'
-import mountain from '../dummy-data-imgs/mountain.jpg'
-
 export default function MusicianDashboard() {
     // get musician id from path params - useParams returns an object containing the dynamic route parameters
     // if route /musician-dashboard/:id is matched by /musician-dashboard/17 then useParams() will return {id: '17'}, an object with all the route params as key-value pairs
@@ -23,9 +18,6 @@ export default function MusicianDashboard() {
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
     const [musician, setMusician] = useState('');
-    // const [albums1, setAlbums1] = useState();
-    // const [events1, setEvents1] = useState();
-
     // useEffect allows you to synchronize component with external system - perform side effects like fetching data, directly updating the DOM, etc. in componenets
     // side effects run after the component has rendered and can be anything that affects something outside the scope of the current function
     // useEffect accepts two arguments, 2nd is opt - useEffect(function, dependency)
@@ -48,15 +40,23 @@ export default function MusicianDashboard() {
         })();
     }, []);                                                     // useEffect runs after every render by default; empty array [] as 2nd param (dependency) means it runs once after first render - i.e. run this effect only if the values in [] have changed since last render
     
-    // pull from db
-    const albums = [
-        {id: 1, title: "Stars", release_date: "2020", url: stars},
-        {id: 2, title: "Sun", release_date: "2021", url: sun},
-        {id: 3, title: "Mountain Mountain Mountain Mountain", release_date: "2022", url: mountain},
-    ];
+    // state to store array of albums by a musician
+    // albums is an array of Album object, each containing the albumId, albumTitle, albumArtImage, releaseDate, etc. of the album
+    const [albums, setAlbums] = useState([]);
+    useEffect(() => {
+        (async () => {
+            const response = await fetch(`http://localhost:5062/api/album/by-musician/${musicianId.id}`);
+            if (!response.ok) {
+                console.log("Error fetching artist's albums...");
+            }
+            else {
+                response.json().then(data => setAlbums(data));
+            }
+        })();
+    }, []);
 
     // state to store array of events hosted by a musician
-    // events is an array of Event objects, each containing the eventId, title, eventDescription, eventPictureFileId, eventTime, ticketPrice, musicianName, etc.
+    // events is an array of Event objects, each containing the eventId, title, eventDescription, eventPictureFileId, eventTime, ticketPrice, musicianName, etc. of the Event
     const [events, setEvents] = useState([]);
     useEffect(() => {
         (async () => {

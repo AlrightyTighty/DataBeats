@@ -19,6 +19,7 @@ namespace backend.Mappers
                 NumSongs = album.NumSongs,
                 Duration = album.Duration,
                 AlbumType = album.AlbumType,
+                AlbumOrSongArtFileId = album.AlbumOrSongArtFileId,
                 Artists = album.MusicianWorksOnAlbums
                                                     .Select(albumArtist => albumArtist.Musician)
                                                     .Select(musician => new ArtistInfo
