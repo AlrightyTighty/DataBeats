@@ -1,0 +1,14 @@
+*:has(.report-button) {
+  position: relative;
+}
+
+.report-button {
+    opacity: 0;
+    transition: 0.25s;
+    z-index: 10;
+}
+
+*:has(> .report-button):hover .report-button {
+    opacity: 1;
+    pointer-events: all;
+}
