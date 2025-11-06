@@ -120,6 +120,11 @@ app.UseWhen(context => (context.Request.Method == "POST" && !context.Request.Pat
 }
 );
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/playlistpage"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+});
+
 app.MapControllers();
 
 
