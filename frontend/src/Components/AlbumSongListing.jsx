@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import styles from "./AlbumSongListing.module.css";
+import ReportButton from "./ReportButton.jsx";
 
 export const AlbumSongListing = ({ number, name, artists, streams, id }) => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export const AlbumSongListing = ({ number, name, artists, streams, id }) => {
 
   return (
     <div onClick={() => navigate(`/Stream/${id}`)} className={styles.songItem}>
+      <ReportButton right="50px" contentId={id} reportType={"SONG"} />
       <div className={styles.songNumber}>{number}</div>
       <div className={styles.songName}>{name}</div>
       <div className={styles.songArtists}>{formatArtists(artists)}</div>

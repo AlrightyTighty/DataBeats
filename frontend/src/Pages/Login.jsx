@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Topnav from "../Components/Topnav";
 import { Link, useNavigate } from "react-router";
 import styles from "./Login.module.css";
@@ -14,6 +14,21 @@ const Login = () => {
 
   const usernameOrEmailRegex = /^.{1,100}$/;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,50}$/;
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(`${API}/api/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const info = await response.json();
+
+      if (info.adminId != null) navigate("/admin");
+      else if (info.musicianId != null) navigate("/musician-dashboard/" + info.musicianId);
+      else navigate("/dashboard");
+    })();
+  }, []);
 
   const onLogin = async (event) => {
     event.preventDefault();
