@@ -92,6 +92,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
+    public virtual DbSet<UserSavesPlaylist> UserSavesPlaylists { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
@@ -1047,7 +1049,7 @@ public partial class ApplicationDBContext : DbContext
 
             entity.Property(e => e.ProfilePictureFileId).HasColumnName("profile_picture_file_id");
             entity.Property(e => e.FileData)
-                .HasColumnType("blob")
+                .HasColumnType("mediumblob")
                 .HasColumnName("file_data");
             entity.Property(e => e.FileExtension)
                 .HasMaxLength(4)
@@ -1704,6 +1706,37 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("user_rates_song_ibfk_1");
+        });
+
+        modelBuilder.Entity<UserSavesPlaylist>(entity =>
+        {
+            entity.HasKey(e => e.UserSavesPlaylistId).HasName("PRIMARY");
+
+            entity.ToTable("user_saves_playlist");
+
+            entity.HasIndex(e => e.UserId, "user_saves_playlist_ibfk_!_idx");
+
+            entity.HasIndex(e => e.PlaylistId, "user_saves_playlist_ibfk_2_idx");
+
+            entity.HasIndex(e => e.UserSavesPlaylistId, "user_saves_playlist_id_UNIQUE").IsUnique();
+
+            entity.Property(e => e.UserSavesPlaylistId).HasColumnName("user_saves_playlist_id");
+            entity.Property(e => e.PlaylistId).HasColumnName("playlist_id");
+            entity.Property(e => e.TimeSaved)
+                .HasColumnType("datetime")
+                .HasColumnName("time_saved");
+            entity.Property(e => e.TimeUnsaved)
+                .HasColumnType("datetime")
+                .HasColumnName("time_unsaved");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Playlist).WithMany(p => p.UserSavesPlaylists)
+                .HasForeignKey(d => d.PlaylistId)
+                .HasConstraintName("user_saves_playlist_ibfk_2");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserSavesPlaylists)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("user_saves_playlist_ibfk_!");
         });
 
         OnModelCreatingPartial(modelBuilder);

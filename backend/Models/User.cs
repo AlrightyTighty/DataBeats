@@ -96,4 +96,6 @@ public partial class User
     public virtual ICollection<UserRatesSong> UserRatesSongDeletedByNavigations { get; set; } = new List<UserRatesSong>();
 
     public virtual ICollection<UserRatesSong> UserRatesSongUsers { get; set; } = new List<UserRatesSong>();
+
+    public virtual ICollection<UserSavesPlaylist> UserSavesPlaylists { get; set; } = new List<UserSavesPlaylist>();
 }

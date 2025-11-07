@@ -153,14 +153,21 @@ namespace backend.Controllers
                                                         .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
                                                         .ToArrayAsync();
 
-            UserPlaylistInformation[] collaboratorPlaylists = await _context.Playlists
+            /*UserPlaylistInformation[] collaboratorPlaylists = await _context.Playlists
                                                         .Include(playlist => playlist.UserIsCollaboratorOfPlaylists)
                                                         .Where(playlist => playlist.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId))
                                                         .Include(playList => playList.PlaylistPictureFile)
                                                         .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
+                                                        .ToArrayAsync();*/
+
+            UserPlaylistInformation[] savedPlaylists = await _context.Playlists
+                                                        .Include(playlist => playlist.UserSavesPlaylists)
+                                                        .Where(playlist => playlist.UserSavesPlaylists.Any(saver => saver.UserId == userId))
+                                                        .Include(playList => playList.PlaylistPictureFile)
+                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
                                                         .ToArrayAsync();
 
-            return Ok(new { OwnedPlaylists = userPlaylists, ContributorPlaylists = collaboratorPlaylists });
+            return Ok(new { OwnedPlaylists = userPlaylists, SavedPlaylists = savedPlaylists });
         }
     }
 

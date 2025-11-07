@@ -38,4 +38,6 @@ public partial class Playlist
     public virtual User User { get; set; } = null!;
 
     public virtual ICollection<UserIsCollaboratorOfPlaylist> UserIsCollaboratorOfPlaylists { get; set; } = new List<UserIsCollaboratorOfPlaylist>();
+
+    public virtual ICollection<UserSavesPlaylist> UserSavesPlaylists { get; set; } = new List<UserSavesPlaylist>();
 }
