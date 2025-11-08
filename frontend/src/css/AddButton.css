@@ -1,23 +1,23 @@
-.edit {
+.add-button {
     display: flex;
     width: min(2.0vw, 5.5vh);
     aspect-ratio: 1/1;
     position: absolute;
-    top: 1.5%;
+    top: 5%;
     right: 1%;
     margin: 0;
     padding: 0;
-    align-items: center;            /* vertical alignment */
-    justify-content: center;        /* horizontal alignment */
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    transform: scale(-1, 1);        /* mirror char w horizontal flip */
+    transform: scale(-1, 1);
     background-color: transparent;
     color: grey;
     border: 2px solid grey;
     border-radius: 50%;
 }
 
-.edit:hover {
+.add-button:hover {
     color: cadetblue;
     border-color: cadetblue;
     cursor: pointer;

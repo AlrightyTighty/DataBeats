@@ -12,7 +12,7 @@ export default function EventCard({event}) {
         }
     }, [event.eventPictureFileId]);
 
-    return <button type="button" className="event" onClick={() => navigate(`/event/${event.eventId}`)}>
+    return <button type="button" className="event" onClick={() => {navigate(`/event/${event.eventId}`)}}>
         <div className="event-promo">
             <img src={imgSrc} alt="event promo"/>
         </div>
