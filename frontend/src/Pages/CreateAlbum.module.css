@@ -1,209 +1,305 @@
+/* === Global Container === */
 #main {
-  margin-top: 140px;
-  padding: 20px 480px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+  color: #ffffff;
+  padding: 60px 40px;
+  margin: 100px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* === Album Info Section === */
 #album-info {
-  width: calc(100% - 40px);
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  width: 100%;
+  max-width: 1000px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 20px;
+  padding: 40px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* === Headings === */
+.h1, .h2 {
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
 }
 
 .h1 {
-  font-weight: normal;
+  font-size: 48px;
+  letter-spacing: -1px;
 }
 
 .h2 {
-  font-weight: normal;
+  font-size: 20px;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
+/* === Album Art Section === */
 #album-art-select {
   width: 100%;
   display: flex;
-  gap: 30px;
+  gap: 40px;
+  align-items: flex-start;
+  margin-top: 30px;
 }
 
 #album-art-image {
-  width: 200px;
-  height: 200px;
+  width: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
+/* === File Input === */
 #album-art-file-input {
   flex-grow: 1;
-  flex-shrink: 1;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  height: fit-content;
-  padding: 10px 10px;
-  border-radius: 15px;
   display: flex;
-  font-size: 16pt;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14pt;
+  color: #ccc;
+  transition: background 0.3s;
+}
+
+#album-art-file-input:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 #album-art-file-input::file-selector-button {
-  background-color: transparent;
-  border-width: 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14pt;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-#album-art-image {
-  border-radius: 20px;
-  border: dashed 2px rgba(255, 255, 255, 0.5);
+#album-art-file-input::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
+/* === Album Text Inputs === */
 .album-text-input {
-  width: 300px;
-  height: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 16px;
+  border-radius: 10px;
   font-size: 16pt;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
 }
 
+.album-text-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* === Artist IDs (Tags) === */
 .artist-ids {
-  margin: 10px 0;
-  width: 300px;
   display: flex;
-  flex-wrap: nowrap;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .artist-ids div {
-  min-width: 30px;
-  width: fit-content;
-  height: fit-content;
-  text-align: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #ccc;
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
 .artist-ids div:hover {
+  background: rgba(255, 80, 80, 0.2);
   text-decoration: line-through;
+  border-color: rgba(255, 80, 80, 0.4);
 }
 
+/* === Songs List Container === */
 #songs-list {
-  margin-top: 25px;
-  width: calc(100% - 40px);
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 20px;
-  height: 500px;
-  overflow-y: auto;
+  margin-top: 60px;
+  width: 100%;
+  max-width: 1000px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* === Songs List Header === */
+#songs-list-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+#songs-list-header button {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 16pt;
+  padding: 8px 20px;
+  transition: all 0.3s ease;
+}
+
+#songs-list-header button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* === Song Entry === */
+.songs-list-entry {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: background 0.3s;
+}
+
+.songs-list-entry:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.songs-list-entry h2 {
+  font-size: 18pt;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* === Song Inputs === */
+.song-text-input,
+.lyric-area,
+.song-file-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 14pt;
+  padding: 10px 14px;
+  transition: background 0.2s, border 0.2s;
+}
+
+.song-text-input:focus,
+.lyric-area:focus,
+.song-file-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lyric-area {
+  height: 150px;
+  resize: none;
+}
+
+.song-file-input::file-selector-button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.song-file-input::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* === Empty Songs Placeholder === */
 #no-song-info {
   width: 100%;
-  height: calc(100% - 40px);
+  height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #b0b0b0;
 }
 
 #no-song-info h1 {
+  font-size: 32px;
   margin: 0;
 }
 
 #no-song-info h2 {
-  margin: 10px;
+  margin: 10px 0;
+  color: #a0a0a0;
 }
 
 #no-song-info img {
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.8;
+  margin-top: 10px;
 }
 
-#songs-list-header {
-  width: 100%;
-  height: 40px;
-  display: flex;
-  justify-content: flex-end;
+/* === Responsive Layout === */
+@media (max-width: 1024px) {
+  #main {
+    padding: 40px 24px;
+  }
+
+  #album-art-select {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #album-art-image {
+    width: 240px;
+    height: 240px;
+  }
+
+  .h1 {
+    font-size: 36px;
+  }
+
+  #album-info,
+  #songs-list {
+    padding: 24px;
+  }
 }
 
-#songs-list-header button {
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: rgba(255, 255, 255, 0.1);
-  font-size: 20pt;
-  transition: 0.25s;
-}
+@media (max-width: 640px) {
+  #main {
+    padding: 24px 16px;
+  }
 
-#songs-list-header button:hover {
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: rgba(255, 255, 255, 0.3);
-  font-size: 20pt;
-}
+  #album-art-image {
+    width: 200px;
+    height: 200px;
+  }
 
-#songs-list-body {
-  width: 100%;
-  height: calc(100% - 80px);
-  padding: 20px 0px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+  .h1 {
+    font-size: 28px;
+  }
 
-.songs-list-entry {
-  width: calc(100% - 42px);
-  margin-bottom: 20px;
-  height: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.songs-list-entry h2 {
-  margin: 0;
-}
-
-.song-text-input {
-  width: calc(100% - 22px);
-  height: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  font-size: 16pt;
-}
-
-.lyric-area {
-  width: calc(100% - 22px);
-  height: 150px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  font-size: 16pt;
-  resize: none;
-}
-
-.song-file-input {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  height: fit-content;
-  padding: 10px 10px;
-  border-radius: 15px;
-  font-size: 16pt;
-  width: calc(100% - 22px);
-}
-
-.song-file-input::file-selector-button {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  height: fit-content;
-  padding: 5px 5px;
-  border-radius: 15px;
-  transition: 0.5s;
-}
-
-.song-file-input::file-selector-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  .album-text-input {
+    font-size: 14pt;
+  }
 }

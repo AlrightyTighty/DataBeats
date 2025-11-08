@@ -14,9 +14,11 @@ const CreateAlbum = () => {
   const [songArtistIds, setSongArtistIds] = useState([]);
   const [albumArtURL, setAlbumArtURL] = useState(null);
 
+  const [songArtists, setSongArtists] = useState([]);
+
   const onIdFieldChange = (event, ids, setIds) => {
     const id = event.target.value;
-
+    
     if (id[id.length - 1] == ",") {
       ids.push(id.replace(/\D/g, ""));
       setIds(ids.slice());
