@@ -183,7 +183,45 @@ namespace backend.Controllers
 
             return Ok(songDeletes.Concat(userDeletes).Concat(playlistDeletes).Concat(albumDeletes).Concat(ratingDeletes).Concat(musicianDeletes));
         }
+
+        [HttpGet]
+        [Route("generateReport")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GenerateReportAsync([FromQuery] string[]? genres, DateOnly? from, DateOnly? to, string[]? reportReasons, string[]? entityTypes, string? groupBy)
+        {
+            IQueryable<Complaint> complaintQuery = _context.Complaints;
+
+            if (to != null)
+                complaintQuery = complaintQuery.Where(complaint => complaint.TimeCreated.Date.CompareTo(to) <= 0);
+
+            if (from != null)
+                complaintQuery = complaintQuery.Where(complaint => complaint.TimeCreated.Date.CompareTo(to) >= 0);
+
+            if (entityTypes != null)
+                complaintQuery = complaintQuery.Where(complaint => entityTypes.Contains(complaint.ComplaintType));
+
+            if (reportReasons != null)
+                complaintQuery = complaintQuery.Where(complaint => reportReasons.Contains(complaint.ComplaintReason));
+            
+            if (reportReasons == null || reportReasons.Contains("USER"))
+            {
+                IQueryable<Complaint, User, Musician, MusicianWorksOnSong, Song> complaintByGenre
+                    = complaintQuery
+                        .Join(_context.Users, c => c.ComplaintTargetId, u => u.UserId, (c, u) => new { Complaint = c, u.MusicianId })
+                        .Join(_context.MusicianWorksOnSongs, cum => cum.MusicianId, sw => sw.MusicianWorksOnSongsId, (cum, sw) => new {cum.Complaint, SongId = sw.SongId})
+                        .Join(_context.Songs, c => c.SongId, s => s.SongId, )
+            }            
+            
+
+        }
+
+        [HttpGet]
+        [Route]
+
+
     }
+
+
 
     public class AdminStatPoint
     {
