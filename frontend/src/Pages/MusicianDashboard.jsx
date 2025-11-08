@@ -6,6 +6,7 @@ import AlbumCard from '../Components/AlbumCard';
 import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName';
 import Bio from '../Components/Bio';
+import AddButton from '../Components/AddButton';
 
 export default function MusicianDashboard() {
     // get musician id from path params - useParams returns an object containing the dynamic route parameters
@@ -85,6 +86,7 @@ export default function MusicianDashboard() {
             </div>
             <div className="albums-events">
                 <div className="albums">
+                    <AddButton route={'/createalbum'}/>
                     <div className="albums-section-title">
                         <h2>Albums</h2>
                     </div>
@@ -95,6 +97,7 @@ export default function MusicianDashboard() {
                     </div>
                 </div>
                 <div className="events">
+                    <AddButton route={'/createevent'}/>
                     <div className="events-section-title">
                         <h2>Events</h2>
                     </div>

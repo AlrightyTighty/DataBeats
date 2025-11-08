@@ -23,7 +23,7 @@ function AlbumCard({album}) {
         }
     }), [album.albumOrSongArtFileId];
 
-    return <button type="button" className="album" onClick={() => navigate(`/album/${album.albumId}`)}>
+    return <button type="button" className="album" onClick={() => {navigate(`/album/${album.albumId}`)}}>
         <div className="album-cover">
             <img src={imgSrc} alt="album cover"/>
         </div>

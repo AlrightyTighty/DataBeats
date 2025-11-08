@@ -134,6 +134,7 @@
     position: absolute;         /* position relative to nearest positioned ancestor, .albums-events */
     top: 0;
     left: 0;
+    /* border: 3px dashed rgb(47, 106, 143); */
 }
 
 .albums-section-title, .events-section-title {
@@ -147,6 +148,7 @@
     overflow: scroll;
     margin: 0;
     padding: 0;
+    /* border: 3px dashed olivedrab; */
 }
 
 .events {
@@ -155,4 +157,5 @@
     position: absolute;         /* position relative to nearest positioned ancestor, .albums-events */
     top: 0;
     left: 55%;
+    /* border: 3px dashed rgb(47, 106, 143); */
 }
