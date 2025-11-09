@@ -201,7 +201,7 @@ export default function EventDetails() {
                 <h2>
                     {event.musicianName}
                     <br></br>
-                    {event.eventTime}
+                    {(new Date(event.eventTime)).toLocaleString()}
                     <br></br>
                     <br></br>
                     ${event.ticketPrice}

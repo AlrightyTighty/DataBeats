@@ -30,7 +30,7 @@ function AlbumCard({album}) {
         </div>
         <div className="album-info">
             <h3>{album.albumTitle}</h3>
-            <p>{album.releaseDate}</p>
+            <p>Released {(new Date(album.releaseDate)).toLocaleString()}</p>
         </div>
     </button>
 }

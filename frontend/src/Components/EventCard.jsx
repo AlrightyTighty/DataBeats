@@ -19,7 +19,7 @@ export default function EventCard({event}) {
         <div className="event-info">
             <h3>{event.title}</h3>
             <p>
-                <b>Time: {event.eventTime}</b>
+                <b>Time: {(new Date(event.eventTime)).toLocaleString()}</b>
                 <br></br>
                 <br></br>
                 Admission: ${event.ticketPrice}
