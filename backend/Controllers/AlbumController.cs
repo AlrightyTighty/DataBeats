@@ -126,13 +126,16 @@ namespace backend.Controllers
             if (uploadingMusician == null)
                 return Unauthorized("User does not have an associated musician account.");
 
-            List<Musician> musicians = new List<Musician>();
-            foreach (ulong musicianId in albumInfo.MusicianIds)
-            {
-                Musician? musician = await _context.Musicians.FindAsync(musicianId);
-                if (musician == null)
-                    return NotFound("No musician exists with id " + musicianId);
+            Dictionary<string, Musician> musicianMap = new Dictionary<string, Musician>();
 
+            List<Musician> musicians = new List<Musician>();
+            foreach (string musicianName in albumInfo.MusicianNames)
+            {
+                Musician? musician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.MusicianName == musicianName);
+                if (musician == null)
+                    return NotFound("No musician exists with name " + musicianName);
+
+                musicianMap[musicianName] = musician;
                 musicians.Add(musician);
             }
 
@@ -159,17 +162,41 @@ namespace backend.Controllers
                     SongFileId = songDto.SongFileId,
                 };
 
-                ulong[] musicianIds = albumInfo.MusicianIdsPerSong[i];
+                string[] musicianNames = albumInfo.MusicianNamesPerSong[i];
 
-                foreach (ulong musicianId in musicianIds)
+                List<Musician> musiciansPerThisSong = new List<Musician>();
+
+                foreach (string musicianName in musicianNames)
+                {
+                    Musician? newMusician = musicianMap[musicianName] ?? await _context.Musicians.FirstOrDefaultAsync(m => m.MusicianName == musicianName);
+                    if (newMusician == null)
+                        return NotFound("No musician found with name " + musicianName);
+
+                    musicianMap[musicianName] = newMusician;
+                    musiciansPerThisSong.Add(newMusician);
+                }
+
+                foreach (Musician musician in musiciansPerThisSong)
                 {
                     MusicianWorksOnSong musicianWorksOnSong = new MusicianWorksOnSong
                     {
-                        MusicianId = musicianId,
+                        Musician = musician,
                         Song = newSong,
                         DateAdded = DateTime.Now
                     };
                     await _context.MusicianWorksOnSongs.AddAsync(musicianWorksOnSong);
+                }
+
+                foreach (string genre in albumInfo.GenresPerSong[i])
+                {
+                    SongGenre songGenre = new SongGenre
+                    {
+                        Song = newSong,
+                        Genre = genre,
+                        TimestampCreated = DateTime.Now,
+                        CreatedByNavigation = uploadingMusician,
+                    };
+                    await _context.SongGenres.AddAsync(songGenre);
                 }
 
                 songs.Add(newSong);

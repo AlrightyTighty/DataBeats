@@ -32,6 +32,8 @@ import Settings from "./Pages/Settings.jsx";
 import NewReleases from "./Pages/NewReleases.jsx";
 import Album from "./Pages/Album.jsx";
 import PlaylistPage from "./Pages/PlaylistPage.jsx";
+import GenerateReport from "./Pages/GenerateReport.jsx";
+import ReportResult from "./Pages/ReportResult.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -64,6 +66,8 @@ const router = createBrowserRouter([
   { path: "/dashboard", element: <Dashboard /> },
   { path: "/album/:id", element: <Album /> },
   { path: "/playlist/:id", element: <PlaylistPage /> },
+  { path: "/admin/generate-report", element: <GenerateReport /> },
+  { path: "/admin/report-result", element: <ReportResult /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

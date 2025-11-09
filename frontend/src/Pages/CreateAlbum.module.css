@@ -22,7 +22,8 @@
 }
 
 /* === Headings === */
-.h1, .h2 {
+.h1,
+.h2 {
   font-weight: 600;
   margin: 0;
   color: #ffffff;
@@ -302,4 +303,32 @@
   .album-text-input {
     font-size: 14pt;
   }
+}
+
+.submit-button {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+  color: #fff;
+  font-size: 16pt;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled,
+.submit-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+  pointer-events: none;
 }

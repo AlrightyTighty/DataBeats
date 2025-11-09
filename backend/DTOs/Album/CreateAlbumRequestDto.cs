@@ -12,11 +12,17 @@ namespace backend.DTOs.Album
 
         public ulong AlbumOrSongArtFileId { get; set; }
 
-        public ulong[] MusicianIds { get; set; } = null!;
+        public string[] MusicianNames { get; set; } = null!;
 
-        public ulong[][] MusicianIdsPerSong { get; set; } = null!;
+        public string[][] MusicianNamesPerSong { get; set; } = null!;
+
+        public ulong[]? MusicianIds { get; set; } = null!;
+
+        public ulong[][]? MusicianIdsPerSong { get; set; } = null!;
+
+        public string[][] GenresPerSong { get; set; } = null!;
 
         public List<CreateSongDto> Songs { get; set; } = null!;
-    
+
     }
 }

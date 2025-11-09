@@ -54,8 +54,6 @@ export default function Playlists() {
 
         <main className={styles.content}>
           <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
-
-          <PlaylistSection title="Collaborative Playlists" playlists={contributorPlaylists} />
           <button onClick={() => navigate("/createplaylist")}> New Playlist </button>
         </main>
       </div>

@@ -187,40 +187,126 @@ namespace backend.Controllers
         [HttpGet]
         [Route("generateReport")]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> GenerateReportAsync([FromQuery] string[]? genres, DateOnly? from, DateOnly? to, string[]? reportReasons, string[]? entityTypes, string? groupBy)
+        public async Task<IActionResult> GenerateReportAsync([FromQuery] DateTime? from, DateTime? until, int? minAlbumStreams, int? minGenreStreams, int minArtistStreams)
         {
-            IQueryable<Complaint> complaintQuery = _context.Complaints;
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            if (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId) == null)
+                return NotFound();
 
-            if (to != null)
-                complaintQuery = complaintQuery.Where(complaint => complaint.TimeCreated.Date.CompareTo(to) <= 0);
+            GenrePopularityReportData[] genres;
+            ArtistPopularityReportData[] artists;
+            AlbumPopularityReportData[] albums;
+
+            IQueryable<Song> songBaseQuery = _context.Songs.Where(song => song.TimestampDeleted == null);
+            IQueryable<Musician> artistsBaseQuery = _context.Musicians.Where(musician => musician.TimestampDeleted == null);
+            IQueryable<Album> albumsBaseQuery = _context.Albums.Where(album => album.TimestampDeleted == null);
 
             if (from != null)
-                complaintQuery = complaintQuery.Where(complaint => complaint.TimeCreated.Date.CompareTo(to) >= 0);
-
-            if (entityTypes != null)
-                complaintQuery = complaintQuery.Where(complaint => entityTypes.Contains(complaint.ComplaintType));
-
-            if (reportReasons != null)
-                complaintQuery = complaintQuery.Where(complaint => reportReasons.Contains(complaint.ComplaintReason));
-            
-            if (reportReasons == null || reportReasons.Contains("USER"))
             {
-                IQueryable<Complaint, User, Musician, MusicianWorksOnSong, Song> complaintByGenre
-                    = complaintQuery
-                        .Join(_context.Users, c => c.ComplaintTargetId, u => u.UserId, (c, u) => new { Complaint = c, u.MusicianId })
-                        .Join(_context.MusicianWorksOnSongs, cum => cum.MusicianId, sw => sw.MusicianWorksOnSongsId, (cum, sw) => new {cum.Complaint, SongId = sw.SongId})
-                        .Join(_context.Songs, c => c.SongId, s => s.SongId, )
-            }            
-            
+                songBaseQuery = songBaseQuery.Where(song => song.TimestampCreated.Date >= from);
+                albumsBaseQuery = albumsBaseQuery.Where(album => album.TimestampCreated.Date >= from);
+            }
 
+            if (until != null)
+            {
+                songBaseQuery = songBaseQuery.Where(song => song.TimestampCreated.Date <= until);
+                albumsBaseQuery = albumsBaseQuery.Where(album => album.TimestampCreated.Date <= until);
+            }
+
+            genres = await songBaseQuery
+                        .Join(_context.SongGenres, song => song.SongId, genre => genre.SongId, (song, genre) => new { genre.Genre, song.Streams })
+                        .GroupBy(genre => genre.Genre)
+                        .Select(group => new GenrePopularityReportData
+                        {
+                            GenreName = group.Key,
+                            Streams = group.Sum(genre => genre.Streams)
+                        })
+                        .Where(info => info.Streams >= minArtistStreams)
+                        .OrderByDescending(info => info.Streams)
+                        .Take(50)
+                        .ToArrayAsync();
+
+            artists = await artistsBaseQuery
+                        .Join(_context.MusicianWorksOnSongs, a => a.MusicianId, sa => sa.MusicianId, (a, sa) => new { a.MusicianName, a.MusicianId, sa.SongId })
+                        .Join(_context.Songs, a => a.SongId, s => s.SongId, (a, s) => new { a.MusicianId, a.MusicianName, s.SongId, s.Streams })
+                        .GroupJoin(
+                            _context.SongGenres,
+                            a => a.SongId,
+                            s => s.SongId,
+                            (a, genres) => new { a, genres }
+                        )
+                        .SelectMany(
+                            x => x.genres.DefaultIfEmpty(),
+                            (x, genre) => new { x.a.MusicianId, x.a.MusicianName, Genre = genre != null ? genre.Genre : null, x.a.Streams }
+                        )
+                        .GroupBy(x => new { x.MusicianId, x.MusicianName })
+                        .Select(g => new ArtistPopularityReportData
+                        {
+                            MusicianId = g.Key.MusicianId,
+                            MusicianName = g.Key.MusicianName,
+                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Streams = g.Sum(x => x.Streams)
+                        })
+                        .Where(info => info.Streams >= minArtistStreams)
+                        .OrderByDescending(info => info.Streams)
+                        .Take(50)
+                        .ToArrayAsync();
+
+            albums = await albumsBaseQuery
+                        .Join(_context.Songs, a => a.AlbumId, s => s.AlbumId, (a, s) => new { a.AlbumId, a.AlbumTitle, s.SongId, s.Streams })
+                        .GroupJoin(
+                            _context.SongGenres,
+                            a => a.SongId,
+                            g => g.SongId,
+                            (a, genres) => new { a, genres }
+                        )
+                        .SelectMany(
+                            x => x.genres.DefaultIfEmpty(),
+                            (x, genre) => new { x.a.AlbumId, x.a.AlbumTitle, x.a.Streams, Genre = genre != null ? genre.Genre : null, x.a.SongId }
+                        )
+                        .Join(_context.MusicianWorksOnAlbums, a => a.AlbumId, aa => aa.AlbumId, (a, aa) => new { a.AlbumId, a.AlbumTitle, a.Streams, a.Genre, a.SongId, aa.MusicianId })
+                        .Join(_context.Musicians, a => a.MusicianId, m => m.MusicianId, (a, m) => new { a.AlbumId, a.AlbumTitle, a.Streams, a.Genre, m.MusicianName })
+                        .GroupBy(x => new { x.AlbumId, x.AlbumTitle })
+                        .Select(g => new AlbumPopularityReportData
+                        {
+                            AlbumName = g.Key.AlbumTitle,
+                            AlbumId = g.Key.AlbumId,
+                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Artists = g.Select(x => x.MusicianName).Distinct().ToArray(),
+                            Streams = g.Sum(x => x.Streams)
+                        })
+                        .Where(info => info.Streams >= minArtistStreams)
+                        .OrderByDescending(info => info.Streams)
+                        .Take(50)
+                        .ToArrayAsync();
+
+
+            return Ok(new { GenreReport = genres, artistReport = artists, albumReport = albums });
         }
-
-        [HttpGet]
-        [Route]
-
-
     }
 
+    public class GenrePopularityReportData
+    {
+        public string GenreName { get; set; } = null!;
+        public int Streams { get; set; }
+    }
+
+    public class ArtistPopularityReportData
+    {
+        public string MusicianName { get; set; } = null!;
+        public ulong? MusicianId { get; set; }
+        public int Streams { get; set; }
+        public string[]? Genres { get; set; }
+    }
+
+    public class AlbumPopularityReportData
+    {
+        public string AlbumName { get; set; } = null!;
+        public ulong? AlbumId { get; set; }
+        public int Streams { get; set; }
+        public string[]? Genres { get; set; }
+        public string[] Artists { get; set; } = null!;
+    }
 
 
     public class AdminStatPoint
