@@ -13,57 +13,97 @@
 }
 
 .event-card {
-  background: #fff;
-  border-radius: 10px;
+  background: #ffffff;
+  border-radius: 16px;
   box-shadow: 0 1px 4px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04);
   overflow: hidden;
-  border: 1px solid #e6e6e6;
+  border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.event-card:hover,
+.event-card:focus-within {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.event-card:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .event-card .media {
-  width: 100%;
-  height: 140px;
-  overflow: hidden;
-  background: #ffffff;
+  padding: 12px 12px 0;       
+  background: transparent;
 }
 
 .event-card .media img {
   width: 100%;
-  height: 100%;
+  height: 160px;              /* fixed image height */
   object-fit: cover;
   display: block;
-}
+  border-radius: 12px;        /* rounded corners */
+  border: 1px solid #e5e7eb;  /* subtle gray border like the mock */
+  overflow: hidden;
+} 
 
-.event-card .body {
-  padding: 12px 14px;
+/* Content area under the image */
+.event-card-content {
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+/* Title + artist */
+.event-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .event-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  color: #000000;
+  color: #111827;
+}
+
+.event-card-divider {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  height: 1px;
+  background: rgba(199, 191, 191, 0.9); 
+}
+
+.event-artist {
+  font-size: 14px;
+  color: #292b2e;
+}
+
+/* Bottom row: date/time + price badge */
+.event-card-footer {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .event-meta {
-  color: #6b7280;
-  font-size: px;
+  font-size: 13px;
+  color: #28292c;
 }
 
-.event-price {
-  color: #111827;
+/* Price pill */
+.event-price-badge {
+  font-size: 13px;
   font-weight: 600;
-  margin-top: 6px;
-}
-
-.event-card-desc {
-  color: #374151;
-  font-size: 14px;
-  opacity: 0.9;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111827;
 }
 
 @media (min-width: 900px) {
