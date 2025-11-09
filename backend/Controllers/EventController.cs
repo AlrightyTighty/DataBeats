@@ -47,47 +47,56 @@ namespace backend.Controllers
             return Ok(evt.ToEventDto());
         }
 
-        // new HttpGet with given route template - route becomes /api/event/by-musician/{musicianId}
         [HttpGet("by-musician/{musicianId}")]
         public async Task<IActionResult> GetByMusician([FromRoute] ulong musicianId)
         {
-            var events = await _context.Events                      // access Events table in db using EF core DbContext
-                .Where(e => e.MusicianId == musicianId)             // filter to only get events where event's MusicianId == route musicianId
-                .Include(e => e.EventPictureFile)                   // load event's image info
-                .Include(e => e.Musician)                           // load event's musician host
-                .Where(e => e.TimestampDeleted == null)             // exclude deleted albums
-                .ToListAsync();                                     // execute query async; var events becomes a list of Event entities after (await) db operation completes
+            var events = await _context.Events                      
+                .Where(e => e.MusicianId == musicianId)           
+                .Include(e => e.EventPictureFile)                   
+                .Include(e => e.Musician)                          
+                .Where(e => e.TimestampDeleted == null)            
+                .ToListAsync();                                    
 
-            // events list empty
             if (!events.Any())
-                // return http status code 404 (not found) with json body { "message": "..." }
                 return NotFound(new { message = "No events found for this musician." });
 
-            // map each Event entity to an DTO (EventDto) using ToEventDto() method defined in EventMapper
             var eventDtos = events.Select(e => e.ToEventDto());
-            // return http status code 200 (ok) response with list of event DTOs serialized as JSON
             return Ok(eventDtos);
         }
 
         [HttpPost]
+        [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> Create([FromBody] CreateEventDto eventDto)
         {
-            // Musician must exist
-            var musicianExists = await _context.Musicians
-                .AnyAsync(m => m.MusicianId == eventDto.MusicianId);
-            if (!musicianExists)
-                return BadRequest("MusicianId does not exist.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+             if (!Request.Headers.TryGetValue("X-UserId", out var headerVals) ||
+                string.IsNullOrEmpty(headerVals.FirstOrDefault()) ||
+                !ulong.TryParse(headerVals.FirstOrDefault(), out var userId))
+            {
+                return Unauthorized("Missing or invalid X-UserId header.");
+            }
+
+    // Check that this user has a musician account
+            var musician = await _context.Musicians
+                .FirstOrDefaultAsync(m => m.UserId == userId);
+
+            if (musician == null)
+            {
+                return Unauthorized("User does not have an associated musician account.");
+            }
 
             if (eventDto.EventPictureFileId == 0)
                 return BadRequest("EventPictureFileId is required.");
 
-            // Picture must exist
             var picExists = await _context.EventPictureFiles
                 .AnyAsync(p => p.EventPictureFileId == eventDto.EventPictureFileId);
             if (!picExists)
                 return BadRequest("EventPictureFileId does not exist.");
 
             var evt = eventDto.ToEvent();
+            evt.MusicianId = musician.MusicianId;
             evt.TimestampCreated = DateTime.UtcNow;
 
             await _context.Events.AddAsync(evt);
@@ -97,6 +106,7 @@ namespace backend.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = evt.EventId }, evt.ToEventDto());
         }
+
 
         [HttpPut]
         [Route("{id}")]
@@ -109,7 +119,6 @@ namespace backend.Controllers
             if (evt == null)
                 return NotFound();
 
-            // Keep current behavior: if a non-zero new picture id is provided, it must exist.
             if (updateDto.EventPictureFileId.HasValue)
             {
                 var picExists = await _context.EventPictureFiles
