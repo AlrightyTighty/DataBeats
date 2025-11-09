@@ -94,7 +94,7 @@ export default function Events() {
                 <div style={{ color: '#374151', fontSize: 14 }}>{e.musicianName ?? e.MusicianName}</div>
                 <div className="event-meta">{new Date(e.eventTime).toLocaleString()}</div>
                 <div className="event-price">${Number(e.ticketPrice ?? 0).toFixed(2)}</div>
-                {e.eventDescription && <div className="event-desc">{e.eventDescription}</div>}
+                {e.eventDescription && <div className="event-card-desc">{e.eventDescription}</div>}
               </div>
             </div>
           );
