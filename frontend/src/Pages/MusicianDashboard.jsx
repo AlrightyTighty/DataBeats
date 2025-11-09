@@ -1,5 +1,6 @@
 import { useParams } from 'react-router';               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
 import { useState, useEffect } from 'react';            // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
+import API from '../lib/api.js';
 import '../css/MusicianDashboard.css';
 import Topnav from '../Components/Topnav';
 import AlbumCard from '../Components/AlbumCard';
@@ -14,7 +15,7 @@ export default function MusicianDashboard() {
     const musicianId = useParams();
 
     // api endpoint urls
-    const musicianURL = `http://localhost:5062/api/musician/${musicianId.id}`;      // access id from musicianId object returned by useParams() and append to api url
+    const musicianURL = `${API}/api/musician/${musicianId.id}`;      // access id from musicianId object returned by useParams() and append to api url
 
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
@@ -46,7 +47,7 @@ export default function MusicianDashboard() {
     const [albums, setAlbums] = useState([]);
     useEffect(() => {
         (async () => {
-            const response = await fetch(`http://localhost:5062/api/album/by-musician/${musicianId.id}`);
+            const response = await fetch(`${API}/api/album/by-musician/${musicianId.id}`);
             if (!response.ok) {
                 console.log("Error fetching artist's albums...");
             }
@@ -61,7 +62,7 @@ export default function MusicianDashboard() {
     const [events, setEvents] = useState([]);
     useEffect(() => {
         (async () => {
-            const response = await fetch(`http://localhost:5062/api/event/by-musician/${musicianId.id}`);
+            const response = await fetch(`${API}/api/event/by-musician/${musicianId.id}`);
             if (!response.ok) {
                 console.log("Error fetching artist's events...");
             }

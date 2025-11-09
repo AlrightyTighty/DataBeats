@@ -46,6 +46,7 @@
     white-space: nowrap;
     display: flex;
     justify-content: left;
+    color: grey;
     /* border: 3px dashed green; */
 }
 

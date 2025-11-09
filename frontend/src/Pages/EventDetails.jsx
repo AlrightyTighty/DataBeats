@@ -1,5 +1,6 @@
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
+import API from '../lib/api.js';
 import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton';
 import '../css/EventDetails.css';
@@ -10,7 +11,7 @@ export default function EventDetails() {
     const eventId = useParams().id;
 
     // api endpoint
-    const api = `http://localhost:5062/api/event/${eventId}`;
+    const api = `${API}/api/event/${eventId}`;
 
     // state to store event details
     const [event, setEvent] = useState('');
@@ -25,7 +26,7 @@ export default function EventDetails() {
                 setEvent(data);
             }
         })();
-    }, []);
+    }, [event]);
 
     // temporary states to hold edits made to event
     const [editTitle, setEditTitle] = useState('');
@@ -45,6 +46,8 @@ export default function EventDetails() {
 
     // function to save changes to db and event state
     const save = async () => {
+        const changed = false;
+        
         if (editTitle != event.title) {
             const response = await fetch(api, {
                 method: "PUT",
@@ -56,6 +59,7 @@ export default function EventDetails() {
                 console.log("Error updating event title...");
             }
             else {
+                changed = true;
                 console.log("Event title updated!")
                 setEvent(prev => ({
                     ...prev,                // fill in all values currently stored in event state
@@ -68,7 +72,7 @@ export default function EventDetails() {
             // upload new pic to event_picture_file table in db
             const formData = new FormData();
             formData.append("file", editPicFileId);         // editPicFileId state holds a File object
-            const pic_response = await fetch("http://localhost:5062/api/event/file", {
+            const pic_response = await fetch(`${API}/api/event/file`, {
                 method: "POST",
                 body: formData,
                 credentials: "include"
@@ -90,6 +94,7 @@ export default function EventDetails() {
                     console.log("Error linking image upload to event...");
                 }
                 else {
+                    changed = true;
                     console.log("Event banner updated!");
                     setEditPicFileId(data.eventPictureFileId);
 
@@ -119,6 +124,7 @@ export default function EventDetails() {
                 console.log("Error updating event description...");
             }
             else {
+                changed = true;
                 console.log("Event description updated!");
                 setEvent(prev => ({
                     ...prev,
@@ -138,6 +144,7 @@ export default function EventDetails() {
                 console.log("Error updating event date/time...");
             }
             else {
+                changed = true;
                 console.log("Event date/time updated!");
                 setEvent(prev => ({
                     ...prev,
@@ -157,6 +164,7 @@ export default function EventDetails() {
                 console.log("Error updating ticket price...")
             }
             else {
+                changed = true;
                 console.log("Ticket price updated!");
                 setEvent(prev => ({
                     ...prev,
@@ -165,7 +173,7 @@ export default function EventDetails() {
             }
         }
 
-        else {
+        if (!changed) {
             console.log("Nothing to save!");
         }
     }

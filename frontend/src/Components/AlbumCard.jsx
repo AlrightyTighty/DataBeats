@@ -1,6 +1,7 @@
-import { useNavigate } from 'react-router'
-import '../css/AlbumCard.css'
+import { useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
+import API from '../lib/api.js';
+import '../css/AlbumCard.css';
 
 function AlbumCard({album}) {
     // useNavigate() function returns NavigateFunction which takes as param a string to describe the destination location
@@ -11,7 +12,7 @@ function AlbumCard({album}) {
     useEffect(() => {
         if (album.albumOrSongArtFileId) {
             (async () => {
-                const response = await fetch(`http://localhost:5062/api/art/${album.albumOrSongArtFileId}`);
+                const response = await fetch(`${API}/api/art/${album.albumOrSongArtFileId}`);
                 if (!response.ok) {
                     console.log("Failed to load album art...");
                 }

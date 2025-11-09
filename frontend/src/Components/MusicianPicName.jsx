@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import API from '../lib/api.js'
 import '../css/MusicianPicName.css'
 import EditButton from './EditButton'
 
@@ -26,7 +27,7 @@ export default function MusicianPicName({musician, api}) {
         // prevent 400 bad request received from api call to pfp table (/api/images/profile-picture/null) by fetching image from db only after state pic (pfp file id) is valid and has been set from first useEffect that loads the musician
         if (pic) {
             (async () => {
-                const response = await fetch(`http://localhost:5062/api/images/profile-picture/${pic}`);
+                const response = await fetch(`${API}/api/images/profile-picture/${pic}`);
                 if (!response.ok) {
                     console.log("Failed to fetch image...");
                 }
@@ -47,6 +48,9 @@ export default function MusicianPicName({musician, api}) {
 
     // save new editName to musician instance in db and to state name, and/or post new editPic as record in pfp file table and link file id pk to musician record fk in db, and save new pfp file id to state pic
     const save = async () => {
+        // keep track of whether changes were made
+        const changed = false;
+
         // api call to save new editName to db as musicianName and to state 'name'
         if (editName != name) {
             const name_response = await fetch(api, {
@@ -59,6 +63,7 @@ export default function MusicianPicName({musician, api}) {
                 console.log("Error saving new name...");
             }
             else {
+                changed = true;
                 console.log("New name saved!");
                 setName(editName);
             }
@@ -69,7 +74,7 @@ export default function MusicianPicName({musician, api}) {
             // upload image to pfp file table
             const formData = new FormData();            // FormData allows you to capture data from html forms and contruct them into key-value pairs (form fields and their values) so they can easily be sent to a server asynchronously using fetch api; uses same format a form would use if encoding type were set to "multipart/form-data"
             formData.append("file", editPic);           // add new key-value pair to FormData obj with "file" as key (must match param name in controller) and editPic as its value - IMPORTANT: field name needs to match param in controller for model binding purposes, so we use "file"
-            const pic_response = await fetch("http://localhost:5062/api/images/profile-picture", {
+            const pic_response = await fetch(`${API}/api/images/profile-picture`, {
                 method: "POST",
                 // never set the {"Content-Type": "multipart/form-data"} header manually for form data - let browser handle it for you since we can't add the boundary separator needed in Content-Type ourselves (browser generates and adds it to send Content-Type + boundary in header automatically)
                 body: formData,
@@ -92,6 +97,7 @@ export default function MusicianPicName({musician, api}) {
                     console.log("Error linking image upload to profile...")
                 }
                 else {
+                    changed = true;
                     console.log("Profile picture updated!");
                     setEditPic(data.profilePictureFileId);
                     setPic(data.profilePictureFileId);
@@ -100,7 +106,7 @@ export default function MusicianPicName({musician, api}) {
         }
 
         // no changes made
-        else {
+        if (!changed) {
             console.log("Nothing to save!");
         }
     }
