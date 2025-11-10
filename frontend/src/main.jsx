@@ -69,7 +69,8 @@ const router = createBrowserRouter([
   { path: "/playlist/:id", element: <PlaylistPage /> },
   { path: "/admin/generate-report", element: <GenerateReport /> },
   { path: "/admin/report-result", element: <ReportResult /> },
-  { path: "*", element: <NotFound /> }
+  { path: "/page-not-found", element: <NotFound /> },
+  { path: "*", element: <NotFound /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

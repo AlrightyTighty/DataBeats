@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import API from '../lib/api.js';
 import Topnav from '../Components/Topnav';
@@ -14,20 +14,24 @@ export default function EventDetails() {
     // api endpoint
     const api = `${API}/api/event/${eventId}`;
 
+    // allow for rerouting if event does not exist
+    const navigate = useNavigate();
+
     // state to store event details
-    const [event, setEvent] = useState('');
+    const [event, setEvent] = useState({});
     useEffect(() => {
         (async () => {
             const response = await fetch(api);
             if (!response.ok) {
-                console.log("Error loading event details...");
+                console.log("Error loading event details... it may not exist or was deleted...");
+                navigate('/page-not-found');
             }
             else {
                 const data = await response.json();
                 setEvent(data);
             }
         })();
-    }, [event]);
+    }, [eventId]);
 
     // temporary states to hold edits made to event
     const [editTitle, setEditTitle] = useState('');
@@ -47,7 +51,7 @@ export default function EventDetails() {
 
     // function to save changes to db and event state
     const save = async () => {
-        const changed = false;
+        let changed = false;
         
         if (editTitle != event.title) {
             const response = await fetch(api, {

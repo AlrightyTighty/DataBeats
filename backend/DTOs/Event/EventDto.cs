@@ -22,5 +22,7 @@ namespace backend.DTOs.Event
         public string? ImageFileName { get; set; }
         public string? ImageFileExtension { get; set; }
 
+        public DateTime? TimestampDeleted { get; set; }
+
     }
 }

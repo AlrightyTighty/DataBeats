@@ -19,7 +19,7 @@ export default function MusicianDashboard() {
 
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
-    const [musician, setMusician] = useState('');
+    const [musician, setMusician] = useState({});
     // useEffect allows you to synchronize component with external system - perform side effects like fetching data, directly updating the DOM, etc. in componenets
     // side effects run after the component has rendered and can be anything that affects something outside the scope of the current function
     // useEffect accepts two arguments, 2nd is opt - useEffect(function, dependency)

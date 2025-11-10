@@ -1,7 +1,11 @@
 import API from '../lib/api.js';
+import { useNavigate } from 'react-router';
 import '../css/DeleteButton.css'
 
 export default function DeleteButton({strwhattodelete, api}) {
+
+    const navigate = useNavigate();
+
     const deletefn = async () => {
         const response = await fetch(api, {
             method: "DELETE",
@@ -12,6 +16,7 @@ export default function DeleteButton({strwhattodelete, api}) {
         }
         else {
             console.log(`${strwhattodelete.charAt(0).toUpperCase()}${strwhattodelete.slice(1)} deleted!`)
+            navigate('/page-not-found');
         }
     }
 
