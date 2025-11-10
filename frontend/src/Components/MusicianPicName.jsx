@@ -127,6 +127,7 @@ export default function MusicianPicName({musician, api}) {
                 <h2 className="name-section">Name</h2>
                 <textarea
                     placeholder="What's your stage name?"
+                    maxLength={50}
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                 />
@@ -141,7 +142,7 @@ export default function MusicianPicName({musician, api}) {
                 </div>
                 
                 <button type="button" className="save" onClick={save}>SAVE</button>
-                <button type="button" className="close" onClick={toggleModal}>CLOSE</button>
+                <button type="button" className="done" onClick={toggleModal}>DONE</button>
             </div>
         } />
     </div>

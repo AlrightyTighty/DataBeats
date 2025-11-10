@@ -71,11 +71,12 @@ export default function Bio({musician, api}) {
                 */}
                 <textarea
                     placeholder="Provide a brief bio so your listeners can get to know you!"
+                    maxLength={700}
                     value={editBio}
                     onChange={(e) => {setEditBio(e.target.value)}}
                 />
                 <button type="button" className="save" onClick={save}>SAVE</button>
-                <button type="button" className="close" onClick={toggleModal}>CLOSE</button>
+                <button type="button" className="done" onClick={toggleModal}>DONE</button>
             </div>
         } />
     </div>

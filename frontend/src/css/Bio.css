@@ -88,7 +88,7 @@
     border: 3px solid white;
 }
 
-.modal-bio .close {
+.modal-bio .done {
     position: absolute;
     top: 1.5%;
     right: 1%;
@@ -99,6 +99,6 @@
     color: white;
 }
 
-.modal-bio .close:hover {
+.modal-bio .done:hover {
     border: 3px solid white;
 }

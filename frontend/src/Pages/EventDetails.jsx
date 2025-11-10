@@ -173,7 +173,7 @@ export default function EventDetails() {
                 console.log("Ticket price updated!");
                 setEvent(prev => ({
                     ...prev,
-                    ticketPrice: editPrice
+                    ticketPrice: parseFloat(editPrice).toFixed(2)       // don't wait for backend, convert to float with two dec places from frontend on save
                 }));
             }
         }
@@ -217,6 +217,7 @@ export default function EventDetails() {
                     <h2 className="event-title">Event Title</h2>
                     <textarea className="edit-title"
                         placeholder="What's the event called?"
+                        maxLength={200}
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
                     />
@@ -229,6 +230,7 @@ export default function EventDetails() {
                     <h2 className="event-desc">Description</h2>
                     <textarea className="edit-description"
                         placeholder="Provide a brief description on the event..."
+                        maxLength={500}
                         value={editDesc}
                         onChange={(e) => setEditDesc(e.target.value)}
                     />
@@ -243,12 +245,13 @@ export default function EventDetails() {
                     <h2 className="event-price">Price</h2>
                     <textarea className="edit-price"
                         placeholder="Adjust the ticket price for this event..."
+                        maxLength={7}
                         value={editPrice}
                         onChange={(e) => setEditPrice(e.target.value)}
                     />
                     
                     <button type="button" className="save" onClick={save}>SAVE</button>
-                    <button type="button" className="close" onClick={toggleModal}>CLOSE</button>
+                    <button type="button" className="done" onClick={toggleModal}>DONE</button>
                 </div>
             }/>
             <div className="share-link">

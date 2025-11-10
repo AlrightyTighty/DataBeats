@@ -285,7 +285,7 @@ a:hover {
     border: 3px solid white;
 }
 
-.modal-event .close {
+.modal-event .done {
     position: absolute;
     top: 1.5%;
     right: 1%;
@@ -296,6 +296,6 @@ a:hover {
     color: white;
 }
 
-.modal-event .close:hover {
+.modal-event .done:hover {
     border: 3px solid white;
 }
