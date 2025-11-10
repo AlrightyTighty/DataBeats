@@ -1,0 +1,14 @@
+*:has(.context-menu-button) {
+  position: relative;
+}
+
+.context-menu-button {
+  opacity: 0;
+  transition: 0.25s;
+  z-index: 10;
+}
+
+*:has(> .context-menu-button):hover .context-menu-button {
+  opacity: 1;
+  pointer-events: all;
+}
