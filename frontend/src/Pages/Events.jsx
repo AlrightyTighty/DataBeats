@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
-import bed from "../assets/graphics/test_image_bed.jpg"; // fallback if no image available
+import { useLocation, useNavigate } from "react-router";
+import Topnav from "../Components/Topnav";
 import "./Events.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
@@ -11,6 +11,7 @@ export default function Events() {
   const [err, setErr] = useState(null);
   const [msg, setMsg] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -29,18 +30,19 @@ export default function Events() {
     })();
   }, []);
 
-  // If redirected here right after creating, show a banner and optimistically prepend
   useEffect(() => {
     const created = location.state?.justCreated;
     if (created) {
       setMsg("Event created ✅");
       setEvents(prev => [created, ...prev]);
-      // clear state so refresh doesn't repeat banner
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
   return (
+    <>
+      <Topnav />
+
     <div className="events-page">
       <h1>Events</h1>
 
@@ -77,29 +79,66 @@ export default function Events() {
 
       <div className="events-grid">
         {events.map(e => {
-          // Prefer inline base64 from your API, else use view endpoint, else local fallback
           const inlineImg = e.imageBase64
             ? `data:image/${e.imageFileExtension || "jpeg"};base64,${e.imageBase64}`
             : null;
           const viewUrl = e.eventPictureFileId ? `${API}/api/event/file/view/${e.eventPictureFileId}` : null;
           const imgSrc = inlineImg || viewUrl || bed;
+  //added pathway to /events/id
+  return (
+<div
+  key={e.eventId}
+  className="event-card"
+  onClick={() => navigate(`/event/${e.eventId}`)}
+  tabIndex={0}
+  onKeyDown={(ev) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      navigate(`/event/${e.eventId}`);
+    }
+  }}
+>
+  <div className="media">
+    <div className="media-inner">
+      <img src={imgSrc} alt={e.title} loading="lazy" />
+    </div>
+  </div>
 
-          return (
-            <div key={e.eventId} className="event-card">
-              <div className="media">
-                <img src={imgSrc} alt={e.title} loading="lazy" />
-              </div>
-              <div className="body">
-                <div className="event-title">{e.title}</div>
-                <div style={{ color: '#374151', fontSize: 14 }}>{e.musicianName ?? e.MusicianName}</div>
-                <div className="event-meta">{new Date(e.eventTime).toLocaleString()}</div>
-                <div className="event-price">${Number(e.ticketPrice ?? 0).toFixed(2)}</div>
-                {e.eventDescription && <div className="event-card-desc">{e.eventDescription}</div>}
-              </div>
-            </div>
-          );
+  <div className="event-card-content">
+    <div className="event-card-header">
+      <div className="event-title">{e.title}</div>
+      <div className="event-artist">
+        {e.musicianName ?? e.MusicianName}
+      </div>
+    </div>
+
+    <div className="event-card-divider" /> {}
+
+    <div className="event-card-footer">
+      <span className="event-meta">
+        {new Date(e.eventTime).toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })}{" "}
+        <br />
+        {" "}
+        {new Date(e.eventTime).toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </span>
+      <span className="event-price-badge">
+        ${Number(e.ticketPrice ?? 0).toFixed(2)}
+      </span>
+    </div>
+  </div>
+</div>
+    );
+
         })}
       </div>
     </div>
+    </>
   );
 }

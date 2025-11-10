@@ -1,0 +1,238 @@
+/* === Global Container === */
+#main {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+  color: #ffffff;
+  padding: 60px 40px;
+  margin: 100px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === Event Info Section (glass card, same as album-info) === */
+#event-info {
+  width: 100%;
+  max-width: 1000px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* === Headings === */
+.h1,
+.h2 {
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.h1 {
+  font-size: 48px;
+  letter-spacing: -1px;
+}
+
+.h2 {
+  font-size: 20px;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* === Event Art Section === */
+#event-art-select {
+  width: 100%;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin-top: 30px;
+}
+
+#event-art-image {
+  width: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* === File Input === */
+#event-art-file-input {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14pt;
+  color: #ccc;
+  transition: background 0.3s;
+}
+
+#event-art-file-input:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#event-art-file-input::file-selector-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14pt;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#event-art-file-input::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* === Event Text Inputs === */
+.eventTextInput {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16pt;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
+}
+
+.eventTextInput:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* === Description Textarea === */
+.eventTextarea {
+  width: 95%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 14pt;
+  padding: 10px 14px;
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* === IDs row === */
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* === Messages === */
+.msg {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.err {
+  background: rgba(255, 0, 0, 0.08);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.12);
+}
+
+.ok {
+  background: rgba(0, 255, 0, 0.04);
+  color: #7ee787;
+  border: 1px solid rgba(0, 255, 0, 0.06);
+}
+
+/* === Submit Button (same style as album) === */
+.submitRow {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.submitButton {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.03)
+  );
+  color: #fff;
+  font-size: 16pt;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+  pointer-events: none;
+}
+
+/* === Responsive tweaks (optional, like album) === */
+@media (max-width: 1024px) {
+  #main {
+    padding: 40px 24px;
+  }
+
+  #event-art-select {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #event-art-image {
+    width: 240px;
+    height: 240px;
+  }
+
+  .h1 {
+    font-size: 36px;
+  }
+
+  #event-info {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  #main {
+    padding: 24px 16px;
+  }
+
+  #event-art-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .h1 {
+    font-size: 28px;
+  }
+
+  .eventTextInput {
+    font-size: 14pt;
+  }
+}
