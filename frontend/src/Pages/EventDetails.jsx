@@ -183,10 +183,10 @@ export default function EventDetails() {
         }
     }
     
-    // state for opening/closing modal
-    const [show, setShow] = useState(false);
-    const toggleModal = () => {
-        setShow(!show);
+    // state for opening/closing editing modal
+    const [showEdit, setShowEdit] = useState(false);
+    const toggleEditModal = () => {
+        setShowEdit(!showEdit);
         setEditTitle(event.title);
         setEditDesc(event.eventDescription);
         setEditPicFileId(event.eventPictureFileId);
@@ -194,7 +194,13 @@ export default function EventDetails() {
         setEditPrice(event.ticketPrice);
     }
 
-    return <div className="event-details" onClick={() => {if (show) toggleModal()}}>
+    // state for opening/closing delete modal
+    const [showDelete, setShowDelete] = useState(false);
+    const toggleDeleteModal = () => {
+        setShowDelete(!showDelete);
+    }
+
+    return <div className="event-details" onClick={() => {if (showEdit) toggleEditModal(); if (showDelete) toggleDeleteModal()}}>
         <Topnav />
         <div className="banner">
             <img src={imgSrc} alt="concert promo" />
@@ -212,7 +218,7 @@ export default function EventDetails() {
                     ${event.ticketPrice}
                 </h2>
             </div>
-            <EditButton state={show} clickFunction={toggleModal} modal={
+            <EditButton state={showEdit} clickFunction={toggleEditModal} modal={
                 <div className="modal-event">
                     <h2 className="event-title">Event Title</h2>
                     <textarea className="edit-title"
@@ -251,13 +257,13 @@ export default function EventDetails() {
                     />
                     
                     <button type="button" className="save" onClick={save}>SAVE</button>
-                    <button type="button" className="done" onClick={toggleModal}>DONE</button>
+                    <button type="button" className="done" onClick={toggleEditModal}>DONE</button>
                 </div>
             }/>
             <div className="share-link">
                 <a href={`http://localhost:5173/event/${event.eventId}`}>http://localhost:5173/event/{event.eventId}</a>
             </div>
         </div>
-        <DeleteButton strwhattodelete='event' api={api}/>
+        <DeleteButton strwhattodelete='event' api={api} state={showDelete} clickFunction={toggleDeleteModal}/>
     </div>
 }
