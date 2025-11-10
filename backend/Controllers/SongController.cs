@@ -20,6 +20,34 @@ namespace backend.Controllers
             _context = context;
         }
 
+
+        [HttpGet("list")]
+        public async Task<IActionResult> List([FromQuery] string? q = null, [FromQuery] int? limit = null)
+        {
+            int take = Math.Clamp(limit ?? 50, 1, 200);
+
+            var songsQuery = _context.Songs
+                .Include(s => s.Album)
+                    .ThenInclude(a => a.AlbumOrSongArtFile)
+                .Include(s => s.MusicianWorksOnSongs)
+                    .ThenInclude(mws => mws.Musician)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var qLower = q.Trim().ToLower();
+                songsQuery = songsQuery.Where(s => EF.Functions.Like(s.SongName.ToLower(), $"%{qLower}%"));
+            }
+
+            var items = await songsQuery
+                .OrderBy(s => s.SongName)
+                .Take(take)
+                .Select(s => s.ToSongDTOForStreaming(s.Album.AlbumOrSongArtFileId, s.Album.AlbumTitle))
+                .ToArrayAsync();
+
+            return Ok(items);
+        }
+
         [HttpGet("{song_id}")]
         public async Task<IActionResult> GetSongById([FromRoute] ulong song_id)
         {

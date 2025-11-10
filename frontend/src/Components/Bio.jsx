@@ -18,7 +18,7 @@ export default function Bio({musician, api}) {
 
     // function to save editBio state to original bio state and send back to db
     const save = async () => {
-        const changed = false;
+        let changed = false;
 
         if (editBio != bio) {
             const response = await fetch(api, {

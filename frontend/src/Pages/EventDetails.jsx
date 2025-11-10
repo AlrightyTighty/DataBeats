@@ -46,7 +46,7 @@ export default function EventDetails() {
 
     // function to save changes to db and event state
     const save = async () => {
-        const changed = false;
+        let changed = false;
         
         if (editTitle != event.title) {
             const response = await fetch(api, {

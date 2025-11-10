@@ -38,3 +38,14 @@ export async function removeSongFromPlaylist(playlistId, songId) {
   if (!res.ok) throw new Error(normalizeErr(await jsonOrText(res)));
   return res.json();
 }
+
+export async function addCollaboratorToPlaylist(playlistId, username) {
+  const res = await fetch(`${API}/api/playlistpage/${playlistId}/collaborators`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username }),
+  });
+  if (!res.ok) throw new Error(normalizeErr(await jsonOrText(res)));
+  return res.json();
+}

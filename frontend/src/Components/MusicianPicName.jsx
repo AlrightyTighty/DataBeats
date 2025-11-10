@@ -49,7 +49,7 @@ export default function MusicianPicName({musician, api}) {
     // save new editName to musician instance in db and to state name, and/or post new editPic as record in pfp file table and link file id pk to musician record fk in db, and save new pfp file id to state pic
     const save = async () => {
         // keep track of whether changes were made
-        const changed = false;
+        let changed = false;
 
         // api call to save new editName to db as musicianName and to state 'name'
         if (editName != name) {

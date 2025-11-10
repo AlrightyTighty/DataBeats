@@ -22,26 +22,19 @@ namespace backend.Controllers
             _context = context;
         }
 
-        // Resolve authenticated user id WITHOUT changing middleware:
-        // - Prefer Claims or HttpContext.Items populated by your middleware
-        // - Else, fall back to cookie session lookup in DB
-        // - Dev-only: allow X-UserId header in DEBUG
         private async Task<ulong?> ResolveUserIdAsync()
         {
-            // 1) Claims (middleware)
             var claimVal = User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ulong.TryParse(claimVal, out var fromClaims))
                 return fromClaims;
 
-            // 2) HttpContext.Items (middleware)
             if (HttpContext.Items.TryGetValue("UserId", out var itemVal) &&
                 ulong.TryParse(itemVal?.ToString(), out var fromItems))
                 return fromItems;
 
-            // 3) Cookie session lookup (DB) — adjust property names if yours differ
-            if (Request.Cookies.TryGetValue("session-id", out var token) && !string.IsNullOrWhiteSpace(token))
+            if (Request.Cookies.TryGetValue("session-id", out var token) &&
+                !string.IsNullOrWhiteSpace(token))
             {
-                // Minimal assumptions: Session has SessionId (string) and UserId (ulong)
                 var session = await _context.Sessions
                     .FirstOrDefaultAsync(s => s.SessionId == token);
 
@@ -50,11 +43,11 @@ namespace backend.Controllers
             }
 
 #if DEBUG
-            // 4) Dev convenience header
             if (Request.Headers.TryGetValue("X-UserId", out var hdr) &&
                 ulong.TryParse(hdr, out var fromHdr))
                 return fromHdr;
 #endif
+
             return null;
         }
 
@@ -66,11 +59,11 @@ namespace backend.Controllers
             if (access.Equals("private", StringComparison.OrdinalIgnoreCase))
             {
                 if (playlist.UserId == userId.Value) return true;
-                if ((playlist.UserIsCollaboratorOfPlaylists?.Any(c => c.UserId == userId.Value) ?? false)) return true;
+                if (playlist.UserIsCollaboratorOfPlaylists?.Any(c => c.UserId == userId.Value) ?? false)
+                    return true;
                 return false;
             }
 
-            // Public: any authenticated user
             return true;
         }
 
@@ -91,8 +84,15 @@ namespace backend.Controllers
 
             var playlist = await _context.Playlists
                 .Include(p => p.PlaylistEntries)
-                    .ThenInclude(pe => pe.Song) // only Song; no Artist/Album assumptions
+                    .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.Album)
+                            .ThenInclude(a => a.AlbumOrSongArtFile)
+                .Include(p => p.PlaylistEntries)
+                    .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.MusicianWorksOnSongs)
+                            .ThenInclude(mws => mws.Musician)
                 .Include(p => p.UserIsCollaboratorOfPlaylists)
+                .Include(p => p.User) // load owner
                 .FirstOrDefaultAsync(p => p.PlaylistId == id && p.TimestampDeleted == null);
 
             if (playlist == null)
@@ -101,11 +101,17 @@ namespace backend.Controllers
             if (!CanRead(playlist, userId))
                 return StatusCode(403, "You do not have access to this playlist.");
 
-            var dto = playlist.ToPlaylistPageDto(userId);
+            var ownerName = await _context.Users
+                .Where(u => u.UserId == playlist.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync();
+            var dto = playlist.ToPlaylistPageDto(userId, ownerName);
             return Ok(dto);
+
         }
 
-        // POST /api/playlistpage/{id}/songs   body: { "songId": <ulong> }
+
+        // POST /api/playlistpage/{id}/songs
         [HttpPost("{id}/songs")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> AddSong([FromRoute] ulong id, [FromBody] AddSongToPlaylistDto body)
@@ -136,19 +142,30 @@ namespace backend.Controllers
             };
 
             _context.PlaylistEntries.Add(entry);
-
-            // Optional: update simple aggregate if it's an int (not nullable)
             playlist.NumOfSongs = Math.Max(0, playlist.NumOfSongs + 1);
 
             await _context.SaveChangesAsync();
 
-            var reloaded = await _context.Playlists
-                .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
-                    .ThenInclude(pe => pe.Song)
-                .Include(p => p.UserIsCollaboratorOfPlaylists)
-                .FirstAsync(p => p.PlaylistId == id);
+                var reloaded = await _context.Playlists
+                    .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                        .ThenInclude(pe => pe.Song)
+                            .ThenInclude(s => s.Album)
+                                .ThenInclude(a => a.AlbumOrSongArtFile)
+                    .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                        .ThenInclude(pe => pe.Song)
+                            .ThenInclude(s => s.MusicianWorksOnSongs)
+                                .ThenInclude(mws => mws.Musician)
+                    .Include(p => p.UserIsCollaboratorOfPlaylists)
+                    .Include(p => p.User) // load owner
+                    .FirstAsync(p => p.PlaylistId == id);
 
-            return Ok(reloaded.ToPlaylistPageDto(userId));
+            // Explicitly load the User if not already loaded
+            var ownerName = await _context.Users
+                .Where(u => u.UserId == playlist.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync();
+    
+            return Ok(reloaded.ToPlaylistPageDto(userId, ownerName));
         }
 
         // DELETE /api/playlistpage/{id}/songs/{songId}
@@ -177,19 +194,81 @@ namespace backend.Controllers
 
             entry.TimeRemoved = DateTime.UtcNow;
             entry.RemovedBy = userId.Value;
-
-            // Optional: adjust aggregate
             playlist.NumOfSongs = Math.Max(0, playlist.NumOfSongs - 1);
 
+            await _context.SaveChangesAsync();
+
+                var reloaded = await _context.Playlists
+                    .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                        .ThenInclude(pe => pe.Song)
+                            .ThenInclude(s => s.Album)
+                                .ThenInclude(a => a.AlbumOrSongArtFile)
+                    .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                        .ThenInclude(pe => pe.Song)
+                            .ThenInclude(s => s.MusicianWorksOnSongs)
+                                .ThenInclude(mws => mws.Musician)
+                    .Include(p => p.UserIsCollaboratorOfPlaylists)
+                    .Include(p => p.User) 
+                    .FirstAsync(p => p.PlaylistId == id);
+
+            var ownerName = await _context.Users
+                .Where(u => u.UserId == playlist.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync();
+            var dto = playlist.ToPlaylistPageDto(userId, ownerName);
+            return Ok(dto);
+
+        }
+
+        // POST /api/playlistpage/{id}/collaborators
+        [HttpPost("{id}/collaborators")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> AddCollaborator([FromRoute] ulong id, [FromBody] backend.DTOs.PlaylistPage.AddCollaboratorDto body)
+        {
+            var userId = await ResolveUserIdAsync();
+            if (!userId.HasValue) return Unauthorized("Authentication required.");
+            if (body == null || string.IsNullOrWhiteSpace(body.Username)) return BadRequest("Username is required.");
+
+            var playlist = await _context.Playlists
+                .Include(p => p.UserIsCollaboratorOfPlaylists)
+                .FirstOrDefaultAsync(p => p.PlaylistId == id && p.TimestampDeleted == null);
+            if (playlist == null) return NotFound(new { error = "Playlist not found." });
+            if (playlist.UserId != userId.Value) return StatusCode(403, "Only the owner can add collaborators.");
+
+            var targetUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == body.Username);
+            if (targetUser == null) return NotFound(new { error = "User not found." });
+            if (targetUser.UserId == playlist.UserId) return BadRequest("Owner is already implicit collaborator.");
+            if (playlist.UserIsCollaboratorOfPlaylists.Any(c => c.UserId == targetUser.UserId && c.TimeRemoved == null))
+                return BadRequest("User already a collaborator.");
+
+            var collab = new UserIsCollaboratorOfPlaylist
+            {
+                PlaylistId = playlist.PlaylistId,
+                UserId = targetUser.UserId,
+                TimeAdded = DateTime.UtcNow
+            };
+            _context.UserIsCollaboratorOfPlaylists.Add(collab);
             await _context.SaveChangesAsync();
 
             var reloaded = await _context.Playlists
                 .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
                     .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.Album)
+                            .ThenInclude(a => a.AlbumOrSongArtFile)
+                .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                    .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.MusicianWorksOnSongs)
+                            .ThenInclude(mws => mws.Musician)
                 .Include(p => p.UserIsCollaboratorOfPlaylists)
+                .Include(p => p.User)
                 .FirstAsync(p => p.PlaylistId == id);
 
-            return Ok(reloaded.ToPlaylistPageDto(userId));
+            var ownerName = await _context.Users
+                .Where(u => u.UserId == playlist.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync();
+            return Ok(reloaded.ToPlaylistPageDto(userId, ownerName));
         }
     }
 }

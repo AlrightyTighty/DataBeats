@@ -18,14 +18,22 @@ namespace backend.Controllers
             _context = context;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("view/{id}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id)
         {
-            PlaylistPictureFile? profilePictureFile = await _context.PlaylistPictureFiles.FindAsync(id);
-            if (profilePictureFile == null)
+            var file = await _context.PlaylistPictureFiles.FindAsync(id);
+            if (file == null)
                 return NotFound();
+            var contentType = file.FileExtension.ToLower() switch
+            {
+                "png" => "image/png",
+                "jpg" or "jpeg" => "image/jpeg",
+                "gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
+            return File(file.FileData, contentType);
 
-            return Ok(profilePictureFile);
+    
 
         }
 
@@ -51,7 +59,9 @@ namespace backend.Controllers
 
                     _context.PlaylistPictureFiles.Add(newPlaylistPictureFile);
                     await _context.SaveChangesAsync();
-                    return CreatedAtAction("GetById", new { id = newPlaylistPictureFile.PlaylistPictureFileId }, newPlaylistPictureFile);
+                    return Ok(new { PlaylistPictureFileId = newPlaylistPictureFile.PlaylistPictureFileId, file});
+
+
                 }
             }
 
