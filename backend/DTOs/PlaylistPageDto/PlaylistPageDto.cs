@@ -8,14 +8,18 @@ namespace backend.DTOs.PlaylistPage
         public ulong PlaylistId { get; set; }
         public string PlaylistName { get; set; } = "";
         public string? PlaylistDescription { get; set; }
-        public string Access { get; set; } = "private"; // "private" | "public"
-        public ulong UserId { get; set; }               // owner user id
+        public string Access { get; set; } = "private";
+        public ulong UserId { get; set; }
+
+        public string? OwnerDisplayName { get; set; }  
+
+        public ulong? PlaylistPictureFileId { get; set; }
 
         // viewer context
         public bool IsOwner { get; set; }
         public bool IsCollaborator { get; set; }
 
-        public int NumOfSongs { get; set; }          
+        public int NumOfSongs { get; set; }
         public List<PlaylistSongDto> Songs { get; set; } = new();
         public List<CollaboratorDto> Collaborators { get; set; } = new();
     }
@@ -26,6 +30,8 @@ namespace backend.DTOs.PlaylistPage
         public string Title { get; set; } = "";
         public string? ArtistName { get; set; }
         public string? AlbumName { get; set; }
+        public ulong? AlbumArtFileId { get; set; }
+        public string? Duration { get; set; }
         public DateTime TimeAddedUtc { get; set; }
         public ulong? PlaylistEntryId { get; set; }
     }
@@ -39,5 +45,10 @@ namespace backend.DTOs.PlaylistPage
     public class AddSongToPlaylistDto
     {
         public ulong SongId { get; set; }
+    }
+
+    public class AddCollaboratorDto
+    {
+        public string Username { get; set; } = string.Empty;
     }
 }

@@ -16,7 +16,6 @@ export default function CreateEvent() {
   const [eventTime, setEventTime] = useState("");
   const [price, setPrice] = useState("");
 
-  // image selection & upload
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [eventPictureFileId, setEventPictureFileId] = useState("");
@@ -34,9 +33,8 @@ export default function CreateEvent() {
     setErr(null);
     setPreview(URL.createObjectURL(f));
 
-    // auto-upload like CreateAlbum / CreatePlaylist
     uploadImage(f).catch(() => {
-      // error is already stored in state
+
     });
   }
 
@@ -57,7 +55,7 @@ export default function CreateEvent() {
 
       const res = await fetch(`${API}/api/event/file`, {
         method: "POST",
-        credentials: "include", // use session cookie; X-UserId is added server-side
+        credentials: "include", 
         body: fd,
       });
 
@@ -95,7 +93,6 @@ export default function CreateEvent() {
     }
   }
 
-  // simple checks to enable/disable submit
   const titleOk = title.trim().length > 0;
   const descOk = desc.trim().length > 0;
   const timeOk = eventTime.trim().length > 0;
@@ -118,7 +115,6 @@ export default function CreateEvent() {
 
       const iso = new Date(eventTime).toISOString();
 
-      // NOTE: no musicianId or userId here – backend gets it from session/X-UserId
       const payload = {
         title: title.trim(),
         eventDescription: desc.trim(),
@@ -129,7 +125,7 @@ export default function CreateEvent() {
 
       const res = await fetch(`${API}/api/event`, {
         method: "POST",
-        credentials: "include", // so AuthenticationHandler can see the session
+        credentials: "include", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -143,16 +139,6 @@ export default function CreateEvent() {
 
       setMsg("Event created ✅");
 
-      // optional: clear form
-      // setTitle("");
-      // setDesc("");
-      // setEventTime("");
-      // setPrice("");
-      // setEventPictureFileId("");
-      // setFile(null);
-      // setPreview(null);
-
-      // optional later: navigate('/events');
     } catch (e) {
       setErr(e.message || String(e));
     } finally {

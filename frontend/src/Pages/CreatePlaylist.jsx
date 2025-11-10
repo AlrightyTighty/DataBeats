@@ -15,6 +15,9 @@ const CreatePlaylist = () => {
   });
 
   const [playlistArtURL, setPlaylistArtURL] = useState(null);
+  const [uploadError, setUploadError] = useState("");
+  const [createError, setCreateError] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const onIdFieldChange = (event, ids, setIds) => {
     const id = event.target.value;
@@ -30,20 +33,32 @@ const CreatePlaylist = () => {
   };
 
   const uploadPlaylistArt = async (event) => {
+    setUploadError("");
     const file = event.target.files[0];
-    const formData = new FormData();
-    formData.set("file", file);
+    if (!file) return;
 
-    const response = await fetch(`${API}/api/playlist/picture`, {
-      method: "POST",
-      body: formData,
-      credentials: "include",
-    });
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
 
-    const responseJson = await response.json();
-    console.log(responseJson);
-
-    playlistInfo.current.playlistArtFileId = responseJson.playlistPictureFileId;
+      const response = await fetch(`${API}/api/playlist/picture`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const txt = await response.text();
+        throw new Error(txt || `Upload failed (${response.status})`);
+      }
+      const responseJson = await response.json();
+      const picId = responseJson.playlistPictureFileId ?? responseJson.PlaylistPictureFileId;
+      playlistInfo.current.playlistArtFileId = picId;
+      if (picId) {
+        setPlaylistArtURL(`${API}/api/playlist/picture/view/${picId}`);
+      }
+    } catch (err) {
+      setUploadError(err.message);
+    }
   };
 
   const changePlaylistArtPicture = (event) => {
@@ -51,30 +66,38 @@ const CreatePlaylist = () => {
   };
 
   const uploadPlaylist = async () => {
-    const createPlaylistInfo = playlistInfo.current;
-    createPlaylistInfo.creatorIds = playlistCreatorIDs;
-
-    console.log({
-      PlaylistName: createPlaylistInfo.playlistTitle,
-      PlaylistPictureId: createPlaylistInfo.playlistArtFileId,
-      PlaylistDescription: createPlaylistInfo.playlistDescription,
-      Access: "private",
-    });
-
-    const response = await fetch(`${API}/api/playlist`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({
-        PlaylistName: createPlaylistInfo.playlistTitle,
-        PlaylistPictureId: createPlaylistInfo.playlistArtFileId,
-        PlaylistDescription: createPlaylistInfo.playlistDescription,
-        Access: "private",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response.json());
+  setCreateError("");
+    if (creating) return;
+    const info = playlistInfo.current;
+    if (!info.playlistTitle.trim()) {
+      setCreateError("Playlist title is required.");
+      return;
+    }
+    setCreating(true);
+    try {
+      const response = await fetch(`${API}/api/playlist`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({
+          PlaylistName: info.playlistTitle,
+          PlaylistPictureId: info.playlistArtFileId || 0,
+          PlaylistDescription: info.playlistDescription,
+          Access: "private",
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        const txt = await response.text();
+        throw new Error(txt || `Create failed (${response.status})`);
+      }
+  
+    } catch (err) {
+      setCreateError(err.message);
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -94,15 +117,17 @@ const CreatePlaylist = () => {
           </h1>
           <h3>Playlist Art</h3>
           <div id={styles["playlist-art-select"]}>
-            <img id={styles["playlist-art-image"]} src={playlistArtURL ?? playlistArtPlaceholder} />
+            <img id={styles["playlist-art-image"]} src={playlistArtURL ?? playlistArtPlaceholder} alt="Playlist art preview" />
             <input
               type="file"
+              accept="image/png"
               id={styles["playlist-art-file-input"]}
               onChange={async (event) => {
-                uploadPlaylistArt(event);
                 changePlaylistArtPicture(event);
+                await uploadPlaylistArt(event);
               }}
             />
+            {uploadError && <div className={styles.error}>{uploadError}</div>}
           </div>
 
           <h3>Playlist Title</h3>
@@ -112,7 +137,9 @@ const CreatePlaylist = () => {
           <textarea className={styles["lyric-area"]} onChange={(event) => editPlaylistInfo("playlistDescription", event)} />
         </div>
 
-        <button onClick={uploadPlaylist}>Submit</button>
+        <button onClick={uploadPlaylist}>
+          Submit
+        </button>
       </main>
     </>
   );
