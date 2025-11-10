@@ -194,7 +194,7 @@ export default function EventDetails() {
         setEditPrice(event.ticketPrice);
     }
 
-    return <div className="event-details">
+    return <div className="event-details" onClick={() => {if (show) toggleModal()}}>
         <Topnav />
         <div className="banner">
             <img src={imgSrc} alt="concert promo" />
