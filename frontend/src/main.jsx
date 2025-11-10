@@ -34,6 +34,7 @@ import Album from "./Pages/Album.jsx";
 import PlaylistPage from "./Pages/PlaylistPage.jsx";
 import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
+import NotFound from "./Pages/NotFound.jsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -68,6 +69,8 @@ const router = createBrowserRouter([
   { path: "/playlist/:id", element: <PlaylistPage /> },
   { path: "/admin/generate-report", element: <GenerateReport /> },
   { path: "/admin/report-result", element: <ReportResult /> },
+  { path: "/page-not-found", element: <NotFound /> },
+  { path: "*", element: <NotFound /> },
 ]);
 
 createRoot(document.getElementById("root")).render(

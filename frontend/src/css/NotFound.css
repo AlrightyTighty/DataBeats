@@ -1,0 +1,21 @@
+.not-found {
+    width: 100vw;
+    position: absolute;
+    top: 25%;
+}
+
+.not-found h2 {
+    width: 100vw;
+    top: 60%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.not-found img {
+    width: 10vw;
+    position: absolute;
+    right: 1vw;
+    top: 45vh;
+}

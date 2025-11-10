@@ -11,7 +11,7 @@ const Topnav = () => {
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
         <img className={styles["app-logo"]} src={appLogo} />
-        <Link className={styles["link"]} to="/dashboard">
+        <Link className={styles["link"]} to="/authtest">
           Dashboard
         </Link>
         <Link className={styles["link"]} to="/account">

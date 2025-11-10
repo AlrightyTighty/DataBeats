@@ -1,8 +1,9 @@
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import API from '../lib/api.js';
 import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton';
+import DeleteButton from '../Components/DeleteButton';
 import '../css/EventDetails.css';
 
 export default function EventDetails() {
@@ -13,20 +14,24 @@ export default function EventDetails() {
     // api endpoint
     const api = `${API}/api/event/${eventId}`;
 
+    // allow for rerouting if event does not exist
+    const navigate = useNavigate();
+
     // state to store event details
-    const [event, setEvent] = useState('');
+    const [event, setEvent] = useState({});
     useEffect(() => {
         (async () => {
             const response = await fetch(api);
             if (!response.ok) {
-                console.log("Error loading event details...");
+                console.log("Error loading event details... it may not exist or was deleted...");
+                navigate('/page-not-found');
             }
             else {
                 const data = await response.json();
                 setEvent(data);
             }
         })();
-    }, [event]);
+    }, [eventId]);
 
     // temporary states to hold edits made to event
     const [editTitle, setEditTitle] = useState('');
@@ -201,7 +206,7 @@ export default function EventDetails() {
                 <h2>
                     {event.musicianName}
                     <br></br>
-                    {event.eventTime}
+                    {(new Date(event.eventTime)).toLocaleString()}
                     <br></br>
                     <br></br>
                     ${event.ticketPrice}
@@ -250,5 +255,6 @@ export default function EventDetails() {
                 <a href={`http://localhost:5173/event/${event.eventId}`}>http://localhost:5173/event/{event.eventId}</a>
             </div>
         </div>
+        <DeleteButton strwhattodelete='event' api={api}/>
     </div>
 }
