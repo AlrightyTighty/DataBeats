@@ -28,6 +28,7 @@ namespace backend.Controllers
             var events = await _context.Events
                 .Include(e => e.EventPictureFile)
                 .Include(e => e.Musician)
+                .Where(e => e.TimestampDeleted == null)
                 .ToListAsync();
             var eventDtos = events.Select(s => s.ToEventDto());
             return Ok(eventDtos);
@@ -39,6 +40,7 @@ namespace backend.Controllers
             var evt = await _context.Events
                 .Include(e => e.EventPictureFile)
                 .Include(e => e.Musician)
+                .Where(e => e.TimestampDeleted == null)
                 .FirstOrDefaultAsync(e => e.EventId == id);
 
             if (evt == null)

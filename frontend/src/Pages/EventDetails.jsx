@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import API from '../lib/api.js';
 import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton';
+import DeleteButton from '../Components/DeleteButton';
 import '../css/EventDetails.css';
 
 export default function EventDetails() {
@@ -250,5 +251,6 @@ export default function EventDetails() {
                 <a href={`http://localhost:5173/event/${event.eventId}`}>http://localhost:5173/event/{event.eventId}</a>
             </div>
         </div>
+        <DeleteButton strwhattodelete='event' api={api}/>
     </div>
 }
