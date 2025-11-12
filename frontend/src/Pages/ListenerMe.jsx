@@ -1,118 +1,70 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ListenerProfile.module.css";
 import API from "../lib/api.js";
 
+import useMe from "../Components/UseMe.js";
+import ProfileHeaderMe from "../Components/Profile/ProfileHeaderMe.jsx";
+import ProfileContent from "../Components/Profile/ProfileContent.jsx";
+
 export default function ListenerMe() {
-  const navigate = useNavigate();
-  const [me, setMe] = useState(null);
+  const { me, loading: authLoading } = useMe();
   const [topSongs, setTopSongs] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+
+  function onShareMe() {
+    const url = `${window.location.origin}/user/${me?.userId ?? ""}`;
+    navigator.share?.({ title: "My Profile", url }) || navigator.clipboard?.writeText(url);
+  }
 
   useEffect(() => {
+    if (authLoading || !me) return;
+
     (async () => {
+      //Top songs (limit 5)
       try {
-        const r = await fetch(`${API}/api/me`, { credentials: "include" });
-        if (!r.ok) {
-          navigate("/login");
-          return;
-        }
-        const user = await r.json();
-        setMe(user);
+        const ts = await fetch(`${API}/api/song/top/${me.userId}`, { credentials: "include" });
+        const data = ts.ok ? await ts.json() : [];
+        const normalized = (Array.isArray(data) ? data : []).map((s) => ({
+          songId: s.songId ?? s.SongId ?? s.id,
+          title:   s.songName ?? s.SongName ?? s.title ?? "Unknown",
+          artistName: s.artistName ?? s.ArtistName ?? "",
+          duration: s.duration ?? s.Duration ?? "",
+        }));
+        setTopSongs(normalized.slice(0, 5));
+      } catch {}
 
-        //top songs 
-        try {
-          const ts = await fetch(`${API}/api/song/top/${user.userId}`, {
-            credentials: "include",
-          });
-          if (ts.ok) {
-            const data = await ts.json();
-            const normalized = (Array.isArray(data) ? data : []).map((s) => ({
-              songId: s.songId ?? s.SongId ?? s.id,
-              songName: s.songName ?? s.SongName ?? s.title ?? "Unknown",
-              duration: s.duration ?? s.Duration ?? "",
-            }));
-            setTopSongs(normalized.slice(0, 5));
-          }
-        } catch {
-        }
-      } catch {
-        navigate("/login");
-      }
+      //playlists
+      try {
+        const pl = await fetch(`${API}/api/playlist/me`, { credentials: "include" });
+        const payload = pl.ok ? await pl.json() : {};
+        const owned  = payload.ownedPlaylists ?? payload.OwnedPlaylists ?? [];
+        const contrib= payload.contributorPlaylists ?? payload.ContributorPlaylists ?? [];
+        const flat = [...owned, ...contrib].map((p) => ({
+          playlistId: p.playlistId ?? p.PlaylistId ?? p.id,
+          name:       p.playlistName ?? p.PlaylistName ?? p.title ?? "Playlist",
+          image:      p.playlistImage ?? p.playlistImageBase64 ?? null,
+        }));
+        setPlaylists(flat.slice(0, 5));
+      } catch {}
     })();
-  }, [navigate]);
-
-  const goStream = (id) => navigate(`/stream/${id}`);
+  }, [authLoading, me]);
 
   return (
     <>
       <Topnav />
       <div className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.left}>
-            <div className={styles.avatar} />
-            <div>
-              <h1>{me?.username || "My Profile"}</h1>
-              <p>{me?.email || "-"}</p>
-
-              <div className={styles.actions}>
-                <Link to="/settings" className={styles.btn}>
-                  Edit Settings
-                </Link>
-                <Link
-                  to={me ? `/followers/${me.userId}` : "#"}
-                  className={styles.btnSec}
-                >
-                  Followers
-                </Link>
-                <Link
-                  to={me ? `/following/${me.userId}` : "#"}
-                  className={styles.btnSec}
-                >
-                  Following
-                </Link>
-              </div>
-            </div>
+        {/*Profile header*/}
+        <section className={styles.header}>
+          <div className={styles.headerInner}>
+            <ProfileHeaderMe me={me} />
           </div>
+        </section>
 
-          <div className={styles.right}>
-            <div className={styles.card}>
-              <h2>Top Songs</h2>
-              {(topSongs.length ? topSongs : [1, 2, 3, 4, 5].map((i) => ({
-                songId: i,
-                songName: `Song ${i}`,
-                duration: "",
-              }))).map((s) => (
-                <div key={s.songId} className={styles.songRow}>
-                  <span>{s.songName}</span>
-                  <button onClick={() => goStream(s.songId)}>▶</button>
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.card}>
-              <h2>Quick Links</h2>
-              <div className={styles.pills}>
-                <Link to="/new">New Releases</Link>
-                <Link to="/playlists">Playlists</Link>
-                <Link to="/events">Events</Link>
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <h2>Explore</h2>
-              <div className={styles.pills}>
-                {/* taskbar destinations */}
-                <Link to="/new">New</Link>
-                <Link to="/playlists">Playlist</Link>
-                <Link to={me ? `/following/${me.userId}` : "#"}>Artist</Link>
-                <Link to="/playlists">Album</Link>
-                <Link to="/events">Event</Link>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        {/*Bio + Top 5 Songs + Playlists*/}
+        <section className={styles.content}>
+          <ProfileContent user={me} topSongs={topSongs} playlists={playlists} />
+        </section>
       </div>
     </>
   );

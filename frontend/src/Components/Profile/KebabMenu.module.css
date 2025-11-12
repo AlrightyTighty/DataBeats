@@ -1,0 +1,89 @@
+.wrap {
+  position: relative;
+  display: inline-block;
+}
+
+/*Icon button*/
+.trigger {
+  display: grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.trigger:hover {
+  background-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+.icon {
+  width: 20px !important;
+  height: 20px !important;
+  object-fit: contain !important;
+  opacity: 0.9 !important;
+  pointer-events: none;
+}
+
+/*Dropdown frame*/
+.menu {
+  position: absolute !important;
+  right: 0 !important;
+  margin-top: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+
+  padding: 12px 10px !important;
+  width: fit-content !important;
+  height: fit-content !important;
+
+  background: rgba(49, 82, 197, 0.34) !important; 
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+
+  z-index: 9999 !important;
+  box-sizing: border-box !important;
+}
+
+.btn {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  padding: 10px 11px !important;
+  gap: 5px !important;
+
+  width: fit-content !important;
+  white-space: nowrap !important;
+
+  background: rgba(41, 58, 163, 0.64) !important;
+  border-radius: 20px !important;
+  border: none !important;
+  cursor: pointer !important;
+
+  color: #FFFFFF !important;
+  font-family: 'Instrument Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+  line-height: 29px !important;
+
+  transition: background-color 0.2s ease !important;
+}
+
+.btn:hover {
+  background-color: #AAB1DC !important; /*hover color*/
+}
+
+.btn:focus-visible,
+.trigger:focus-visible {
+  outline: 2px solid #AAB1DC !important;
+  outline-offset: 2px !important;
+}

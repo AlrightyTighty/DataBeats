@@ -1,0 +1,212 @@
+.frame {
+  position: absolute;
+  width: 1300px;
+  height: 968px;
+  left: 73px;
+  top: 490px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 39px;
+}
+
+/*Bio and top songs*/
+.bioAndSongs {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  width: 1300px;
+  height: 559px;
+}
+
+/*Bio*/
+.bioBox {
+  width: 420px;
+  height: 559px;
+  background: rgba(151, 71, 255, 0.38);
+  border-radius: 25px;
+  position: relative;
+  color: #fff;
+  padding: 18px 26px;
+  box-sizing: border-box;
+}
+
+.bioTitle {
+  font-family: "Instrument Sans";
+  font-weight: 400;
+  font-size: 34px;
+  margin-bottom: 20px;
+}
+
+.bioText {
+  font-family: "Instrument Sans";
+  font-size: 26.65px;
+  line-height: 33px;
+  white-space: pre-wrap;
+}
+
+/*Top Songs*/
+.songBox {
+  width: 857px;
+  height: 515px;
+  background: rgba(151, 71, 255, 0.38);
+  border-radius: 25px;
+  padding: 22px 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+  color: #fff;
+}
+
+.songHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.songTitle {
+  font-family: "Instrument Sans";
+  font-weight: 400;
+  font-size: 34px;
+}
+
+.songList {
+  width: 802px;
+  height: 411px;
+  background: rgba(121, 212, 247, 0.29);
+  border-radius: 14.5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 35px;
+}
+
+.songRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 650px;
+  height: 62px;
+  padding: 14px 12px;
+  background: rgba(141, 151, 230, 0.69);
+  border-radius: 17.5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.songRow:hover {
+  background: #8d97e6;
+}
+
+.songName,
+.songArtist,
+.songDuration {
+  font-family: "Instrument Sans";
+  font-weight: 400;
+  font-size: 28px;
+  color: #fff;
+}
+
+.empty {
+  opacity: 0.7;
+  font-size: 20px;
+}
+
+/*Playlist section*/
+.playlistBox {
+  width: 1300px;
+  height: 408px;
+  background: rgba(115, 7, 255, 0.5);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 25px;
+  box-sizing: border-box;
+}
+
+.playlistHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.playlistTitle {
+  font-family: "Instrument Sans";
+  font-size: 34px;
+  color: #fff;
+}
+
+.viewAll {
+  font-family: "Instrument Sans";
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewAll:hover {
+  text-decoration: underline;
+}
+
+.playlistGrid {
+  display: flex;
+  gap: 22px;
+}
+
+.playlistCard {
+  position: relative;
+  width: 250px;
+  height: 325px;
+  border-radius: 20px;
+  background: rgba(12, 91, 136, 0.3);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.playlistCard:hover {
+  background: rgba(12, 91, 136, 0.45);
+}
+
+.albumPic {
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  top: 15px;
+  bottom: 83px;
+  background: #4d1c1c;
+  border-radius: 18px;
+}
+
+.playlistName {
+  position: absolute;
+  left: 13px;
+  right: 14px;
+  bottom: 46px;
+  font-family: "Instrument Sans";
+  font-size: 28px;
+  color: #fff;
+}
+
+.playlistYear,
+.playlistType {
+  position: absolute;
+  bottom: 22px;
+  font-family: "Instrument Sans";
+  font-size: 22px;
+  color: #fff;
+}
+
+.playlistYear {
+  left: 14px;
+}
+
+.playlistType {
+  left: 50%;
+  transform: translateX(-50%);
+}

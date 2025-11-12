@@ -1,9 +1,172 @@
-.page {min-height:100vh;background:linear-gradient(180deg,#0C2E9A 6%,#0B1F5C 50%,#0A101D 100%);padding-top:140px;padding-bottom:80px;color:#fff;}
-.container {width:1300px;max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:40px;}
-h1 {font-size:42px;font-weight:700;}
-.list {display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:24px;}
-.card {display:flex;align-items:center;gap:20px;background:rgba(12,46,154,0.52);border-radius:20px;padding:18px;}
-.avatar {width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.3);}
-.info {flex:1;}
-.btn {background:#79D4F7;color:#0A101D;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600;}
-@media(max-width:900px){.list{grid-template-columns:1fr;}}
+.page {
+  position: relative;
+  width: 1440px;
+  min-height: 1080px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #0C2E9A 6%, #0B1F5C 50%, #0A101D 100%);
+  display: flex;
+  padding: 156px 70px 98px;
+  box-sizing: border-box;
+}
+
+.panel {
+  width: 1300px;
+  min-height: 774px;
+  background: rgba(12, 46, 154, 0.52);
+  background-blend-mode: plus-lighter;
+  border-radius: 20px;
+  padding: 24px 26px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 49px;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 259px;
+  width: 1247px;
+  height: 59px;
+}
+
+.headerUsername {
+  font-family: "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 59px;
+  color: #fff;
+}
+
+.headerTitle {
+  font-family: "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 59px;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 233px);
+  gap: 20px;
+  width: 1245px;
+}
+
+.account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 233px;
+  height: 284.49px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.avatar {
+  width: 233px;
+  height: 233px;
+  background: #D9D9D9;
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.account:hover .avatar {
+  border: 5px solid #3C5AB9;
+}
+
+.usernameLink {
+  width: 233px;
+  height: 35.49px;
+  text-align: center;
+  color: #fff;
+  font-family: "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 28.4179px;
+  line-height: 35px;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color .12s ease;
+}
+
+.usernameLink:hover {
+  border-color: #fff;
+}
+
+.requestWrap {
+  position: relative;
+  width: 233px;
+  height: 284.49px;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.requestBtns {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 146px;
+  height: 104px;
+  z-index: 1;
+}
+
+.pill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 23px;
+  gap: 10px;
+  width: 146px;
+  height: 47px;
+  background: rgba(54, 8, 112, 0.6);
+  border-radius: 20px;
+  color: #fff;
+  font-family: "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 28.4179px;
+  line-height: 35px;
+  border: none;
+  cursor: pointer;
+  transition: background-color .12s ease, transform .04s ease;
+}
+
+.pill:hover {
+  background: rgba(54, 8, 112, 0.9);
+}
+
+.pill:active {
+  transform: translateY(1px);
+}
+
+.pillDanger {
+  background: rgba(208, 112, 112, 0.7);
+}
+
+.pillDanger:hover {
+  background: rgba(208, 112, 112, 0.95);
+}
+
+.errorCard, .emptyCard {
+  width: 100%;
+  min-height: 60px;
+  background: rgba(255, 0, 0, .15);
+  border-radius: 14px;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.emptyCard {
+  background: rgba(255, 255, 255, .08);
+}

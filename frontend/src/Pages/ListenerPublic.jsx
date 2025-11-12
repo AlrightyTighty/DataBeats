@@ -1,161 +1,145 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ListenerProfile.module.css";
 import API from "../lib/api.js";
 
+import useMe from "../Components/UseMe.js";
+import KebabMenu from "../Components/Profile/KebabMenu.jsx";
+import useFollow from "../hooks/useFollow.js";
+import ProfileContent from "../Components/Profile/ProfileContent.jsx";
+
+function ProfileHeaderVisitor({ user }) {
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%", color: "#fff" }}>
+      {/*profile image*/}
+      <div style={{
+        position: "absolute", left: 92, top: 28, bottom: 28, width: 233,
+        borderRadius: 12, background: "#D9D9D9", overflow: "hidden"
+      }} />
+
+      {/*username*/}
+      <div style={{
+        position: "absolute", left: 364, top: 120, width: 287, height: 49,
+        display: "flex", alignItems: "center", justifyContent: "center"
+      }}>
+        <div style={{ fontFamily: "Instrument Sans", fontWeight: 700, fontSize: 40, lineHeight: "49px" }}>
+          {user?.username ?? user?.displayName ?? "User"}
+        </div>
+      </div>
+
+      {/*Following*/}
+      <div style={{ position: "absolute", left: 361, bottom: 28, width: 192, height: 41 }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", gap: 10, alignItems: "center" }}>
+          <span style={{ fontFamily: "Instrument Sans", fontSize: 34 }}>Following:</span>
+          <span style={{ fontFamily: "Instrument Sans", fontSize: 34 }}>
+            {user?.followingCount ?? 0}
+          </span>
+        </div>
+      </div>
+
+      {/*Followers*/}
+      <div style={{ position: "absolute", left: 825, bottom: 28, width: 192, height: 41 }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", gap: 10, alignItems: "center" }}>
+          <span style={{ fontFamily: "Instrument Sans", fontSize: 34 }}>Followers:</span>
+          <span style={{ fontFamily: "Instrument Sans", fontSize: 34 }}>
+            {user?.followerCount ?? 0}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ListenerPublic() {
-  const { id } = useParams();                   
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  const [me, setMe] = useState(null);           
-  const [user, setUser] = useState(null);       
-
-  const [isFollowing, setIsFollowing] = useState(false); 
-  const [requested, setRequested] = useState(false);      
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
-
   const viewedUserId = useMemo(() => Number(id), [id]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch(`${API}/api/me`, { credentials: "include" });
-        if (!r.ok) { navigate("/login"); return; }
-        const meJson = await r.json();
-        setMe(meJson);
-      } catch {
-        navigate("/login");
-      }
-    })();
-  }, [navigate]);
+  const { me, loading: authLoading } = useMe();
+  const [user, setUser] = useState(null);
+  const [topSongs, setTopSongs] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
 
-  //Load viewed user
   useEffect(() => {
     if (!viewedUserId) return;
     (async () => {
       try {
         const r = await fetch(`${API}/api/user/${viewedUserId}`, { credentials: "include" });
         if (r.ok) setUser(await r.json());
-      } catch { /* ignore */ }
+      } catch {}
+
+      // top songs
+      try {
+        const ts = await fetch(`${API}/api/song/top/${viewedUserId}`, { credentials: "include" });
+        const data = ts.ok ? await ts.json() : [];
+        const normalized = (Array.isArray(data) ? data : []).map((s) => ({
+          songId: s.songId ?? s.SongId ?? s.id,
+          title:   s.songName ?? s.SongName ?? s.title ?? "Unknown",
+          artistName: s.artistName ?? s.ArtistName ?? "",
+          duration: s.duration ?? s.Duration ?? "",
+        }));
+        setTopSongs(normalized.slice(0, 5));
+      } catch {}
+
+      //playlists
+      try {
+        const r2 = await fetch(`${API}/api/playlist/user/${viewedUserId}`, { credentials: "include" });
+        const data = r2.ok ? await r2.json() : [];
+        const mapped = (Array.isArray(data) ? data : []).map(p => ({
+          playlistId: p.playlistId ?? p.PlaylistId ?? p.id,
+          name:       p.playlistName ?? p.PlaylistName ?? p.title ?? "Playlist",
+          image:      p.playlistImage ?? p.playlistImageBase64 ?? null,
+        }));
+        setPlaylists(mapped.slice(0, 5));
+      } catch {}
     })();
   }, [viewedUserId]);
 
-  useEffect(() => {
-    if (!me || !viewedUserId) return;
+  //follow logic
+  const { label, act } = useFollow({
+    variant: "user",
+    viewerId: me?.userId,
+    targetId: viewedUserId,
+    initialStatus: "none",
+    apiBase: API
+  });
 
-    (async () => {
-      try {
-        const f = await fetch(`${API}/api/friend/friends/${me.userId}`, { credentials: "include" });
-        const friends = f.ok ? await f.json() : [];
-        const friendIds = Array.isArray(friends) ? friends.map(x => Number(x.FriendId ?? x.friendId)) : [];
-        setIsFollowing(friendIds.includes(viewedUserId));
-
-        const p = await fetch(`${API}/api/friend/pending/${viewedUserId}`, { credentials: "include" });
-        if (p.ok) {
-          const pendingList = await p.json();
-          const youRequested = Array.isArray(pendingList)
-            ? pendingList.some(req => Number(req.FrienderId ?? req.frienderId) === Number(me.userId))
-            : false;
-          setRequested(youRequested);
-        }
-      } catch { /* ignore */ }
-      finally {
-        setLoading(false);
-      }
-    })();
-  }, [me, viewedUserId]);
-
-  async function handleFollow() {
-    if (!me || !viewedUserId || me.userId === viewedUserId) return;
-    setBusy(true);
-    try {
-      const r = await fetch(`${API}/api/friend`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ frienderId: Number(me.userId), friendeeId: viewedUserId }),
-      });
-      if (r.ok) {
-        setRequested(true);  
-        setIsFollowing(false);
-      }
-    } finally {
-      setBusy(false);
-    }
+  // kebabmenu
+  function onShare() {
+    const url = `${window.location.origin}/user/${viewedUserId}`;
+    navigator.share?.({ title: "Profile", url }) || navigator.clipboard?.writeText(url);
+  }
+  function onReport() {
+    navigate(`/report?userId=${viewedUserId}`);
   }
 
-  async function handleUnfollow() {
-    if (!me || !viewedUserId || me.userId === viewedUserId) return;
-    setBusy(true);
-    try {
-      const r = await fetch(`${API}/api/friend/${me.userId}/${viewedUserId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (r.ok) {
-        setIsFollowing(false);
-        setRequested(false);
-      }
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const isSelf = me && Number(me.userId) === viewedUserId;
+  const isSelf = !!me && Number(me.userId) === viewedUserId;
 
   return (
     <>
       <Topnav />
       <div className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.left}>
-            <div className={styles.avatar} />
-            <div>
-              <h1>{user?.username || "User"}</h1>
-              <p>{user?.email || "-"}</p>
-
-              <div className={styles.actions}>
-                <Link to={`/followers/${viewedUserId}`} className={styles.btnSec}>
-                  Followers
-                </Link>
-                <Link to={`/following/${viewedUserId}`} className={styles.btnSec}>
-                  Following
-                </Link>
-
-                {!isSelf && (
-                  <>
-                    {isFollowing ? (
-                      <button className={styles.btnUnfollow} onClick={handleUnfollow} disabled={busy}>
-                        {busy ? "..." : "Unfollow"}
-                      </button>
-                    ) : requested ? (
-                      <button className={styles.btnPending} disabled>
-                        Requested
-                      </button>
-                    ) : (
-                      <button className={styles.btn} onClick={handleFollow} disabled={busy}>
-                        {busy ? "..." : "Follow"}
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
+        <section className={styles.header}>
+          <div className={styles.headerInner}>
+            {user ? <ProfileHeaderVisitor user={user} /> : null}
           </div>
+        </section>
 
-          <div className={styles.right}>
-            {loading ? (
-              <div className={styles.card}><h2>Loading…</h2></div>
-            ) : (
-              <>
-                <div className={styles.card}><h2>Recent Activity</h2><div>No activity yet</div></div>
-                <div className={styles.card}><h2>Public Playlists</h2><div>None available</div></div>
-              </>
-            )}
+        {!authLoading && !isSelf && (
+          <div className={styles.kebabSlot}>
+            <KebabMenu
+              onShare={onShare}
+              followLabel={label}
+              onFollowAction={act}
+              onReport={onReport}
+            />
           </div>
-        </div>
+        )}
+
+        <section className={styles.content}>
+          <ProfileContent user={user} topSongs={topSongs} playlists={playlists} />
+        </section>
       </div>
     </>
   );

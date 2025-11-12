@@ -1,5 +1,5 @@
-import { useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./FollowPages.module.css";
 
@@ -7,46 +7,62 @@ const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function Followers() {
   const { id } = useParams();
-  const [friends, setFriends] = useState([]);
+  const userId = useMemo(() => Number(id), [id]);
+  const navigate = useNavigate();
+
+  const [owner, setOwner] = useState(null);
+  const [followers, setFollowers] = useState([]);
   const [pending, setPending] = useState([]);
+  const [busyId, setBusyId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
-  const [busyId, setBusyId] = useState(null);
 
   useEffect(() => {
+    if (!userId) return;
     (async () => {
       try {
         setLoading(true);
         setErr(null);
-        const [rFriends, rPending] = await Promise.all([fetch(`${API}/api/friend/friends/${id}`), fetch(`${API}/api/friend/pending/${id}`)]);
-        if (!rFriends.ok || !rPending.ok) throw new Error("Failed to load follows");
-        setFriends(await rFriends.json());
-        setPending(await rPending.json());
+        const [u, f, p] = await Promise.all([
+          fetch(`${API}/api/user/${userId}`, { credentials: "include" }),
+          fetch(`${API}/api/friend/friends/${userId}`, { credentials: "include" }),
+          fetch(`${API}/api/friend/pending/${userId}`, { credentials: "include" }),
+        ]);
+        if (u.ok) setOwner(await u.json());
+
+        if (!f.ok) throw new Error("Failed to load followers");
+        const fData = await f.json();
+        const mappedF = (Array.isArray(fData) ? fData : []).map(x => ({
+          id: x.friendId,
+          username: x.username,
+          since: x.timeAccepted ?? x.timeFriended,
+        }));
+        setFollowers(mappedF);
+
+        const pData = p.ok ? await p.json() : [];
+        const mappedP = (Array.isArray(pData) ? pData : []).map(x => ({
+          requestId: x.friendsWithId,
+          id: x.frienderId,
+          username: x.frienderName,
+          since: x.timeFriended,
+        }));
+        setPending(mappedP);
       } catch (e) {
         setErr(e.message || String(e));
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [userId]);
 
-  async function acceptRequest(reqId) {
+  async function accept(reqId) {
     try {
       setBusyId(reqId);
-      const r = await fetch(`${API}/api/friend/accept/${reqId}`, { method: "PATCH" });
+      const r = await fetch(`${API}/api/friend/accept/${reqId}`, { method: "PATCH", credentials: "include" });
       if (!r.ok) throw new Error("Accept failed");
-      const accepted = pending.find((p) => p.friendsWithId === reqId);
-      setPending(pending.filter((p) => p.friendsWithId !== reqId));
-      setFriends([
-        {
-          friendsWithId: reqId,
-          friendId: accepted.frienderId,
-          username: accepted.frienderName,
-          timeFriended: accepted.timeFriended,
-          timeAccepted: new Date().toISOString(),
-        },
-        ...friends,
-      ]);
+      const item = pending.find(p => p.requestId === reqId);
+      setPending(pending.filter(p => p.requestId !== reqId));
+      if (item) setFollowers([{ id: item.id, username: item.username, since: new Date().toISOString() }, ...followers]);
     } catch (e) {
       setErr(e.message || String(e));
     } finally {
@@ -54,72 +70,83 @@ export default function Followers() {
     }
   }
 
-  async function declineRequest(reqId) {
+  async function decline(reqId) {
     try {
       setBusyId(reqId);
-      setPending(pending.filter((p) => p.friendsWithId !== reqId));
+      setPending(pending.filter(p => p.requestId !== reqId));
     } finally {
       setBusyId(null);
     }
   }
 
+  const cards = [...pending.map(p => ({ type: "pending", ...p })), ...followers.map(f => ({ type: "friend", ...f }))];
+
   return (
     <>
       <Topnav />
       <div className={styles.page}>
-        <div className={styles.container}>
-          <h1>Followers {friends.length > 0 ? `(${friends.length})` : ""}</h1>
-
-          {err && (
-            <div className={styles.card} style={{ background: "rgba(255,0,0,.15)" }}>
-              {err}
-            </div>
-          )}
-
-          <div className={styles.list}>
-            {!loading && friends.length === 0 && (
-              <div className={styles.card} style={{ opacity: 0.8, justifyContent: "center" }}>
-                No followers yet.
-              </div>
-            )}
-            {friends.map((f) => (
-              <div key={f.friendsWithId} className={styles.card} role="link" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && (location.href = `/user/${f.friendId}`)}>
-                <div className={styles.avatar} />
-                <div className={styles.info}>
-                  <h3>{f.username}</h3>
-                  <p>Friended on {new Date(f.timeAccepted ?? f.timeFriended).toLocaleDateString()}</p>
-                </div>
-                <a href={`/user/${f.friendId}`} className={styles.btn}>
-                  View Profile
-                </a>
-              </div>
-            ))}
+        <div className={styles.panel}>
+          <div className={styles.headerRow}>
+            <div className={styles.headerUsername}>{owner?.username ?? "Username"}</div>
+            <div className={styles.headerTitle}>Follower</div>
           </div>
 
-          <h2 style={{ marginTop: 8 }}>Pending Requests {pending.length > 0 ? `(${pending.length})` : ""}</h2>
-          <div className={styles.list}>
-            {!loading && pending.length === 0 && (
-              <div className={styles.card} style={{ opacity: 0.8, justifyContent: "center" }}>
-                No pending requests.
-              </div>
+          {err && <div className={styles.errorCard}>{err}</div>}
+
+          <div className={styles.grid}>
+            {!loading && cards.length === 0 && (
+              <div className={styles.emptyCard}>No followers yet.</div>
             )}
-            {pending.map((p) => (
-              <div key={p.friendsWithId} className={styles.card}>
-                <div className={styles.avatar} />
-                <div className={styles.info}>
-                  <h3>{p.frienderName}</h3>
-                  <p>Requested on {new Date(p.timeFriended).toLocaleDateString()}</p>
-                </div>
-                <div style={{ display: "flex", gap: 8, minWidth: 180, justifyContent: "flex-end" }}>
-                  <button className={styles.btn} disabled={busyId === p.friendsWithId} onClick={() => acceptRequest(p.friendsWithId)}>
-                    Accept
+
+            {cards.map(card =>
+              card.type === "pending" ? (
+                <div key={`p-${card.requestId}`} className={styles.requestWrap}>
+                  <button
+                    className={styles.account}
+                    onClick={() => navigate(`/user/${card.id}`)}
+                  >
+                    <div className={styles.avatar} />
+                    <span
+                      className={styles.usernameLink}
+                      onClick={(e) => { e.stopPropagation(); navigate(`/user/${card.id}`); }}
+                    >
+                      {card.username}
+                    </span>
                   </button>
-                  <button className={styles.btn} style={{ background: "#d07070" }} disabled={busyId === p.friendsWithId} onClick={() => declineRequest(p.friendsWithId)}>
-                    Decline
-                  </button>
+
+                  <div className={styles.requestBtns}>
+                    <button
+                      className={styles.pill}
+                      disabled={busyId === card.requestId}
+                      onClick={() => accept(card.requestId)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className={`${styles.pill} ${styles.pillDanger}`}
+                      disabled={busyId === card.requestId}
+                      onClick={() => decline(card.requestId)}
+                    >
+                      Decline
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ) : (
+                <button
+                  key={`f-${card.id}`}
+                  className={styles.account}
+                  onClick={() => navigate(`/user/${card.id}`)}
+                >
+                  <div className={styles.avatar} />
+                  <span
+                    className={styles.usernameLink}
+                    onClick={(e) => { e.stopPropagation(); navigate(`/user/${card.id}`); }}
+                  >
+                    {card.username}
+                  </span>
+                </button>
+              )
+            )}
           </div>
         </div>
       </div>
