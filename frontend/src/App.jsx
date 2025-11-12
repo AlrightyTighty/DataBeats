@@ -41,7 +41,12 @@ import Playbar from "./Components/Playbar.jsx";
 import History from "./Pages/History.jsx";
 
 function App() {
-  const [playbarState, setPlaybarState] = useState({songId: null, albumId: null, playlistId: null, visible: false});
+  const [playbarState, setPlaybarState] = useState({
+    songId: null,
+    albumId: null,
+    playlistId: null,
+    visible: false,
+  });
 
   const router = createBrowserRouter([
     { path: "/", element: <Login /> },
@@ -72,19 +77,27 @@ function App() {
     { path: "/settings", element: <Settings /> },
     { path: "/new", element: <NewReleases /> },
     { path: "/dashboard", element: <Dashboard /> },
-    { path: "/album/:id", element: <Album setPlaybarState={setPlaybarState} /> },
-    { path: "/playlist/:id", element: <PlaylistPage setPlaybarState={setPlaybarState} /> },
+    {
+      path: "/album/:id",
+      element: <Album setPlaybarState={setPlaybarState} />,
+    },
+    {
+      path: "/playlist/:id",
+      element: <PlaylistPage setPlaybarState={setPlaybarState} />,
+    },
     { path: "/admin/generate-report", element: <GenerateReport /> },
     { path: "/admin/report-result", element: <ReportResult /> },
     { path: "/page-not-found", element: <NotFound /> },
     { path: "*", element: <NotFound /> },
-    { path: "/history/:id", element: <History />},
+    { path: "/history/:id", element: <History /> },
   ]);
 
-  return <>
+  return (
+    <>
       <RouterProvider router={router} />
-      {plaubarState.visible && <Playbar playbarState={playbarState} />}
-  </>
+      {playbarState.visible && <Playbar playbarState={playbarState} />}
+    </>
+  );
 }
 
 export default App;
