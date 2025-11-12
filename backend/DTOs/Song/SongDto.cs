@@ -31,5 +31,7 @@ namespace backend.DTOs.Song
 
         public ulong[] ArtistIds { get; set; } = null!;
 
+        public ulong CreatorId { get; set; }
+
     }
 }

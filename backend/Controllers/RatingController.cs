@@ -28,7 +28,7 @@ namespace backend.Controllers
             Console.WriteLine(songId);
             Console.WriteLine(count);
             Console.WriteLine(page);
-            List<RatingDto> ratings = await _context.UserRatesSongs.Where(rating => rating.SongId == songId)
+            List<RatingDto> ratings = await _context.UserRatesSongs.Where(rating => rating.SongId == songId && rating.TimestampDeleted == null)
                                                                        .Skip((page - 1) * count)
                                                                        .Take(count)
                                                                        .Include(review => review.User)
@@ -45,7 +45,7 @@ namespace backend.Controllers
         {
             UserRatesSong? rating = await _context.UserRatesSongs
                                            .Include(rating => rating.User)
-                                           .FirstOrDefaultAsync(rating => rating.UserRatesSongId == ratingId);
+                                           .FirstOrDefaultAsync(rating => rating.UserRatesSongId == ratingId && rating.TimestampDeleted == null);
             if (rating == null)
                 return NotFound("No rating with id " + ratingId + " was found.");
 
@@ -75,6 +75,27 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetReviewAsync), new { ratingId = newRating.UserRatesSongId }, newRating.ToDTO());
+        }
+
+        [HttpDelete("{ratingId}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> DeleteReviewAsync([FromRoute] ulong ratingId)
+        {
+            Console.WriteLine("Deleting Rating!");
+
+            UserRatesSong? rating = await _context.UserRatesSongs
+                                           .Include(rating => rating.User)
+                                           .FirstOrDefaultAsync(rating => rating.UserRatesSongId == ratingId && rating.TimestampDeleted == null);
+
+            if (rating == null)
+                return NotFound("No rating with id " + ratingId + " was found.");
+
+            if (rating.UserId != ulong.Parse(Request.Headers["X-UserId"]!))
+                return Forbid();
+
+            rating.TimestampDeleted = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

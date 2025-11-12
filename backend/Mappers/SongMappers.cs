@@ -36,6 +36,7 @@ namespace backend.Mappers
                 Duration = songModel.Duration,
                 AlbumId = songModel.AlbumId,
                 AlbumName = albumName,
+                CreatorId = songModel.CreatedBy,
                 ArtistIds = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.MusicianId).ToArray(),
                 ArtistNames = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.Musician.MusicianName).ToArray(),
                 AlbumArtId = albumArtId

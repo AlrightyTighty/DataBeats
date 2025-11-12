@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.Mappers;
 using backend.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,9 +56,35 @@ namespace backend.Controllers
                                                   .Include(song => song.MusicianWorksOnSongs)
                                                         .ThenInclude(worksOn => worksOn.Musician)
                                                   .FirstOrDefaultAsync(song => song.SongId == song_id);
-            
+
             if (foundSong != null)
                 return Ok(foundSong.ToSongDTOForStreaming(foundSong.Album.AlbumOrSongArtFileId, foundSong.Album.AlbumTitle));
+            else
+                return NotFound();
+        }
+
+        [HttpDelete("{song_id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> DeleteSongById([FromRoute] ulong song_id)
+        {
+            Song? foundSong = await _context.Songs.FirstOrDefaultAsync(song => song.SongId == song_id && song.TimestampDeleted == null);
+
+            /*
+            Console.WriteLine("WE FIND DA SONG!!!");
+            Console.WriteLine(foundSong);
+            */
+
+            
+
+            if (foundSong != null)
+            {
+                if (foundSong.CreatedBy != ulong.Parse(Request.Headers["X-UserId"]!))
+                    return Forbid();
+                    
+                foundSong.TimestampDeleted = DateTime.Now;
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
             else
                 return NotFound();
         }

@@ -26,7 +26,7 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] ulong id, [FromQuery] bool includeImageData = false)
         {
-            Album? album = await _context.Albums.Include(album => album.MusicianWorksOnAlbums).ThenInclude(albumArtist => albumArtist.Musician).FirstOrDefaultAsync(album => album.AlbumId == id);
+            Album? album = await _context.Albums.Where(album => album.TimestampDeleted == null).Include(album => album.MusicianWorksOnAlbums).ThenInclude(albumArtist => albumArtist.Musician).FirstOrDefaultAsync(album => album.AlbumId == id);
             if (album == null || album.TimestampDeleted != null)
                 return NotFound("There is no such album with id " + id);
 
@@ -43,7 +43,7 @@ namespace backend.Controllers
         [HttpGet("songs/{id}")]
         public async Task<IActionResult> GetAllSongsAsync([FromRoute] ulong id)
         {
-            SongDto[] songs = await _context.Songs.Where(song => song.AlbumId == id).Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(songArtist => songArtist.Musician).Select(song => song.ToSongDTOForStreaming(song.Album.AlbumOrSongArtFileId, song.Album.AlbumTitle)).ToArrayAsync();
+            SongDto[] songs = await _context.Songs.Where(song => song.AlbumId == id).Where(song => song.TimestampDeleted == null).Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(songArtist => songArtist.Musician).Select(song => song.ToSongDTOForStreaming(song.Album.AlbumOrSongArtFileId, song.Album.AlbumTitle)).ToArrayAsync();
 
             return Ok(songs);
         }
@@ -52,6 +52,7 @@ namespace backend.Controllers
         public async Task<IActionResult> GetByMusician([FromRoute] ulong musicianId)
         {
             var albums = await _context.Albums
+                .Where(album => album.TimestampDeleted == null)
                 .Where(album => album.MusicianWorksOnAlbums.Any(mwa => mwa.MusicianId == musicianId))
                 .Where(album => album.TimestampDeleted == null)
                 .ToListAsync();
@@ -70,7 +71,7 @@ namespace backend.Controllers
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
             User deletingUser = (await _context.Users.FindAsync(userId))!;
             Album? albumToDelete = await _context.Albums.FindAsync(id);
-            if (albumToDelete == null)
+            if (albumToDelete == null || albumToDelete.TimestampDeleted != null)
                 return NotFound();
 
             if (deletingUser.AdminId == null)
@@ -122,7 +123,7 @@ namespace backend.Controllers
             string userIdString = Request.Headers["X-UserId"]!;
             ulong userId = ulong.Parse(userIdString);
 
-            Musician? uploadingMusician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.UserId == userId);
+            Musician? uploadingMusician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.UserId == userId && musician.TimestampDeleted == null);
             if (uploadingMusician == null)
                 return Unauthorized("User does not have an associated musician account.");
 
@@ -131,7 +132,7 @@ namespace backend.Controllers
             List<Musician> musicians = new List<Musician>();
             foreach (string musicianName in albumInfo.MusicianNames)
             {
-                Musician? musician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.MusicianName == musicianName);
+                Musician? musician = await _context.Musicians.FirstOrDefaultAsync(musician => musician.MusicianName == musicianName && musician.TimestampDeleted == null);
                 if (musician == null)
                     return NotFound("No musician exists with name " + musicianName);
 
@@ -168,7 +169,7 @@ namespace backend.Controllers
 
                 foreach (string musicianName in musicianNames)
                 {
-                    Musician? newMusician = musicianMap[musicianName] ?? await _context.Musicians.FirstOrDefaultAsync(m => m.MusicianName == musicianName);
+                    Musician? newMusician = musicianMap[musicianName] ?? await _context.Musicians.FirstOrDefaultAsync(m => m.MusicianName == musicianName && m.TimestampDeleted == null);
                     if (newMusician == null)
                         return NotFound("No musician found with name " + musicianName);
 
