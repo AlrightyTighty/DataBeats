@@ -25,9 +25,10 @@ namespace backend.Controllers
         [HttpGet("list")]
         public async Task<IActionResult> List([FromQuery] string? q = null, [FromQuery] int? limit = null)
         {
-            int take = Math.Clamp(limit ?? 50, 1, 200);
+            int take = Math.Clamp(limit ?? 10, 1, 200);
 
             var songsQuery = _context.Songs
+                .AsNoTracking() //hopefully makes this faster
                 .Include(s => s.Album)
                     .ThenInclude(a => a.AlbumOrSongArtFile)
                 .Include(s => s.MusicianWorksOnSongs)
@@ -52,11 +53,7 @@ namespace backend.Controllers
         [HttpGet("{song_id}")]
         public async Task<IActionResult> GetSongById([FromRoute] ulong song_id)
         {
-            Song? foundSong = await _context.Songs.Include(song => song.Album)
-                                                  .Include(song => song.MusicianWorksOnSongs)
-                                                        .ThenInclude(worksOn => worksOn.Musician)
-                                                  .FirstOrDefaultAsync(song => song.SongId == song_id);
-
+            Song? foundSong = await _context.Songs.Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(worksOn => worksOn.Musician).FirstOrDefaultAsync(song => song.SongId == song_id);
             if (foundSong != null)
                 return Ok(foundSong.ToSongDTOForStreaming(foundSong.Album.AlbumOrSongArtFileId, foundSong.Album.AlbumTitle));
             else
