@@ -99,5 +99,17 @@ namespace backend.Controllers
             // return updated musician dto
             return Ok(musician.ToDto());
         }
+
+        [HttpPost("{id}/follow")]
+        public async Task<IActionResult> FollowArtist([FromRoute] ulong id)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            var artist = await _context.Musicians.FindAsync(id);
+            if (artist == null) return NotFound();
+            artist.FollowerCount++;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
     }
 }
