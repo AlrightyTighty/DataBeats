@@ -11,7 +11,7 @@
   overflow-x: hidden;
 }
 
-/* Taskbar */
+/*Taskbar*/
 .taskbar {
   display: flex;
   gap: 20px;
@@ -59,7 +59,7 @@
   opacity: .9;
 }
 
-/* Sections */
+/*Sections*/
 .section {
   display: flex;
   flex-direction: column;
@@ -91,7 +91,7 @@
   opacity: 0.8;
 }
 
-/* Card grid */
+/*Card grid*/
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

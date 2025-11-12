@@ -37,6 +37,7 @@ import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
 import Playbar from "./Components/Playbar.jsx";
+import History from "./Pages/History.jsx";
 
 function App() {
   const [playbarState, setPlaybarState] = useState();
@@ -76,6 +77,7 @@ function App() {
     { path: "/admin/report-result", element: <ReportResult /> },
     { path: "/page-not-found", element: <NotFound /> },
     { path: "*", element: <NotFound /> },
+    { path: "/history/:id", element: <History />},
   ]);
 
   return <>
