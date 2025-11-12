@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using backend.DTOs.Album;
 using backend.DTOs.Song;
@@ -236,8 +238,38 @@ namespace backend.Controllers
 
             newAlbum = await _context.Albums.Include(album => album.MusicianWorksOnAlbums).ThenInclude(albumArtist => albumArtist.Musician).FirstAsync(album => album.AlbumId == newAlbum.AlbumId);
 
+            ulong[] allMusicianIds = musicianMap.Values.Select(musician => musician.MusicianId).ToArray();
+
+            string[] emails = _context.UserFollowsUsers
+                                            .Include(followship => followship.FolloweeNavigation)
+                                            .Include(followship => followship.FollowerNavigation)
+                                            .ThenInclude(follower => follower.AuthenticationInformation)
+                                            .Where(followship => allMusicianIds.Any(m => m == followship.FolloweeNavigation.MusicianId))
+                                            .DistinctBy(followship => followship.Follower)
+                                            .Select(followship => followship.FollowerNavigation.AuthenticationInformation!.Email)
+                                            .ToArray();
+
+            Task.Run(() =>
+            {
+                EmailUsers(emails, newAlbum.AlbumId);
+            });
+
             return CreatedAtAction("GetById", new { id = newAlbum.AlbumId }, newAlbum.ToDTO());
 
+        }
+
+        void EmailUsers(string[] emails, ulong albumId)
+        {
+
+            foreach (string email in emails)
+            {
+                SmtpClient client = new SmtpClient("smtp.office365.com", 587)
+                {
+                    Credentials = new NetworkCredential("joshua@baddle.fun", Environment.GetEnvironmentVariable("SMTPAppPassword")),
+                    EnableSsl = false
+                };
+                client.Send("beanhead@baddle.fun", email, "New Album Dropped!", "A new album was dropped by one of your followed artists on Databeats! Check it out at https://databeats-frontend-63991322723.us-south1.run.app/album/" + albumId);
+            }
         }
 
     }

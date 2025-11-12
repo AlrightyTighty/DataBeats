@@ -19,19 +19,32 @@ const Topnav = () => {
         if (!dead && me?.userId) setAccountPath(`/user/${me.userId}`);
       } catch {}
     })();
-    return () => { dead = true; };
+    return () => {
+      dead = true;
+    };
   }, []);
 
   return (
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
         <img className={styles["app-logo"]} src={appLogo} />
-        <Link className={styles["link"]} to="/authtest">Dashboard</Link>
-        <Link className={styles["link"]} to={accountPath}>Account</Link>
-        <Link className={styles["link"]} to="/events">Events</Link>
+        <Link className={styles["link"]} to="/authtest">
+          Dashboard
+        </Link>
+        <Link className={styles["link"]} to={accountPath}>
+          Account
+        </Link>
+        <Link className={styles["link"]} to="/events">
+          Events
+        </Link>
       </div>
       <div className={styles["searchbar-container"]}>
         <Searchbar />
+      </div>
+      <div className={styles["right-section"]}>
+        <Link className={styles["link"]} to="/logout">
+          Logout
+        </Link>
       </div>
     </nav>
   );
