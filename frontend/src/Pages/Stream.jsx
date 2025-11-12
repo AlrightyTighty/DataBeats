@@ -32,14 +32,7 @@ const Stream = () => {
   const ranRef = useRef(false);
 
   const [reviews, setReviews] = useState([
-    {
-      user_id: 7,
-      user_name: "alrightytighty",
-      starCount: 5,
-      comment:
-        "Fire ass album!!! Great stuff, lvl0p. \n test \n test \n test \n test",
-      reviewId: 1,
-    },
+
   ]);
 
   const [reviewPage, setReviewPage] = useState(1);

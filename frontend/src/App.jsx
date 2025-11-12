@@ -1,4 +1,5 @@
 import "./App.css";
+import { useState } from "react";
 
 import _appLogo from "./assets/graphics/DatabeatsLogo.png";
 
@@ -39,7 +40,7 @@ import NotFound from "./Pages/NotFound.jsx";
 import Playbar from "./Components/Playbar.jsx";
 
 function App() {
-  const [playbarState, setPlaybarState] = useState();
+  const [playbarState, setPlaybarState] = useState({songId: null, albumId: null, playlistId: null, visible: false});
 
   const router = createBrowserRouter([
     { path: "/", element: <Login /> },
@@ -80,7 +81,7 @@ function App() {
 
   return <>
       <RouterProvider router={router} />
-      <Playbar/>
+      {plaubarState.visible && <Playbar playbarState={playbarState} />}
   </>
 }
 
