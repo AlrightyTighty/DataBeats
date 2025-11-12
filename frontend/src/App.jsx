@@ -1,9 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-
-import _appLogo from "./assets/graphics/DatabeatsLogo.png";
-
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router";
 import "./index.css";
 
 import Login from "./Pages/Login.jsx";
@@ -39,6 +36,66 @@ import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
 import Playbar from "./Components/Playbar.jsx";
 import History from "./Pages/History.jsx";
+import _appLogo from "./assets/graphics/DatabeatsLogo.png";
+
+function Layout({ playbarState, setPlaybarState }) {
+  return (
+    <>
+      <Outlet context={{ playbarState, setPlaybarState }} />
+      {playbarState.visible && (
+        <>
+          <Playbar playbarState={playbarState} />
+          <div style={{ height: "80px" }} />
+        </>
+      )}
+    </>
+  );
+}
+
+const createAppRouter = (playbarState, setPlaybarState) =>
+  createBrowserRouter([
+    {
+      element: (
+        <Layout playbarState={playbarState} setPlaybarState={setPlaybarState} />
+      ),
+      children: [
+        { path: "/", element: <Login /> },
+        { path: "/login", element: <Login /> },
+        { path: "/signup", element: <Signup /> },
+        { path: "/register", element: <Register /> },
+        { path: "/authtest", element: <Authtest /> },
+        { path: "/stream/:id", element: <Stream /> },
+        { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
+        { path: "/artist/:id", element: <Artist /> },
+        { path: "/streamtest", element: <StreamPopupTest /> },
+        { path: "/events", element: <Events /> },
+        { path: "/event/:id", element: <EventDetails /> },
+        { path: "/createevent", element: <CreateEvent /> },
+        { path: "/createalbum", element: <CreateAlbum /> },
+        { path: "/search", element: <SearchResult /> },
+        { path: "/playlists", element: <Playlists /> },
+        { path: "/createplaylist", element: <CreatePlaylist /> },
+        { path: "/admin", element: <Admin /> },
+        { path: "/report", element: <Report /> },
+        { path: "/dashboard", element: <Dashboard /> },
+        { path: "/me", element: <ListenerMe /> },
+        { path: "/user/:id", element: <ListenerPublic /> },
+        { path: "/artist-user/:id", element: <ArtistProfileUser /> },
+        { path: "/followers/:id", element: <Followers /> },
+        { path: "/following/:id", element: <Following /> },
+        { path: "/artist-events/:id", element: <ArtistEvents /> },
+        { path: "/settings", element: <Settings /> },
+        { path: "/new", element: <NewReleases /> },
+        { path: "/album/:id", element: <Album /> },
+        { path: "/playlist/:id", element: <PlaylistPage /> },
+        { path: "/admin/generate-report", element: <GenerateReport /> },
+        { path: "/admin/report-result", element: <ReportResult /> },
+        { path: "/page-not-found", element: <NotFound /> },
+        { path: "*", element: <NotFound /> },
+        { path: "/history/:id", element: <History /> },
+      ],
+    },
+  ]);
 
 function App() {
   const [playbarState, setPlaybarState] = useState({
@@ -48,56 +105,9 @@ function App() {
     visible: false,
   });
 
-  const router = createBrowserRouter([
-    { path: "/", element: <Login /> },
-    { path: "/login", element: <Login /> },
-    { path: "/signup", element: <Signup /> },
-    { path: "/register", element: <Register /> },
-    { path: "/authtest", element: <Authtest /> },
-    { path: "/stream/:id", element: <Stream /> },
-    { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
-    { path: "/artist/:id", element: <Artist /> },
-    { path: "/streamtest", element: <StreamPopupTest /> },
-    { path: "/events", element: <Events /> },
-    { path: "/event/:id", element: <EventDetails /> },
-    { path: "/createevent", element: <CreateEvent /> },
-    { path: "/createalbum", element: <CreateAlbum /> },
-    { path: "/search", element: <SearchResult /> },
-    { path: "/playlists", element: <Playlists /> },
-    { path: "/createplaylist", element: <CreatePlaylist /> },
-    { path: "/admin", element: <Admin /> },
-    { path: "/report", element: <Report /> },
-    { path: "/dashboard", element: <Dashboard /> },
-    { path: "/me", element: <ListenerMe /> },
-    { path: "/user/:id", element: <ListenerPublic /> },
-    { path: "/artist-user/:id", element: <ArtistProfileUser /> },
-    { path: "/followers/:id", element: <Followers /> },
-    { path: "/following/:id", element: <Following /> },
-    { path: "/artist-events/:id", element: <ArtistEvents /> },
-    { path: "/settings", element: <Settings /> },
-    { path: "/new", element: <NewReleases /> },
-    { path: "/dashboard", element: <Dashboard /> },
-    {
-      path: "/album/:id",
-      element: <Album setPlaybarState={setPlaybarState} />,
-    },
-    {
-      path: "/playlist/:id",
-      element: <PlaylistPage setPlaybarState={setPlaybarState} />,
-    },
-    { path: "/admin/generate-report", element: <GenerateReport /> },
-    { path: "/admin/report-result", element: <ReportResult /> },
-    { path: "/page-not-found", element: <NotFound /> },
-    { path: "*", element: <NotFound /> },
-    { path: "/history/:id", element: <History /> },
-  ]);
+  const router = createAppRouter(playbarState, setPlaybarState);
 
-  return (
-    <>
-      <RouterProvider router={router} />
-      {playbarState.visible && <Playbar playbarState={playbarState} />}
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

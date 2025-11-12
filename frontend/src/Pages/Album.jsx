@@ -1,15 +1,18 @@
 import { AlbumSongListing } from "../Components/AlbumSongListing.jsx";
 import styles from "./Album.module.css";
 import API from "../lib/api.js";
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router";
+import { useEffect, useState, useRef, useContext } from "react";
+import { useOutletContext, useParams } from "react-router";
+import Topnav from "../Components/Topnav.jsx";
 
 const albumData = {
   title: "Midnight Echoes",
   artists: ["Luna Rivera", "The Midnight Collective"],
   type: "LP",
-  description: "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
-  coverImage: "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
+  description:
+    "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
+  coverImage:
+    "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
   songs: [
     {
       id: 1,
@@ -75,11 +78,20 @@ const albumData = {
 };
 
 const Album = () => {
+  const { setPlaybarState } = useOutletContext();
+
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
   };
 
-  const [albumData, setAlbumData] = useState({ title: null, artists: [], type: null, description: null, coverImage: null, songs: [] });
+  const [albumData, setAlbumData] = useState({
+    title: null,
+    artists: [],
+    type: null,
+    description: null,
+    coverImage: null,
+    songs: [],
+  });
 
   const isLoading = useRef(false);
 
@@ -90,7 +102,9 @@ const Album = () => {
 
     isLoading.current = true;
     (async () => {
-      const albumInfoResponse = await fetch(`${API}/api/album/${id}?includeImageData=true`);
+      const albumInfoResponse = await fetch(
+        `${API}/api/album/${id}?includeImageData=true`
+      );
       const albumInfo = await albumInfoResponse.json();
 
       const songInfoResponse = await fetch(`${API}/api/album/songs/${id}`);
@@ -103,32 +117,50 @@ const Album = () => {
   });
 
   return (
-    <div className={styles.container}>
-      <div className={styles.albumHeader}>
-        <div className={styles.albumCover}>
-          <img src={`data:image/png;base64,${albumData.albumArtImage}`} alt={albumData.albumTitle} className={styles.coverImage} />
+    <>
+      <Topnav />
+      <div className={styles.container}>
+        <div className={styles.albumHeader}>
+          <div className={styles.albumCover}>
+            <img
+              src={`data:image/png;base64,${albumData.albumArtImage}`}
+              alt={albumData.albumTitle}
+              className={styles.coverImage}
+            />
+          </div>
+
+          <div className={styles.albumInfo}>
+            <div className={styles.albumType}>{albumData.albumType}</div>
+            <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
+            <div className={styles.albumArtists}>
+              {formatArtists(albumData.artists)}
+            </div>
+          </div>
         </div>
 
-        <div className={styles.albumInfo}>
-          <div className={styles.albumType}>{albumData.albumType}</div>
-          <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
-          <div className={styles.albumArtists}>{formatArtists(albumData.artists)}</div>
+        <div className={styles.songsList}>
+          <div className={styles.songsHeader}>
+            <div className={styles.headerNumber}>#</div>
+            <div className={styles.headerTitle}>Title</div>
+            <div className={styles.headerArtists}>Artists</div>
+            <div className={styles.headerStreams}>Streams</div>
+          </div>
+
+          {albumData.songs.map((song, index) => (
+            <AlbumSongListing
+              setPlaybarState={setPlaybarState}
+              key={song.songId}
+              number={index + 1}
+              name={song.songName}
+              artists={song.artistNames}
+              streams={song.streams}
+              id={song.songId}
+              albumId={id}
+            />
+          ))}
         </div>
       </div>
-
-      <div className={styles.songsList}>
-        <div className={styles.songsHeader}>
-          <div className={styles.headerNumber}>#</div>
-          <div className={styles.headerTitle}>Title</div>
-          <div className={styles.headerArtists}>Artists</div>
-          <div className={styles.headerStreams}>Streams</div>
-        </div>
-
-        {albumData.songs.map((song, index) => (
-          <AlbumSongListing key={song.songId} number={index + 1} name={song.songName} artists={song.artistNames} streams={song.streams} id={song.songId} />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

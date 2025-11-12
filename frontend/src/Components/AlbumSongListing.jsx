@@ -2,7 +2,15 @@ import { useNavigate } from "react-router";
 import styles from "./AlbumSongListing.module.css";
 import ReportButton from "./ReportButton.jsx";
 
-export const AlbumSongListing = ({ number, name, artists, streams, id }) => {
+export const AlbumSongListing = ({
+  albumId,
+  number,
+  name,
+  artists,
+  streams,
+  id,
+  setPlaybarState,
+}) => {
   const navigate = useNavigate();
 
   const formatStreams = (count) => {
@@ -19,7 +27,17 @@ export const AlbumSongListing = ({ number, name, artists, streams, id }) => {
   };
 
   return (
-    <div onClick={() => navigate(`/Stream/${id}`)} className={styles.songItem}>
+    <div
+      onClick={() => {
+        setPlaybarState({
+          songId: id,
+          albumId: albumId,
+          playlistId: null,
+          visible: true,
+        });
+      }}
+      className={styles.songItem}
+    >
       <ReportButton right="50px" contentId={id} reportType={"SONG"} />
       <div className={styles.songNumber}>{number}</div>
       <div className={styles.songName}>{name}</div>

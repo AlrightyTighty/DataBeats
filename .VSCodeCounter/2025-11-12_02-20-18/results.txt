@@ -1,0 +1,328 @@
+Date : 2025-11-12 02:20:18
+Directory : /home/alrightytighty/DataBeats
+Total : 257 files,  19895 codes, 570 comments, 3239 blanks, all 23704 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| JavaScript JSX |         62 |      5,547 |        173 |        735 |      6,455 |
+| C#             |        110 |      5,429 |         34 |      1,607 |      7,070 |
+| PostCSS        |         56 |      5,326 |        340 |        814 |      6,480 |
+| JSON           |          6 |      3,195 |          0 |          6 |      3,201 |
+| JavaScript     |          8 |        249 |          4 |         39 |        292 |
+| XML            |          6 |         45 |          0 |          6 |         51 |
+| YAML           |          2 |         43 |          4 |          6 |         53 |
+| Docker         |          2 |         22 |         13 |         13 |         48 |
+| Properties     |          2 |         15 |          2 |          3 |         20 |
+| HTML           |          1 |         13 |          0 |          1 |         14 |
+| Markdown       |          2 |         11 |          0 |          9 |         20 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |        257 |     19,895 |        570 |      3,239 |     23,704 |
+| . (Files)                                                                                         |          1 |          2 |          0 |          1 |          3 |
+| backend                                                                                           |        117 |      5,510 |         40 |      1,622 |      7,172 |
+| backend (Files)                                                                                   |          7 |        166 |         10 |         47 |        223 |
+| backend/Controllers                                                                               |         21 |      2,227 |         24 |        422 |      2,673 |
+| backend/DTOs                                                                                      |         31 |        493 |          2 |        113 |        608 |
+| backend/DTOs/Album                                                                                |          2 |         43 |          0 |         19 |         62 |
+| backend/DTOs/Authentication                                                                       |          3 |         34 |          0 |          3 |         37 |
+| backend/DTOs/Event                                                                                |          3 |         54 |          1 |         16 |         71 |
+| backend/DTOs/EventPictureFile                                                                     |          1 |          4 |          0 |          1 |          5 |
+| backend/DTOs/Friend                                                                               |          2 |         33 |          0 |          5 |         38 |
+| backend/DTOs/History                                                                              |          3 |         39 |          0 |          0 |         39 |
+| backend/DTOs/Musician                                                                             |          3 |         39 |          0 |         13 |         52 |
+| backend/DTOs/Playlist                                                                             |          3 |         50 |          0 |         11 |         61 |
+| backend/DTOs/PlaylistPageDto                                                                      |          1 |         44 |          1 |         10 |         55 |
+| backend/DTOs/ProfilePictureFile                                                                   |          1 |         14 |          0 |          4 |         18 |
+| backend/DTOs/Rating                                                                               |          2 |         29 |          0 |          4 |         33 |
+| backend/DTOs/Report                                                                               |          1 |         14 |          0 |          4 |         18 |
+| backend/DTOs/Song                                                                                 |          2 |         36 |          0 |         17 |         53 |
+| backend/DTOs/SongFileDto                                                                          |          1 |         20 |          0 |          3 |         23 |
+| backend/DTOs/User                                                                                 |          3 |         40 |          0 |          3 |         43 |
+| backend/Mappers                                                                                   |         12 |        435 |          4 |         32 |        471 |
+| backend/Middleware                                                                                |          1 |         43 |          0 |          9 |         52 |
+| backend/Models                                                                                    |         44 |      2,123 |          0 |        998 |      3,121 |
+| backend/Properties                                                                                |          1 |         23 |          0 |          1 |         24 |
+| frontend                                                                                          |        139 |     14,383 |        530 |      1,616 |     16,529 |
+| frontend (Files)                                                                                  |         10 |      3,268 |         14 |         30 |      3,312 |
+| frontend/public                                                                                   |          1 |          1 |          0 |          0 |          1 |
+| frontend/src                                                                                      |        128 |     11,114 |        516 |      1,586 |     13,216 |
+| frontend/src (Files)                                                                              |          4 |        247 |          6 |         26 |        279 |
+| frontend/src/Components                                                                           |         48 |      3,098 |         79 |        473 |      3,650 |
+| frontend/src/Components (Files)                                                                   |         40 |      2,504 |         69 |        386 |      2,959 |
+| frontend/src/Components/Profile                                                                   |          8 |        594 |         10 |         87 |        691 |
+| frontend/src/Pages                                                                                |         57 |      6,744 |        385 |        973 |      8,102 |
+| frontend/src/assets                                                                               |          4 |         25 |          0 |          2 |         27 |
+| frontend/src/css                                                                                  |         10 |        807 |         43 |         81 |        931 |
+| frontend/src/hooks                                                                                |          3 |        147 |          0 |         22 |        169 |
+| frontend/src/lib                                                                                  |          2 |         46 |          3 |          9 |         58 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                          | language       | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /home/alrightytighty/DataBeats/README.md                                                          | Markdown       |          2 |          0 |          1 |          3 |
+| /home/alrightytighty/DataBeats/backend/Controllers/AdminController.cs                             | C#             |        304 |          0 |         36 |        340 |
+| /home/alrightytighty/DataBeats/backend/Controllers/AlbumController.cs                             | C#             |        195 |          2 |         47 |        244 |
+| /home/alrightytighty/DataBeats/backend/Controllers/AlbumOrSongArtFileController.cs                | C#             |         58 |          0 |         11 |         69 |
+| /home/alrightytighty/DataBeats/backend/Controllers/AuthenticationController.cs                    | C#             |         64 |          0 |         10 |         74 |
+| /home/alrightytighty/DataBeats/backend/Controllers/AuthenticationTest.cs                          | C#             |         34 |          0 |          5 |         39 |
+| /home/alrightytighty/DataBeats/backend/Controllers/EventController.cs                             | C#             |        140 |          1 |         28 |        169 |
+| /home/alrightytighty/DataBeats/backend/Controllers/EventPictureFileController.cs                  | C#             |         84 |          0 |         18 |        102 |
+| /home/alrightytighty/DataBeats/backend/Controllers/FriendController.cs                            | C#             |        100 |          0 |         22 |        122 |
+| /home/alrightytighty/DataBeats/backend/Controllers/HistoryController.cs                           | C#             |        215 |          0 |         29 |        244 |
+| /home/alrightytighty/DataBeats/backend/Controllers/MusicianController.cs                          | C#             |         88 |          6 |         21 |        115 |
+| /home/alrightytighty/DataBeats/backend/Controllers/PlaylistController.cs                          | C#             |        149 |          6 |         32 |        187 |
+| /home/alrightytighty/DataBeats/backend/Controllers/PlaylistPageController.cs                      | C#             |        223 |          5 |         47 |        275 |
+| /home/alrightytighty/DataBeats/backend/Controllers/PlaylistPictureFileController.cs               | C#             |         58 |          0 |         13 |         71 |
+| /home/alrightytighty/DataBeats/backend/Controllers/ProfilePictureController.cs                    | C#             |         53 |          0 |         11 |         64 |
+| /home/alrightytighty/DataBeats/backend/Controllers/RatingController.cs                            | C#             |         84 |          0 |         17 |        101 |
+| /home/alrightytighty/DataBeats/backend/Controllers/ReportController.cs                            | C#             |         39 |          0 |          6 |         45 |
+| /home/alrightytighty/DataBeats/backend/Controllers/SearchController.cs                            | C#             |        102 |          0 |         12 |        114 |
+| /home/alrightytighty/DataBeats/backend/Controllers/SongController.cs                              | C#             |         70 |          4 |         15 |         89 |
+| /home/alrightytighty/DataBeats/backend/Controllers/SongFileController.cs                          | C#             |         73 |          0 |         17 |         90 |
+| /home/alrightytighty/DataBeats/backend/Controllers/StreamSongController.cs                        | C#             |         42 |          0 |         13 |         55 |
+| /home/alrightytighty/DataBeats/backend/Controllers/UserController.cs                              | C#             |         52 |          0 |         12 |         64 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Album/AlbumDto.cs                                     | C#             |         24 |          0 |         10 |         34 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Album/CreateAlbumRequestDto.cs                        | C#             |         19 |          0 |          9 |         28 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Authentication/AuthenticationInformationRequestDto.cs | C#             |         12 |          0 |          1 |         13 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Authentication/SessionDto.cs                          | C#             |         14 |          0 |          1 |         15 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Authentication/UpdateAuthDto.cs                       | C#             |          8 |          0 |          1 |          9 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Event/CreateEventDto.cs                               | C#             |         16 |          0 |          5 |         21 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Event/EventDto.cs                                     | C#             |         22 |          0 |          6 |         28 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Event/UpdateEventDto.cs                               | C#             |         16 |          1 |          5 |         22 |
+| /home/alrightytighty/DataBeats/backend/DTOs/EventPictureFile/EventPictureFileDto.cs               | C#             |          4 |          0 |          1 |          5 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Friend/CreateFriendRequestDto.cs                      | C#             |         20 |          0 |          3 |         23 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Friend/FriendDto.cs                                   | C#             |         13 |          0 |          2 |         15 |
+| /home/alrightytighty/DataBeats/backend/DTOs/History/HistoryPlayDto.cs                             | C#             |         15 |          0 |          0 |         15 |
+| /home/alrightytighty/DataBeats/backend/DTOs/History/RecordPlayDto.cs                              | C#             |          7 |          0 |          0 |          7 |
+| /home/alrightytighty/DataBeats/backend/DTOs/History/TopSongDto.cs                                 | C#             |         17 |          0 |          0 |         17 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Musician/CreateMusicianDto.cs                         | C#             |         15 |          0 |          4 |         19 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Musician/MusicianDto.cs                               | C#             |         18 |          0 |          9 |         27 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Musician/UpdateMusicianDto.cs                         | C#             |          6 |          0 |          0 |          6 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Playlist/CreatePlaylistDto.cs                         | C#             |         15 |          0 |          4 |         19 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Playlist/Playlistdto.cs                               | C#             |         20 |          0 |          3 |         23 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Playlist/UpdatePlaylistDto.cs                         | C#             |         15 |          0 |          4 |         19 |
+| /home/alrightytighty/DataBeats/backend/DTOs/PlaylistPageDto/PlaylistPageDto.cs                    | C#             |         44 |          1 |         10 |         55 |
+| /home/alrightytighty/DataBeats/backend/DTOs/ProfilePictureFile/ProfilePictureFileDto.cs           | C#             |         14 |          0 |          4 |         18 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Rating/CreateRatingDto.cs                             | C#             |         13 |          0 |          3 |         16 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Rating/RatingDto.cs                                   | C#             |         16 |          0 |          1 |         17 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Report/CreateReportDto.cs                             | C#             |         14 |          0 |          4 |         18 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Song/CreateSongDto.cs                                 | C#             |         13 |          0 |          3 |         16 |
+| /home/alrightytighty/DataBeats/backend/DTOs/Song/SongDto.cs                                       | C#             |         23 |          0 |         14 |         37 |
+| /home/alrightytighty/DataBeats/backend/DTOs/SongFileDto/SongFileDto.cs                            | C#             |         20 |          0 |          3 |         23 |
+| /home/alrightytighty/DataBeats/backend/DTOs/User/CreateUserRequestDto.cs                          | C#             |         13 |          0 |          1 |         14 |
+| /home/alrightytighty/DataBeats/backend/DTOs/User/UpdateUserDto.cs                                 | C#             |         10 |          0 |          1 |         11 |
+| /home/alrightytighty/DataBeats/backend/DTOs/User/UserDto.cs                                       | C#             |         17 |          0 |          1 |         18 |
+| /home/alrightytighty/DataBeats/backend/Dockerfile                                                 | Docker         |         11 |          6 |          6 |         23 |
+| /home/alrightytighty/DataBeats/backend/Mappers/AlbumMappers.cs                                    | C#             |         39 |          0 |          2 |         41 |
+| /home/alrightytighty/DataBeats/backend/Mappers/EventMapper.cs                                     | C#             |         43 |          0 |          2 |         45 |
+| /home/alrightytighty/DataBeats/backend/Mappers/FriendMappers.cs                                   | C#             |         20 |          0 |          2 |         22 |
+| /home/alrightytighty/DataBeats/backend/Mappers/MusicianMapper.cs                                  | C#             |         37 |          0 |          1 |         38 |
+| /home/alrightytighty/DataBeats/backend/Mappers/PlaylistMapper.cs                                  | C#             |         41 |          2 |          2 |         45 |
+| /home/alrightytighty/DataBeats/backend/Mappers/PlaylistPageMapper.cs                              | C#             |         71 |          2 |         13 |         86 |
+| /home/alrightytighty/DataBeats/backend/Mappers/ProfilePictureMapper.cs                            | C#             |         22 |          0 |          1 |         23 |
+| /home/alrightytighty/DataBeats/backend/Mappers/RatingMappers.cs                                   | C#             |         24 |          0 |          1 |         25 |
+| /home/alrightytighty/DataBeats/backend/Mappers/SessionMapper.cs                                   | C#             |         22 |          0 |          1 |         23 |
+| /home/alrightytighty/DataBeats/backend/Mappers/SongFileMapper.cs                                  | C#             |         31 |          0 |          2 |         33 |
+| /home/alrightytighty/DataBeats/backend/Mappers/SongMappers.cs                                     | C#             |         44 |          0 |          2 |         46 |
+| /home/alrightytighty/DataBeats/backend/Mappers/UserMappers.cs                                     | C#             |         41 |          0 |          3 |         44 |
+| /home/alrightytighty/DataBeats/backend/Middleware/AuthenticationHandler.cs                        | C#             |         43 |          0 |          9 |         52 |
+| /home/alrightytighty/DataBeats/backend/Models/Admin.cs                                            | C#             |         38 |          0 |         34 |         72 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminDeletesAlbum.cs                                | C#             |         18 |          0 |         14 |         32 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminDeletesMusician.cs                             | C#             |         18 |          0 |         14 |         32 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminDeletesPlaylist.cs                             | C#             |         18 |          0 |         14 |         32 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminDeletesRating.cs                               | C#             |         18 |          0 |         14 |         32 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminDeletesSong.cs                                 | C#             |         18 |          0 |         14 |         32 |
+| /home/alrightytighty/DataBeats/backend/Models/AdminManagesUser.cs                                 | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/Album.cs                                            | C#             |         28 |          0 |         24 |         52 |
+| /home/alrightytighty/DataBeats/backend/Models/AlbumContainsSong.cs                                | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/AlbumGenre.cs                                       | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/AlbumOrSongArtFile.cs                               | C#             |         11 |          0 |          7 |         18 |
+| /home/alrightytighty/DataBeats/backend/Models/ApplicationDBContext.cs                             | C#             |      1,345 |          0 |        402 |      1,747 |
+| /home/alrightytighty/DataBeats/backend/Models/Artist.cs                                           | C#             |         10 |          0 |          3 |         13 |
+| /home/alrightytighty/DataBeats/backend/Models/AuthenticationInformation.cs                        | C#             |         15 |          0 |         11 |         26 |
+| /home/alrightytighty/DataBeats/backend/Models/Complaint.cs                                        | C#             |         15 |          0 |         11 |         26 |
+| /home/alrightytighty/DataBeats/backend/Models/Event.cs                                            | C#             |         22 |          0 |         18 |         40 |
+| /home/alrightytighty/DataBeats/backend/Models/EventPictureFile.cs                                 | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/Musician.cs                                         | C#             |         39 |          0 |         35 |         74 |
+| /home/alrightytighty/DataBeats/backend/Models/MusicianHostsEvent.cs                               | C#             |         12 |          0 |          8 |         20 |
+| /home/alrightytighty/DataBeats/backend/Models/MusicianWorksOnAlbum.cs                             | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/MusicianWorksOnSong.cs                              | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/Playlist.cs                                         | C#             |         24 |          0 |         20 |         44 |
+| /home/alrightytighty/DataBeats/backend/Models/PlaylistEntry.cs                                    | C#             |         16 |          0 |         12 |         28 |
+| /home/alrightytighty/DataBeats/backend/Models/PlaylistPictureFile.cs                              | C#             |         11 |          0 |          7 |         18 |
+| /home/alrightytighty/DataBeats/backend/Models/ProfilePictureFile.cs                               | C#             |         12 |          0 |          8 |         20 |
+| /home/alrightytighty/DataBeats/backend/Models/Review.cs                                           | C#             |         21 |          0 |         17 |         38 |
+| /home/alrightytighty/DataBeats/backend/Models/Session.cs                                          | C#             |         12 |          0 |          8 |         20 |
+| /home/alrightytighty/DataBeats/backend/Models/Song.cs                                             | C#             |         33 |          0 |         29 |         62 |
+| /home/alrightytighty/DataBeats/backend/Models/SongFile.cs                                         | C#             |         15 |          0 |         11 |         26 |
+| /home/alrightytighty/DataBeats/backend/Models/SongGenre.cs                                        | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/SongLyricist.cs                                     | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/SongPath.cs                                         | C#             |         12 |          0 |          1 |         13 |
+| /home/alrightytighty/DataBeats/backend/Models/SongProducer.cs                                     | C#             |         19 |          0 |         15 |         34 |
+| /home/alrightytighty/DataBeats/backend/Models/SongUpload.cs                                       | C#             |          8 |          0 |          4 |         12 |
+| /home/alrightytighty/DataBeats/backend/Models/User.cs                                             | C#             |         53 |          0 |         49 |        102 |
+| /home/alrightytighty/DataBeats/backend/Models/UserAttendsEvent.cs                                 | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/UserFollowsUser.cs                                  | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/UserFriendsWithUser.cs                              | C#             |         15 |          0 |         11 |         26 |
+| /home/alrightytighty/DataBeats/backend/Models/UserIsCollaboratorOfPlaylist.cs                     | C#             |         15 |          0 |         11 |         26 |
+| /home/alrightytighty/DataBeats/backend/Models/UserLikesSong.cs                                    | C#             |         11 |          0 |          7 |         18 |
+| /home/alrightytighty/DataBeats/backend/Models/UserListensToSong.cs                                | C#             |         12 |          0 |          8 |         20 |
+| /home/alrightytighty/DataBeats/backend/Models/UserMakesComplaint.cs                               | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Models/UserRatesSong.cs                                    | C#             |         23 |          0 |         19 |         42 |
+| /home/alrightytighty/DataBeats/backend/Models/UserSavesPlaylist.cs                                | C#             |         13 |          0 |          9 |         22 |
+| /home/alrightytighty/DataBeats/backend/Program.cs                                                 | C#             |        108 |          4 |         33 |        145 |
+| /home/alrightytighty/DataBeats/backend/Properties/launchSettings.json                             | JSON           |         23 |          0 |          1 |         24 |
+| /home/alrightytighty/DataBeats/backend/appsettings.Development.json                               | JSON           |          8 |          0 |          1 |          9 |
+| /home/alrightytighty/DataBeats/backend/appsettings.json                                           | JSON           |          9 |          0 |          1 |         10 |
+| /home/alrightytighty/DataBeats/backend/backend.csproj                                             | XML            |         19 |          0 |          4 |         23 |
+| /home/alrightytighty/DataBeats/backend/cloudbuild.yaml                                            | YAML           |          5 |          0 |          1 |          6 |
+| /home/alrightytighty/DataBeats/backend/package-lock.json                                          | JSON           |          6 |          0 |          1 |          7 |
+| /home/alrightytighty/DataBeats/frontend/.env                                                      | Properties     |          1 |          0 |          0 |          1 |
+| /home/alrightytighty/DataBeats/frontend/Dockerfile                                                | Docker         |         11 |          7 |          7 |         25 |
+| /home/alrightytighty/DataBeats/frontend/README.md                                                 | Markdown       |          9 |          0 |          8 |         17 |
+| /home/alrightytighty/DataBeats/frontend/cloudbuild.yaml                                           | YAML           |         38 |          4 |          5 |         47 |
+| /home/alrightytighty/DataBeats/frontend/eslint.config.js                                          | JavaScript     |         28 |          0 |          2 |         30 |
+| /home/alrightytighty/DataBeats/frontend/index.html                                                | HTML           |         13 |          0 |          1 |         14 |
+| /home/alrightytighty/DataBeats/frontend/nginx.conf                                                | Properties     |         14 |          2 |          3 |         19 |
+| /home/alrightytighty/DataBeats/frontend/package-lock.json                                         | JSON           |      3,117 |          0 |          1 |      3,118 |
+| /home/alrightytighty/DataBeats/frontend/package.json                                              | JSON           |         32 |          0 |          1 |         33 |
+| /home/alrightytighty/DataBeats/frontend/public/vite.svg                                           | XML            |          1 |          0 |          0 |          1 |
+| /home/alrightytighty/DataBeats/frontend/src/App.css                                               | PostCSS        |         31 |          0 |          5 |         36 |
+| /home/alrightytighty/DataBeats/frontend/src/App.jsx                                               | JavaScript JSX |        107 |          0 |          8 |        115 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AddButton.jsx                              | JavaScript JSX |          6 |          0 |          1 |          7 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AddSongModal.jsx                           | JavaScript JSX |        137 |          0 |         14 |        151 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AddSongModal.module.css                    | PostCSS        |        283 |          5 |         54 |        342 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AddUserModal.jsx                           | JavaScript JSX |         87 |          1 |         15 |        103 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AddUserModal.module.css                    | PostCSS        |        125 |          9 |         19 |        153 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AdminActivity.jsx                          | JavaScript JSX |        127 |          0 |         10 |        137 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AdminActivity.module.css                   | PostCSS        |         91 |          0 |         18 |        109 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AlbumCard.jsx                              | JavaScript JSX |         32 |          3 |          4 |         39 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AlbumSongListing.jsx                       | JavaScript JSX |         44 |          0 |          5 |         49 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/AlbumSongListing.module.css                | PostCSS        |         61 |          0 |         12 |         73 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Bio.jsx                                    | JavaScript JSX |         56 |         17 |         10 |         83 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContentReportsChart.jsx                    | JavaScript JSX |        141 |          0 |         11 |        152 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContentReportsChart.module.css             | PostCSS        |        112 |          0 |         22 |        134 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContextMenu.jsx                            | JavaScript JSX |         19 |          0 |          5 |         24 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContextMenu.module.css                     | PostCSS        |         33 |          0 |          4 |         37 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContextMenuButton.jsx                      | JavaScript JSX |         16 |          0 |          3 |         19 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ContextMenuButton.module.css               | PostCSS        |         12 |          0 |          3 |         15 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/DeleteButton.jsx                           | JavaScript JSX |         30 |          0 |          5 |         35 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/EditButton.jsx                             | JavaScript JSX |         10 |          3 |          2 |         15 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/EventCard.jsx                              | JavaScript JSX |         26 |          0 |          3 |         29 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/MusicianPicName.jsx                        | JavaScript JSX |        114 |         23 |         12 |        149 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Playbar.jsx                                | JavaScript JSX |        127 |          5 |         23 |        155 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Playbar.module.css                         | PostCSS        |         80 |          3 |         14 |         97 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/PlaylistCard.jsx                           | JavaScript JSX |         19 |          0 |          3 |         22 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/PlaylistCard.module.css                    | PostCSS        |         75 |          0 |         13 |         88 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/PlaylistSection.jsx                        | JavaScript JSX |         15 |          0 |          2 |         17 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/PlaylistSection.module.css                 | PostCSS        |         36 |          0 |          8 |         44 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/KebabMenu.jsx                      | JavaScript JSX |         56 |          0 |          7 |         63 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/KebabMenu.module.css               | PostCSS        |         72 |          2 |         16 |         90 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileContent.jsx                 | JavaScript JSX |         64 |          4 |          7 |         75 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileContent.module.css          | PostCSS        |        183 |          4 |         26 |        213 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileHeader.module.css           | PostCSS        |        112 |          0 |         16 |        128 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileHeaderArtistVisitor.jsx     | JavaScript JSX |         33 |          0 |          3 |         36 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileHeaderMe.jsx                | JavaScript JSX |         40 |          0 |          8 |         48 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Profile/ProfileHeaderUserVisitor.jsx       | JavaScript JSX |         34 |          0 |          4 |         38 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ReportButton.jsx                           | JavaScript JSX |         19 |          0 |          4 |         23 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/ReportButton.module.css                    | PostCSS        |         12 |          0 |          2 |         14 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/SearchResultCard.jsx                       | JavaScript JSX |         13 |          0 |          3 |         16 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/SearchResultCard.module.css                | PostCSS        |         40 |          0 |          7 |         47 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/SearchResultsRow.jsx                       | JavaScript JSX |         14 |          0 |          2 |         16 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/SearchResultsRow.module.css                | PostCSS        |         23 |          0 |          3 |         26 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Searchbar.jsx                              | JavaScript JSX |         35 |          0 |         10 |         45 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Searchbar.module.css                       | PostCSS        |         11 |          0 |          1 |         12 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Topnav.jsx                                 | JavaScript JSX |         35 |          0 |          6 |         41 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/Topnav.module.css                          | PostCSS        |         40 |          0 |          6 |         46 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/UseMe.js                                   | JavaScript     |         23 |          0 |          4 |         27 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/UserReports.jsx                            | JavaScript JSX |        176 |          0 |         16 |        192 |
+| /home/alrightytighty/DataBeats/frontend/src/Components/UserReports.module.css                     | PostCSS        |        149 |          0 |         27 |        176 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Admin.jsx                                       | JavaScript JSX |         30 |          0 |          4 |         34 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Admin.module.css                                | PostCSS        |         74 |          0 |         14 |         88 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Album.jsx                                       | JavaScript JSX |        152 |          0 |         16 |        168 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Album.module.css                                | PostCSS        |        147 |          0 |         29 |        176 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/AlbumView.jsx                                   | JavaScript JSX |         86 |          0 |          9 |         95 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/AlbumView.module.css                            | PostCSS        |         10 |        111 |          1 |        122 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Artist.module.css                               | PostCSS        |        163 |          3 |         20 |        186 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ArtistEvents.jsx                                | JavaScript JSX |         80 |          0 |          7 |         87 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ArtistEvents.module.css                         | PostCSS        |         81 |        106 |         12 |        199 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ArtistProfileUser.jsx                           | JavaScript JSX |        124 |          0 |         14 |        138 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ArtistProfileUser.module.css                    | PostCSS        |         41 |          0 |          2 |         43 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Authtest.jsx                                    | JavaScript JSX |         22 |          0 |          8 |         30 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreateAlbum.jsx                                 | JavaScript JSX |        289 |         23 |         52 |        364 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreateAlbum.module.css                          | PostCSS        |        277 |         13 |         45 |        335 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreateEvent.jsx                                 | JavaScript JSX |        206 |          7 |         37 |        250 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreateEvent.module.css                          | PostCSS        |        196 |         11 |         32 |        239 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreatePlaylist.jsx                              | JavaScript JSX |        132 |          0 |         17 |        149 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/CreatePlaylist.module.css                       | PostCSS        |        167 |          0 |         28 |        195 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Dashboard.jsx                                   | JavaScript JSX |        107 |          0 |         11 |        118 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Dashboard.module.css                            | PostCSS        |        136 |          3 |         20 |        159 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/EventDetails.jsx                                | JavaScript JSX |        232 |         14 |         23 |        269 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Events.css                                      | PostCSS        |         91 |          5 |         17 |        113 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Events.jsx                                      | JavaScript JSX |        129 |          1 |         15 |        145 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/FollowPages.module.css                          | PostCSS        |        153 |          0 |         20 |        173 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Followers.jsx                                   | JavaScript JSX |        141 |          0 |         15 |        156 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Following.jsx                                   | JavaScript JSX |         74 |          0 |          9 |         83 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/GenerateReport.jsx                              | JavaScript JSX |         72 |          1 |         14 |         87 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/GenerateReport.module.css                       | PostCSS        |         64 |          0 |         10 |         74 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/History.jsx                                     | JavaScript JSX |        434 |          7 |         36 |        477 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/History.module.css                              | PostCSS        |        257 |          7 |         40 |        304 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ListenerMe.jsx                                  | JavaScript JSX |         59 |          4 |          9 |         72 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ListenerProfile.module.css                      | PostCSS        |         43 |          1 |          4 |         48 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ListenerPublic.jsx                              | JavaScript JSX |        122 |          8 |         16 |        146 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Login.jsx                                       | JavaScript JSX |         73 |          0 |         16 |         89 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Login.module.css                                | PostCSS        |         60 |          0 |          9 |         69 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/MusicianDashboard.jsx                           | JavaScript JSX |        104 |         19 |          6 |        129 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/NewReleases.jsx                                 | JavaScript JSX |         80 |          0 |          8 |         88 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/NewReleases.module.css                          | PostCSS        |         81 |          0 |          7 |         88 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/NotFound.jsx                                    | JavaScript JSX |         12 |          0 |          1 |         13 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/PlaylistPage.jsx                                | JavaScript JSX |        267 |         12 |         32 |        311 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/PlaylistPage.module.css                         | PostCSS        |        287 |          8 |         53 |        348 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Playlists.jsx                                   | JavaScript JSX |         66 |         16 |         16 |         98 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Playlists.module.css                            | PostCSS        |         32 |          0 |          8 |         40 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Register.jsx                                    | JavaScript JSX |         83 |          0 |         18 |        101 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Register.module.css                             | PostCSS        |         61 |          0 |          9 |         70 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Report.jsx                                      | JavaScript JSX |         76 |          2 |         16 |         94 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Report.module.css                               | PostCSS        |        102 |          0 |         17 |        119 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ReportResult.jsx                                | JavaScript JSX |         71 |          0 |          9 |         80 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/ReportResult.module.css                         | PostCSS        |         74 |          0 |         13 |         87 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/SearchResult.jsx                                | JavaScript JSX |         40 |          1 |          9 |         50 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/SearchResult.module.css                         | PostCSS        |         19 |          0 |          4 |         23 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Settings.jsx                                    | JavaScript JSX |        164 |          2 |         24 |        190 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Settings.module.css                             | PostCSS        |          6 |          0 |          1 |          7 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Signup.jsx                                      | JavaScript JSX |          5 |          0 |          3 |          8 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Stream.jsx                                      | JavaScript JSX |        363 |          0 |         52 |        415 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/Stream.module.css                               | PostCSS        |        216 |          0 |         32 |        248 |
+| /home/alrightytighty/DataBeats/frontend/src/Pages/StreamPopupTest.jsx                             | JavaScript JSX |         11 |          0 |          4 |         15 |
+| /home/alrightytighty/DataBeats/frontend/src/assets/barMenu.svg                                    | XML            |          8 |          0 |          1 |          9 |
+| /home/alrightytighty/DataBeats/frontend/src/assets/eye.svg                                        | XML            |         13 |          0 |          1 |         14 |
+| /home/alrightytighty/DataBeats/frontend/src/assets/react.svg                                      | XML            |          1 |          0 |          0 |          1 |
+| /home/alrightytighty/DataBeats/frontend/src/assets/star.svg                                       | XML            |          3 |          0 |          0 |          3 |
+| /home/alrightytighty/DataBeats/frontend/src/css/AddButton.css                                     | PostCSS        |         23 |          0 |          1 |         24 |
+| /home/alrightytighty/DataBeats/frontend/src/css/AlbumCard.css                                     | PostCSS        |         37 |          0 |          5 |         42 |
+| /home/alrightytighty/DataBeats/frontend/src/css/Bio.css                                           | PostCSS        |         92 |          3 |          9 |        104 |
+| /home/alrightytighty/DataBeats/frontend/src/css/DeleteButton.css                                  | PostCSS        |         68 |          0 |          6 |         74 |
+| /home/alrightytighty/DataBeats/frontend/src/css/EditButton.css                                    | PostCSS        |         23 |          0 |          1 |         24 |
+| /home/alrightytighty/DataBeats/frontend/src/css/EventCard.css                                     | PostCSS        |         38 |          2 |          5 |         45 |
+| /home/alrightytighty/DataBeats/frontend/src/css/EventDetails.css                                  | PostCSS        |        259 |         18 |         24 |        301 |
+| /home/alrightytighty/DataBeats/frontend/src/css/MusicianDashboard.css                             | PostCSS        |        130 |         14 |         17 |        161 |
+| /home/alrightytighty/DataBeats/frontend/src/css/MusicianPicName.css                               | PostCSS        |        118 |          6 |         11 |        135 |
+| /home/alrightytighty/DataBeats/frontend/src/css/NotFound.css                                      | PostCSS        |         19 |          0 |          2 |         21 |
+| /home/alrightytighty/DataBeats/frontend/src/hooks/useAuthentication.js                            | JavaScript     |         30 |          0 |          8 |         38 |
+| /home/alrightytighty/DataBeats/frontend/src/hooks/useContextMenu.js                               | JavaScript     |         32 |          0 |          6 |         38 |
+| /home/alrightytighty/DataBeats/frontend/src/hooks/useFollow.js                                    | JavaScript     |         85 |          0 |          8 |         93 |
+| /home/alrightytighty/DataBeats/frontend/src/index.css                                             | PostCSS        |        100 |          6 |         10 |        116 |
+| /home/alrightytighty/DataBeats/frontend/src/lib/api.js                                            | JavaScript     |          2 |          2 |          2 |          6 |
+| /home/alrightytighty/DataBeats/frontend/src/lib/playlistPageApi.js                                | JavaScript     |         44 |          1 |          7 |         52 |
+| /home/alrightytighty/DataBeats/frontend/src/main.jsx                                              | JavaScript JSX |          9 |          0 |          3 |         12 |
+| /home/alrightytighty/DataBeats/frontend/vite.config.js                                            | JavaScript     |          5 |          1 |          2 |          8 |
+| Total                                                                                             |                |     19,895 |        570 |      3,239 |     23,704 |
++---------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

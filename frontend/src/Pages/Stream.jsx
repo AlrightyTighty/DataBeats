@@ -31,9 +31,7 @@ const Stream = () => {
 
   const ranRef = useRef(false);
 
-  const [reviews, setReviews] = useState([
-
-  ]);
+  const [reviews, setReviews] = useState([]);
 
   const [reviewPage, setReviewPage] = useState(1);
 
@@ -325,14 +323,17 @@ const Stream = () => {
 
                       if (userInfo.userId == review.userId) {
                         reviewFunctions.push(async () => {
-                          await fetch(`${API}/api/rating/${review.userRatesSongId}`, {
-                            method: "delete",
-                            credentials: "include",
-                          });
+                          await fetch(
+                            `${API}/api/rating/${review.userRatesSongId}`,
+                            {
+                              method: "delete",
+                              credentials: "include",
+                            }
+                          );
 
                           reviews.splice(index, 1);
                           setReviews(reviews.slice());
-                          setContextMenu({visible: false});
+                          setContextMenu({ visible: false });
                         });
 
                         reviewItems.push("Delete");
