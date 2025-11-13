@@ -37,7 +37,9 @@ export default function Settings() {
           setPreview(`${API}/api/file/view/${data.profilePictureFileId}`);
       }
 
-      const resAuth = await fetch(`${API}/api/authentication/${CURRENT_USER_ID}`);
+      const resAuth = await fetch(
+        `${API}/api/authentication/${CURRENT_USER_ID}`
+      );
       if (resAuth.ok) {
         const data = await resAuth.json();
         setAuth({
@@ -96,7 +98,38 @@ export default function Settings() {
       }),
     });
 
-    setMessage(res.ok ? "Account info updated." : "Error updating account info.");
+    setMessage(
+      res.ok ? "Account info updated." : "Error updating account info."
+    );
+  }
+
+  //soft delete / disable account
+  async function deleteAccount() {
+    setMessage("");
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? " +
+        "You will not be able to log in again."
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`${API}/api/user/${CURRENT_USER_ID}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok || res.status === 204) {
+        setMessage("Account deleted. You will be signed out.");
+        // redirect after a short delay
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1200);
+      } else {
+        setMessage("Error deleting account.");
+      }
+    } catch (e) {
+      setMessage("Error deleting account.");
+    }
   }
 
   return (
@@ -104,7 +137,6 @@ export default function Settings() {
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-
           {/* Left side: Profile */}
           <div className={styles.left}>
             <h2>Profile Info</h2>
@@ -129,7 +161,9 @@ export default function Settings() {
               First Name
               <input
                 value={profile.fname}
-                onChange={(e) => setProfile({ ...profile, fname: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, fname: e.target.value })
+                }
               />
             </label>
 
@@ -137,7 +171,9 @@ export default function Settings() {
               Last Name
               <input
                 value={profile.lname}
-                onChange={(e) => setProfile({ ...profile, lname: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, lname: e.target.value })
+                }
               />
             </label>
 
@@ -145,7 +181,9 @@ export default function Settings() {
               Display Name
               <input
                 value={profile.username}
-                onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                onChange={(e) =>
+                  setProfile({ ...profile, username: e.target.value })
+                }
               />
             </label>
 
@@ -178,6 +216,11 @@ export default function Settings() {
 
             <button className={styles.save} onClick={saveAuth}>
               Save Account
+            </button>
+
+            {/*delete account button */}
+            <button className={styles.delete} onClick={deleteAccount}>
+              Delete Account
             </button>
 
             {message && <p style={{ marginTop: "10px" }}>{message}</p>}

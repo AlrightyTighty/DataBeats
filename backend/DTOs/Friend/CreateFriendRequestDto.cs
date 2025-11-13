@@ -10,12 +10,15 @@ namespace backend.DTOs.Friend
 
         public UserFriendsWithUser ToUserFriendsWithUser()
         {
+            var now = DateTime.UtcNow;
+
             return new UserFriendsWithUser
             {
                 FrienderId = FrienderId,
                 FriendeeId = FriendeeId,
-                TimeFriended = DateTime.UtcNow,
-                FriendedState = "Pending"
+                TimeFriended = now,
+                TimeAccepted = now,
+                FriendedState = "Accepted"
             };
         }
     }

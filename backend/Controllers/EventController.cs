@@ -56,7 +56,8 @@ namespace backend.Controllers
                 .Where(e => e.MusicianId == musicianId)           
                 .Include(e => e.EventPictureFile)                   
                 .Include(e => e.Musician)                          
-                .Where(e => e.TimestampDeleted == null)            
+                .Where(e => e.TimestampDeleted == null)
+                .OrderByDescending(e => e.EventTime)            
                 .ToListAsync();                                    
 
             if (!events.Any())

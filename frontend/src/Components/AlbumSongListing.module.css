@@ -1,6 +1,6 @@
 .songItem {
   display: grid;
-  grid-template-columns: 60px 1fr 280px 140px;
+  grid-template-columns: 60px 60px 2fr 1.3fr 0.8fr 50px;
   gap: 20px;
   padding: 16px 20px;
   border-radius: 8px;
@@ -38,6 +38,45 @@
   font-size: 14px;
   text-align: right;
   font-weight: 500;
+}
+
+.songLike {
+  justify-self: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #b0b0b0;
+  font-size: 28px;
+  padding: 0;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.songLike:hover {
+  color: #ff0000;
+  transform: scale(1.1);
+}
+
+.songLikeActive {
+  justify-self: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ff0000; 
+  font-size: 28px;
+  padding: 0;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.songLikeActive:hover {
+  transform: scale(1.1);
+}
+
+.reportButtonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 1024px) {

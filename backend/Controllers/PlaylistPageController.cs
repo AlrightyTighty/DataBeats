@@ -16,7 +16,7 @@ namespace backend.Controllers
     public class PlaylistPageController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-
+        
         public PlaylistPageController(ApplicationDBContext context)
         {
             _context = context;

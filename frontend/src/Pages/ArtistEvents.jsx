@@ -1,82 +1,148 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistEvents.module.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5062";
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function ArtistEvents() {
+  const navigate = useNavigate();
   const { id } = useParams();
+
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
 
   useEffect(() => {
+    if (!id) return;
     (async () => {
       try {
-        const res = await fetch(`${API}/api/event/artist/${id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setEvents(data);
+        setErr(null);
+        setLoading(true);
+        const res = await fetch(`${API}/api/event/by-musician/${id}`);
+        if (!res.ok) {
+          if (res.status === 404) {
+            setEvents([]);
+            setErr("No events found for this artist.");
+          } else {
+            throw new Error(
+              `GET /api/event/by-musician/${id} failed (${res.status})`
+            );
+          }
         } else {
-          setEvents([]);
+          const data = await res.json();
+          const list = Array.isArray(data) ? data : [];
+          list.sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime));
+          setEvents(list);
         }
-      } catch (err) {
-        console.error("Error loading artist events:", err);
+      } catch (e) {
+        setErr(e.message || String(e));
+        setEvents([]);
       } finally {
         setLoading(false);
       }
     })();
   }, [id]);
 
+  const artistDisplay = useMemo(() => {
+    for (const e of events) {
+      if (e.musicianName) return e.musicianName;
+      if (e.musician?.musicianName) return e.musician.musicianName;
+    }
+    return "Artist";
+  }, [events]);
+
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          <h1>Events by Artist</h1>
+          <h1 className={styles.title}>
+            <button
+              type="button"
+              className={styles.artistLink}
+              onClick={() => navigate(`/artist/${id}`)}
+              title={`View ${artistDisplay} profile`}
+              aria-label={`View ${artistDisplay} profile`}
+            >
+              {artistDisplay}
+            </button>
+            <span className={styles.sep}> — </span>
+            <span>Events</span>
+          </h1>
+
+          {err && <div className={styles.centerText}>{err}</div>}
 
           {loading ? (
             <p className={styles.centerText}>Loading...</p>
           ) : events.length === 0 ? (
-            <p className={styles.centerText}>No events found for this artist.</p>
+            <p className={styles.centerText}>No events found.</p>
           ) : (
             <div className={styles.grid}>
-              {events.map((e) => (
-                <a
-                  key={e.eventId}
-                  href={`/event/${e.eventId}`}
-                  className={styles.card}
-                >
-                  {e.eventPictureFileId ? (
-                    <img
-                      src={`${API}/api/file/view/${e.eventPictureFileId}`}
-                      alt={e.title}
-                      className={styles.img}
-                    />
-                  ) : (
-                    <div className={styles.placeholder} />
-                  )}
+              {events.map((ev) => {
+                const imgFromId = ev.eventPictureFileId
+                  ? `${API}/api/event/file/view/${ev.eventPictureFileId}`
+                  : null;
+                const imgFromDto =
+                  ev.imageBase64 && ev.imageFileExtension
+                    ? `data:image/${ev.imageFileExtension};base64,${ev.imageBase64}`
+                    : null;
+                const coverSrc = imgFromId || imgFromDto;
 
-                  <div className={styles.info}>
-                    <h3>{e.title}</h3>
-                    {e.musicianName && (
-                      <p className={styles.artist}>{e.musicianName}</p>
+                const dateStr = ev.eventTime
+                  ? new Date(ev.eventTime).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                  : "—";
+
+                const priceStr =
+                  typeof ev.ticketPrice === "number"
+                    ? `$${ev.ticketPrice.toFixed(2)}`
+                    : ev.ticketPrice ?? "—";
+
+                const desc =
+                  ev.eventDescription ||
+                  ev.description ||
+                  ev.EventDescription ||
+                  "";
+
+                return (
+                  <button
+                    key={ev.eventId}
+                    type="button"
+                    className={styles.card}
+                    onClick={() => navigate(`/event/${ev.eventId}`)}
+                    title={ev.title}
+                  >
+                    {coverSrc ? (
+                      <img
+                        src={coverSrc}
+                        alt={ev.title}
+                        className={styles.cover}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className={styles.coverPlaceholder} />
                     )}
-                    <p className={styles.date}>
-                      {new Date(e.eventTime).toLocaleDateString(undefined, {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
-                    <p className={styles.price}>
-                      {e.ticketPrice && e.ticketPrice > 0
-                        ? `$${e.ticketPrice.toFixed(2)}`
-                        : "Free"}
-                    </p>
-                  </div>
-                </a>
-              ))}
+
+                    <div className={styles.body}>
+                      <h3 className={styles.eventTitle}>{ev.title}</h3>
+
+                      <div className={styles.meta}>
+                        <span className={styles.date}>{dateStr}</span>
+                        <span className={styles.dot}>•</span>
+                        <span className={styles.price}>{priceStr}</span>
+                      </div>
+
+                      {desc && <p className={styles.desc}>{desc}</p>}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

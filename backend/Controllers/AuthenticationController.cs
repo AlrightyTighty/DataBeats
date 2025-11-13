@@ -50,6 +50,17 @@ namespace backend.Controllers
 
             if (toLogin == null)
                 return Unauthorized("Invalid login info.");
+//delete
+            var authInfo = _context.AuthenticationInformations
+            .FirstOrDefault(a => a.UserId == toLogin.UserId);
+
+            if (authInfo == null)
+                return Unauthorized("Invalid login info.");
+
+            if (authInfo.Locked)
+            {
+                return Unauthorized("Account is disabled.");
+            }
 
             Session newSession = new Session
             {

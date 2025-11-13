@@ -4,6 +4,7 @@ import API from "../lib/api.js";
 import { useEffect, useState, useRef, useContext } from "react";
 import { useOutletContext, useParams } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
+import { toggleLike } from "../lib/likesApi.js";
 
 const albumData = {
   title: "Midnight Echoes",
@@ -93,6 +94,8 @@ const Album = () => {
     songs: [],
   });
 
+  const [likes, setLikes] = useState({}); // { songId: true/false }
+
   const isLoading = useRef(false);
 
   const id = useParams().id;
@@ -114,7 +117,19 @@ const Album = () => {
       console.log(albumInfo);
       setAlbumData(albumInfo);
     })();
-  });
+  }, [id]);
+
+  async function handleToggleLike(songId){
+    try{
+      const { isLiked } = await toggleLike(songId);
+      setLikes((prev)=> ({
+        ...prev,
+        [songId]: isLiked,
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  }
 
   return (
     <>
@@ -140,10 +155,12 @@ const Album = () => {
 
         <div className={styles.songsList}>
           <div className={styles.songsHeader}>
+            <div className={styles.headerLike}></div> {/* heart column */}
             <div className={styles.headerNumber}>#</div>
             <div className={styles.headerTitle}>Title</div>
             <div className={styles.headerArtists}>Artists</div>
             <div className={styles.headerStreams}>Streams</div>
+            <div className={styles.headerReport}></div> {/* report column */}
           </div>
 
           {albumData.songs.map((song, index) => (
@@ -156,6 +173,8 @@ const Album = () => {
               streams={song.streams}
               id={song.songId}
               albumId={id}
+              isLiked={!!likes[song.songId]}
+              onToggleLike={handleToggleLike}
             />
           ))}
         </div>

@@ -21,7 +21,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendFriendRequest([FromBody] CreateFriendRequestDto dto)
+        public async Task<IActionResult> AddFriend([FromBody] CreateFriendRequestDto dto)
         {
             if (dto.FrienderId == dto.FriendeeId)
                 return BadRequest("You cannot friend yourself.");
@@ -32,7 +32,7 @@ namespace backend.Controllers
                     (f.FrienderId == dto.FriendeeId && f.FriendeeId == dto.FrienderId));
 
             if (existing != null)
-                return BadRequest("Friend request or friendship already exists.");
+                return BadRequest("Friendship already exists.");
 
             var newFriend = dto.ToUserFriendsWithUser();
             await _context.UserFriendsWithUsers.AddAsync(newFriend);
