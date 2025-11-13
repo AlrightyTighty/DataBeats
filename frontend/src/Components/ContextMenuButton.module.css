@@ -3,7 +3,7 @@
 }
 
 .context-menu-button {
-  opacity: 0;
+  opacity: 1;
   transition: 0.25s;
   z-index: 10;
 }
