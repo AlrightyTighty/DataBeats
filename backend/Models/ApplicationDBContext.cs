@@ -42,6 +42,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<Complaint> Complaints { get; set; }
 
+    public virtual DbSet<Email> Emails { get; set; }
+
     public virtual DbSet<Event> Events { get; set; }
 
     public virtual DbSet<EventPictureFile> EventPictureFiles { get; set; }
@@ -95,7 +97,8 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<UserSavesPlaylist> UserSavesPlaylists { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=uma-music-db.c72imm4c0ouz.us-east-2.rds.amazonaws.com;uid=admin;pwd=Ramamusic123!;database=music_db", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -713,6 +716,28 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
+        modelBuilder.Entity<Email>(entity =>
+        {
+            entity.HasKey(e => e.EmailId).HasName("PRIMARY");
+
+            entity.ToTable("email");
+
+            entity.Property(e => e.EmailId).HasColumnName("email_id");
+            entity.Property(e => e.EmailBody)
+                .HasColumnType("text")
+                .HasColumnName("email_body");
+            entity.Property(e => e.EmailFrom)
+                .HasColumnType("text")
+                .HasColumnName("email_from");
+            entity.Property(e => e.EmailSubject)
+                .HasColumnType("text")
+                .HasColumnName("email_subject");
+            entity.Property(e => e.EmailTo)
+                .HasColumnType("text")
+                .HasColumnName("email_to");
+            entity.Property(e => e.Sent).HasColumnName("sent");
+        });
+
         modelBuilder.Entity<Event>(entity =>
         {
             entity.HasKey(e => e.EventId).HasName("PRIMARY");
@@ -811,6 +836,7 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
             entity.Property(e => e.FollowerCount).HasColumnName("follower_count");
+            entity.Property(e => e.IsVerified).HasColumnName("is_verified");
             entity.Property(e => e.Label)
                 .HasMaxLength(50)
                 .HasColumnName("label");

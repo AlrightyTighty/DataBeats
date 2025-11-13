@@ -139,7 +139,4 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/event") && 
 
 app.MapControllers();
 
-
-
-
 app.Run();
