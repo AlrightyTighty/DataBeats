@@ -31,11 +31,13 @@ export default function PlaylistPage() {
       setError("");
       const data = await getPlaylistPage(playlistId);
       setPlaylist(data);
-      
+
       // Load album art for all songs
-      const artIds = [...new Set(data.songs.map(s => s.albumArtFileId).filter(Boolean))];
+      const artIds = [
+        ...new Set(data.songs.map((s) => s.albumArtFileId).filter(Boolean)),
+      ];
       const newCache = { ...albumArtCache };
-      
+
       for (const artId of artIds) {
         if (!newCache[artId]) {
           try {
@@ -49,7 +51,7 @@ export default function PlaylistPage() {
           }
         }
       }
-      
+
       setAlbumArtCache(newCache);
     } catch (e) {
       setError(String(e.message || e));
@@ -99,7 +101,9 @@ export default function PlaylistPage() {
         <Topnav />
         <div className={styles.page}>
           <div className={styles.inner}>
-            {loading && <div className={styles.status}>Loading playlist...</div>}
+            {loading && (
+              <div className={styles.status}>Loading playlist...</div>
+            )}
             {!loading && error && (
               <div className={`${styles.status} ${styles.statusError}`}>
                 Error: {error}
@@ -121,7 +125,9 @@ export default function PlaylistPage() {
     ? `${API}/api/playlist/picture/view/${picId}`
     : albumArtPlaceholder;
 
-  const canEdit = playlist.isOwner || playlist.isCollaborator;
+  const isLikedPlaylist = playlist.playlistName === "Your Liked Playlist";
+
+  const canEdit =(playlist.isOwner || playlist.isCollaborator) && !isLikedPlaylist;
 
   return (
     <>
@@ -151,7 +157,7 @@ export default function PlaylistPage() {
                     Access: <strong>{playlist.access}</strong>
                   </span>
                   <span>
-                    • Owner: {" "}
+                    • Owner:{" "}
                     <strong>
                       {playlist.ownerDisplayName ?? `User #${playlist.userId}`}
                     </strong>
@@ -164,13 +170,19 @@ export default function PlaylistPage() {
               </div>
             </div>
 
-            {/* Add song / user row */}
+            {/* Add song / user row (hidden for liked playlist) */}
             {canEdit && (
               <div className={styles.addRow}>
-                <button onClick={() => setShowAddModal(true)} className={styles.addButton}>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className={styles.addButton}
+                >
                   ➕ Add Songs
                 </button>
-                <button onClick={() => setShowAddUser(true)} className={styles.addUserButton}>
+                <button
+                  onClick={() => setShowAddUser(true)}
+                  className={styles.addUserButton}
+                >
                   ➕ Add Users
                 </button>
                 {showAddModal && (
@@ -193,37 +205,36 @@ export default function PlaylistPage() {
                     isOpen={showAddUser}
                     onClose={() => setShowAddUser(false)}
                     onAdd={async (username) => {
-                      try{
-                        const { addCollaboratorToPlaylist } = await import("../lib/playlistPageApi.js");
-                        const data = await addCollaboratorToPlaylist(playlistId, username);
+                      try {
+                        const { addCollaboratorToPlaylist } = await import(
+                          "../lib/playlistPageApi.js"
+                        );
+                        const data = await addCollaboratorToPlaylist(
+                          playlistId,
+                          username
+                        );
                         setPlaylist(data);
                       } catch (err) {
                         console.warn(err);
                         return Promise.reject(err);
                       }
-                    
                     }}
                   />
                 )}
               </div>
             )}
 
-            {}
             {error && (
               <div className={`${styles.status} ${styles.statusError}`}>
                 {error}
               </div>
             )}
 
-            {}
             <section className={styles.songsSection}>
-              
-
               {playlist.songs.length === 0 ? (
                 <div className={styles.emptyText}>No songs yet.</div>
               ) : (
                 <>
-                  {}
                   <div className={styles.songsHeaderRow}>
                     <div className={styles.colIndex}>#</div>
                     <div className={styles.colAlbumArt}></div>
@@ -236,14 +247,16 @@ export default function PlaylistPage() {
 
                   <ul className={styles.songList}>
                     {playlist.songs.map((s, i) => {
-                      const albumArtSrc = s.albumArtFileId && albumArtCache[s.albumArtFileId]
-                        ? albumArtCache[s.albumArtFileId]
-                        : albumArtPlaceholder;
+                      const albumArtSrc =
+                        s.albumArtFileId && albumArtCache[s.albumArtFileId]
+                          ? albumArtCache[s.albumArtFileId]
+                          : albumArtPlaceholder;
 
                       return (
                         <li
                           key={
-                            s.playlistEntryId ?? `${s.songId}-${s.timeAddedUtc}`
+                            s.playlistEntryId ??
+                            `${s.songId}-${s.timeAddedUtc}`
                           }
                           className={`${styles.songRow} ${styles.songRowGrid}`}
                         >
@@ -284,7 +297,7 @@ export default function PlaylistPage() {
                             {s.duration || "—"}
                           </div>
 
-                          {/* actions */}
+                          {/* actions (hidden for liked playlist) */}
                           <div className={styles.colActions}>
                             {canEdit && (
                               <button

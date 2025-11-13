@@ -1,127 +1,117 @@
-.profileCard {
-  position: absolute;
-  width: 1300px;
-  height: 289px;
-  left: 70px;
-  top: 200px;
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  background: rgba(121, 212, 247, 0.5);
-  border-radius: 20px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
-  display: grid;
-  grid-template-columns: 96px 1fr auto;
+.followModalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
   align-items: center;
-  column-gap: 18px;
-  padding: 18px 20px;
-  box-sizing: border-box;
-
-  z-index: 5;
+  justify-content: center;
+  z-index: 9999;
 }
 
-.relativeRoot {
-  position: relative;
-  min-height: 100vh;
+.followModal {
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: rgba(12, 46, 154, 0.95);
+  border-radius: 18px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #fff;
 }
 
-.avatar {
-  width: 96px;
-  height: 96px;
+.followModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.followModalHeader span {
+  font: 700 20px/1 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto,
+    sans-serif;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.followModalBody {
+  flex: 1;
+  min-height: 120px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.followList {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.followRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: rgba(10, 16, 29, 0.45);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.16s ease, transform 0.04s ease;
+}
+
+.followRow:hover {
+  background: rgba(121, 212, 247, 0.22);
+  transform: translateY(-1px);
+}
+
+.followAvatar {
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  object-fit: cover;
-  background: rgba(255,255,255,0.25);
-  border: 1px solid rgba(0,0,0,0.08);
+  background: #d9d9d9;
+  flex-shrink: 0;
 }
 
-.main {
+.followText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.name {
-  font: 700 24px/1.2 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: #0b0f13;
+.followName {
+  font-size: 15px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.counts {
-  margin-top: 8px;
-  display: flex;
-  gap: 28px;
-  font: 600 14px/1.2 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: rgba(11, 15, 19, 0.8);
+.followSince {
+  font-size: 12px;
+  opacity: 0.85;
 }
 
-.countLink {
-  color: rgba(11, 15, 19, 0.92);
-  text-decoration: none;
-  cursor: pointer;
-}
-.countLink:hover { text-decoration: underline; }
-.countMuted { pointer-events: none; opacity: 0.7; }
-
-.subtle {
-  margin-top: 6px;
-  font: 500 12px/1.2 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: rgba(11, 15, 19, 0.6);
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.chip {
-  appearance: none;
-  border: 0;
-  padding: 10px 14px;
-  border-radius: 16px;
-  background: rgba(41, 58, 163, 0.64);
-  color: #fff;
-  cursor: pointer;
-  text-decoration: none;
-  font: 700 16px/1 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  transition: background-color .16s ease, transform .04s ease;
-}
-.chip:hover { background: #AAB1DC; }
-.chip:active { transform: translateY(1px); }
-.chip:focus-visible {
-  outline: 2px solid #AAB1DC; outline-offset: 2px;
-}
-
-.toast {
-  position: absolute;
-  right: 20px;
-  bottom: 16px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font: 600 12px/1 "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  pointer-events: none;
-}
-
-.actions :global(.portalMenu), 
-.actions :global(.menu) {
-  z-index: 2147483647;
-}
-
-@media (max-width: 1400px) {
-  .profileCard {
-    position: static;           
-    width: auto;
-    max-width: 1300px;
-    height: auto;
-    margin: 24px auto 0;
-    grid-template-columns: 72px 1fr;
-    row-gap: 12px;
-  }
-  .avatar { width: 72px; height: 72px; }
-  .actions { grid-column: 1 / -1; justify-self: end; }
+.followEmpty {
+  width: 100%;
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.9;
 }

@@ -1,11 +1,23 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import styles from "./ProfileHeader.module.css";
+import KebabMenu from "./KebabMenu";
+import ProfileFollowModal from "./ProfileFollowModal.jsx";
 
 export default function ProfileHeaderMe({ me }) {
   const [copied, setCopied] = useState(false);
+  const [showFriends, setShowFriends] = useState(false);
 
-  const userId = me.userId ?? me.id;
-  const shareUrl = useMemo(() => `${window.location.origin}/user/${userId}`, [userId]);
+  const userId = useMemo(() => me?.userId ?? me?.id ?? null, [me]);
+  const username =
+    me?.displayName || me?.username || (userId ? `user-${userId}` : "profile");
+
+  const shareUrl = useMemo(
+    () =>
+      userId
+        ? `${window.location.origin}/user/${userId}`
+        : window.location.origin,
+    [userId]
+  );
 
   async function share() {
     try {
@@ -16,32 +28,86 @@ export default function ProfileHeaderMe({ me }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 1200);
       }
-    } catch {
-    }
+    } catch {}
   }
 
+  function openFriendsModal() {
+    if (!userId) return;
+    setShowFriends(true);
+  }
+
+  function closeFriendsModal() {
+    setShowFriends(false);
+  }
+
+  const avatarSrc =
+    me?.imageUrl ||
+    (me?.profilePictureFileId != null
+      ? `/api/images/profile-picture/${me.profilePictureFileId}`
+      : "");
+
   return (
-    <div className={styles.profileCard}>
-      <img
-        className={styles.avatar}
-        src={me.imageUrl || `/api/images/profile-picture/${me.profilePictureFileId ?? ""}`}
-        alt=""
-      />
+    <>
+      <div className={styles.profileCard}>
+        <img className={styles.avatar} src={avatarSrc} alt="" />
 
-      <div className={styles.main}>
-        <div className={styles.name}>{me.displayName || me.username}</div>
-        <div className={styles.counts}>
-          <a className={styles.countLink} href={`/following/${userId}`}>Following: {me.followingCount ?? 0}</a>
-          <a className={styles.countLink} href={`/followers/${userId}`}>Followers: {me.followerCount ?? 0}</a>
+        <div className={styles.main}>
+          <div className={styles.row}>
+            <div className={styles.name}>{username}</div>
+          </div>
+
+          <div className={styles.counts}>
+            <button
+              type="button"
+              className={styles.countLinkBtn}
+              disabled={!userId}
+              onClick={openFriendsModal}
+            >
+              Following: {me?.followingCount ?? 0}
+            </button>
+
+            <button
+              type="button"
+              className={styles.countLinkBtn}
+              disabled={!userId}
+              onClick={openFriendsModal}
+            >
+              Followers: {me?.followerCount ?? 0}
+            </button>
+          </div>
         </div>
+
+        <div className={styles.actions}>
+          {/*Follow button = open popup */}
+          <button
+            type="button"
+            className={styles.chip}
+            onClick={openFriendsModal}
+            disabled={!userId}
+          >
+            Followers &amp; Following
+          </button>
+
+          <button
+            type="button"
+            className={styles.chip}
+            onClick={() => (location.href = "/settings")}
+          >
+            Edit Profile
+          </button>
+
+          <KebabMenu onShare={share} onReport={null} />
+        </div>
+
+        {copied && <div className={styles.toast}>Link copied</div>}
       </div>
 
-      <div className={styles.actions}>
-        <a className={styles.chip} href="/settings">Edit Profile</a>
-        <button className={styles.chip} onClick={share} aria-label="Share my profile">Share</button>
-      </div>
-
-      {copied && <div className={styles.toast}>Link copied</div>}
-    </div>
+      {/*Popup component*/}
+      <ProfileFollowModal
+        userId={userId}
+        open={showFriends}
+        onClose={closeFriendsModal}
+      />
+    </>
   );
 }

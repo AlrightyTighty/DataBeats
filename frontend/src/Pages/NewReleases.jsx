@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./NewReleases.module.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
 export default function NewReleases() {
+  const navigate = useNavigate();
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
@@ -15,7 +17,8 @@ export default function NewReleases() {
         setErr(null);
         setLoading(true);
         const res = await fetch(`${API}/api/album/new`);
-        if (!res.ok) throw new Error(`GET /api/album/new failed (${res.status})`);
+        if (!res.ok)
+          throw new Error(`GET /api/album/new failed (${res.status})`);
         const data = await res.json();
         setAlbums(Array.isArray(data) ? data : []);
       } catch (e) {
@@ -43,20 +46,29 @@ export default function NewReleases() {
             <div className={styles.grid}>
               {albums.map((a) => {
                 const coverSrc = a.albumOrSongArtFileId
-                  ? `${API}/api/file/view/${a.albumOrSongArtFileId}`
+                  ? `${API}/api/art/view/${a.albumOrSongArtFileId}`
                   : null;
-                const year = a.releaseDate
-                  ? new Date(a.releaseDate).getFullYear()
+
+                const dateStr = a.releaseDate
+                  ? new Date(a.releaseDate).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
                   : "—";
+
                 const artistLine =
-                  (a.artists && a.artists.join(", ")) || "Unknown Artist";
+                  Array.isArray(a.artists) && a.artists.length > 0
+                    ? a.artists.map((x) => x.artistName).join(", ")
+                    : "Unknown Artist";
 
                 return (
-                  <a
+                  <button
                     key={a.albumId}
-                    href={`/album/${a.albumId}`}
+                    type="button"
                     className={styles.card}
                     title={a.albumTitle}
+                    onClick={() => navigate(`/album/${a.albumId}`)}
                   >
                     {coverSrc ? (
                       <img
@@ -72,10 +84,10 @@ export default function NewReleases() {
                     <div className={styles.text}>
                       <h3>{a.albumTitle}</h3>
                       <p>
-                        {artistLine} • {year}
+                        {artistLine} • {dateStr}
                       </p>
                     </div>
-                  </a>
+                  </button>
                 );
               })}
             </div>

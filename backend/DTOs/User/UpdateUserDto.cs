@@ -6,5 +6,6 @@ namespace backend.DTOs.User
         public string? Fname { get; set; }
         public string? Lname { get; set; }
         public ulong? ProfilePictureFileId { get; set; }
+        public string? Bio { get; set; } 
     }
 }

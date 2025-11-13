@@ -58,7 +58,7 @@ export default function Bio({musician, api}) {
         <p>{bio}</p>
         <EditButton state={show} clickFunction={toggleModal} modal={
             <div className="modal-bio">
-                <h2>About [Editing]</h2>
+                <h2>About</h2>
 
                 {/* <textarea /> is a built-in browser componenet that lets u render a multi-line text input */}
                 {/* controlled comoponents are form elements like input, textarea, or select that are managed by react state; the value of the form element is set and updated through react state */}

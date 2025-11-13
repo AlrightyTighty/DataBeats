@@ -14,5 +14,6 @@ namespace backend.DTOs.User
         public ulong? AdminId { get; set; }
         public ulong? MusicianId { get; set; }
         public ulong UserId { get; set; }
+        public string? Bio { get; set; } 
     }
 }

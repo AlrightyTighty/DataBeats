@@ -1,9 +1,10 @@
 import { AlbumSongListing } from "../Components/AlbumSongListing.jsx";
 import styles from "./Album.module.css";
 import API from "../lib/api.js";
-import { useEffect, useState, useRef, useContext } from "react";
-import { useOutletContext, useParams } from "react-router";
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
+import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
 
 const albumData = {
   title: "Midnight Echoes",
@@ -77,8 +78,7 @@ const albumData = {
   ],
 };
 
-const Album = () => {
-  const { setPlaybarState } = useOutletContext();
+const Album = ({ setPlaybarState }) => {
 
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
@@ -92,6 +92,8 @@ const Album = () => {
     coverImage: null,
     songs: [],
   });
+
+  const [likes, setLikes] = useState({}); // { songId: true/false }
 
   const isLoading = useRef(false);
 
@@ -113,8 +115,33 @@ const Album = () => {
       albumInfo.songs = songInfo;
       console.log(albumInfo);
       setAlbumData(albumInfo);
+
+      // Initialize like states for the songs on this album
+      try {
+        const songIds = (songInfo || []).map((s) => s.songId);
+        const likedSet = await getLikeStatuses(songIds);
+        const likesMap = {};
+        songIds.forEach((sid) => {
+          if (likedSet.has(sid)) likesMap[sid] = true;
+        });
+        setLikes(likesMap);
+      } catch (e) {
+        console.warn("Failed to fetch like statuses", e);
+      }
     })();
-  });
+  }, [id]);
+
+  async function handleToggleLike(songId){
+    try{
+      const { isLiked } = await toggleLike(songId);
+      setLikes((prev)=> ({
+        ...prev,
+        [songId]: isLiked,
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  }
 
   return (
     <>
@@ -140,10 +167,12 @@ const Album = () => {
 
         <div className={styles.songsList}>
           <div className={styles.songsHeader}>
+            <div className={styles.headerLike}></div> {/* heart column */}
             <div className={styles.headerNumber}>#</div>
             <div className={styles.headerTitle}>Title</div>
             <div className={styles.headerArtists}>Artists</div>
             <div className={styles.headerStreams}>Streams</div>
+            <div className={styles.headerReport}></div> {/* report column */}
           </div>
 
           {albumData.songs.map((song, index) => (
@@ -156,6 +185,8 @@ const Album = () => {
               streams={song.streams}
               id={song.songId}
               albumId={id}
+              isLiked={!!likes[song.songId]}
+              onToggleLike={handleToggleLike}
             />
           ))}
         </div>

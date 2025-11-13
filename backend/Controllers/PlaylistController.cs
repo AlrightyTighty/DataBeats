@@ -19,6 +19,7 @@ namespace backend.Controllers
     {
         private readonly ApplicationDBContext _context;
 
+        private const string LikedPlaylistName = "Your Liked Playlist";
         public PlaylistController(ApplicationDBContext context)
         {
             _context = context;
@@ -51,6 +52,11 @@ namespace backend.Controllers
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
 
+            if (playlistDto.PlaylistName == LikedPlaylistName)
+            {
+                return BadRequest("Playlist name reserved.");
+            }
+            
             var playlist = new Playlist
             {
                 UserId = userId,
@@ -82,6 +88,11 @@ namespace backend.Controllers
             if (playlist == null)
             {
                 return NotFound();
+            }
+
+            if (playlist.PlaylistName == LikedPlaylistName)
+            {
+                return BadRequest("You cannot rename your liked playlist");
             }
 
             playlist.PlaylistName = updateDto.PlaylistName;
@@ -133,6 +144,11 @@ namespace backend.Controllers
             if (playlist == null)
             {
                 return NotFound();
+            }
+
+            if (playlist.PlaylistName == LikedPlaylistName)
+            {
+                return BadRequest("You cannot delete your liked playlist");
             }
 
             playlist.TimestampDeleted = DateTime.UtcNow;
