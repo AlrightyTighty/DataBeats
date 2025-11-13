@@ -1,8 +1,8 @@
 import { AlbumSongListing } from "../Components/AlbumSongListing.jsx";
 import styles from "./Album.module.css";
 import API from "../lib/api.js";
-import { useEffect, useState, useRef, useContext } from "react";
-import { useOutletContext, useParams } from "react-router";
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
 import { toggleLike } from "../lib/likesApi.js";
 
@@ -78,8 +78,7 @@ const albumData = {
   ],
 };
 
-const Album = () => {
-  const { setPlaybarState } = useOutletContext();
+const Album = ({ setPlaybarState }) => {
 
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
