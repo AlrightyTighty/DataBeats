@@ -27,15 +27,25 @@ export default function Dashboard() {
           fetch(`${API}/api/event`, { credentials: "include" }),
         ]);
 
-        const playlistResponse = resPlaylists.ok ? await resPlaylists.json() : {};
+        const playlistResponse = resPlaylists.ok
+          ? await resPlaylists.json()
+          : {};
         const eventsResponse = resEvents.ok ? await resEvents.json() : [];
 
-        const owned = playlistResponse.ownedPlaylists ?? playlistResponse.OwnedPlaylists ?? [];
-        const contrib = playlistResponse.contributorPlaylists ?? playlistResponse.ContributorPlaylists ?? [];
+        const owned =
+          playlistResponse.ownedPlaylists ??
+          playlistResponse.OwnedPlaylists ??
+          [];
+        const contrib =
+          playlistResponse.contributorPlaylists ??
+          playlistResponse.ContributorPlaylists ??
+          [];
         const combined = [...owned, ...contrib].slice(0, 5);
 
         setPlaylists(combined);
-        setEvents((Array.isArray(eventsResponse) ? eventsResponse : []).slice(0, 5));
+        setEvents(
+          (Array.isArray(eventsResponse) ? eventsResponse : []).slice(0, 5)
+        );
       } catch (err) {
         console.error("Error loading dashboard:", err);
       } finally {
@@ -49,32 +59,58 @@ export default function Dashboard() {
       <Topnav />
       <div className={styles.page}>
         <div className={styles.taskbar}>
-          <button onClick={() => navigate("/new")} className={styles.btn}><div className={styles.btnHighlight}></div><span>New</span></button>
-          <button onClick={() => navigate("/playlists")} className={styles.btn}><div className={styles.btnHighlight}></div><span>Playlist</span></button>
- <button
-   onClick={() => {
-     if (!userId) return;
-     const musicianId = me?.musicianId ?? me?.MusicianId ?? null;
-     if (musicianId) {
-       navigate(`/musician/${musicianId}`);
-     } else {
-       navigate(`/artists`);
-     }
-   }}
-   disabled={!userId}
-   className={styles.btn}
->
- <div className={styles.btnHighlight}></div><span>Artist</span>
- </button>
+          <button onClick={() => navigate("/new")} className={styles.btn}>
+            <div className={styles.btnHighlight}></div>
+            <span>New</span>
+          </button>
 
-          <button onClick={() => navigate("/playlists")} className={styles.btn}><div className={styles.btnHighlight}></div><span>Album</span></button>
-          <button onClick={() => navigate("/events")} className={styles.btn}><div className={styles.btnHighlight}></div><span>Event</span></button>
+          <button onClick={() => navigate("/playlists")} className={styles.btn}>
+            <div className={styles.btnHighlight}></div>
+            <span>Playlist</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (!userId) return;
+              const musicianId = me?.musicianId ?? me?.MusicianId ?? null;
+              if (musicianId) {
+                navigate(`/musician/${musicianId}`);
+              } else {
+                navigate(`/artists`);
+              }
+            }}
+            disabled={!userId}
+            className={styles.btn}
+          >
+            <div className={styles.btnHighlight}></div>
+            <span>Like</span>
+          </button>
+
+          <button onClick={() => navigate("/playlists")} className={styles.btn}>
+            <div className={styles.btnHighlight}></div>
+            <span>Album</span>
+          </button>
+
+          <button onClick={() => navigate("/events")} className={styles.btn}>
+            <div className={styles.btnHighlight}></div>
+            <span>Event</span>
+          </button>
+
+          <button onClick={() => navigate("/history")} className={styles.btn}>
+            <div className={styles.btnHighlight}></div>
+            <span>History</span>
+          </button>
         </div>
 
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Playlists</h2>
-            <span className={styles.viewAll} onClick={() => navigate("/playlists")}>View All</span>
+            <span
+              className={styles.viewAll}
+              onClick={() => navigate("/playlists")}
+            >
+              View All
+            </span>
           </div>
           {loading ? (
             <p>Loading playlists...</p>
@@ -97,7 +133,12 @@ export default function Dashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2>Events</h2>
-            <span className={styles.viewAll} onClick={() => navigate("/events")}>View All</span>
+            <span
+              className={styles.viewAll}
+              onClick={() => navigate("/events")}
+            >
+              View All
+            </span>
           </div>
           {loading ? (
             <p>Loading events...</p>

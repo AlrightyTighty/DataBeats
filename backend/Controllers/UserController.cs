@@ -8,6 +8,7 @@ using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft. EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -58,7 +59,31 @@ namespace backend.Controllers
 
             _context.Users.Add(newUser);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new {id = newUser.UserId}, newUser.ToUserDtoFromUser());
+            return CreatedAtAction(nameof(GetById), new { id = newUser.UserId }, newUser.ToUserDtoFromUser());
         }
+
+        // SOFT DELETE: lock account "forever" so user can't log in anymore
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> SoftDeleteUser([FromRoute] ulong id)
+        {
+            var user = await _context.Users
+                .Include(u => u.AuthenticationInformation)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+                return NotFound();
+
+            if (user.AuthenticationInformation == null)
+                return BadRequest("No authentication record for this user.");
+
+            user.AuthenticationInformation.Locked = true;
+            // effectively permanent
+            user.AuthenticationInformation.LockExpiration = DateTime.UtcNow.AddDays(100);
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        
+
     }
 }

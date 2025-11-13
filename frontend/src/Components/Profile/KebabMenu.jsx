@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import barMenu from "../../assets/barMenu.svg";
 import styles from "./KebabMenu.module.css";
 
-export default function KebabMenu({ onShare, followLabel, onFollowAction, onReport }) {
+export default function KebabMenu({ onShare, onReport }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -19,7 +19,7 @@ export default function KebabMenu({ onShare, followLabel, onFollowAction, onRepo
       <button
         type="button"
         aria-label="Menu"
-        onClick={() => setOpen(v => !v)}
+        onClick={() => setOpen((v) => !v)}
         className={styles.trigger}
       >
         <img src={barMenu} alt="" className={styles.icon} />
@@ -30,27 +30,22 @@ export default function KebabMenu({ onShare, followLabel, onFollowAction, onRepo
           <button
             type="button"
             className={styles.btn}
-            onClick={() => { setOpen(false); onShare?.(); }}
+            onClick={() => {
+              setOpen(false);
+              onShare?.();
+            }}
             role="menuitem"
           >
             Share
           </button>
 
-          {followLabel ? (
-            <button
-              type="button"
-              className={styles.btn}
-              onClick={() => { setOpen(false); onFollowAction?.(); }}
-              role="menuitem"
-            >
-              {followLabel}
-            </button>
-          ) : null}
-
           <button
             type="button"
             className={styles.btn}
-            onClick={() => { setOpen(false); onReport?.(); }}
+            onClick={() => {
+              setOpen(false);
+              onReport?.();
+            }}
             role="menuitem"
           >
             Report

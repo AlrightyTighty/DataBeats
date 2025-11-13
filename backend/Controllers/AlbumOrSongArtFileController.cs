@@ -61,9 +61,25 @@ namespace backend.Controllers
                     await _context.AlbumOrSongArtFiles.AddAsync(newFile);
                     await _context.SaveChangesAsync();
 
-                    return CreatedAtAction("GetById", new {id = newFile.AlbumOrSongArtFileId, sendFileData=false}, newFile);
+                    return CreatedAtAction("GetById", new { id = newFile.AlbumOrSongArtFileId, sendFileData = false }, newFile);
                 }
+            }
+            ;
+        }
+        
+        [HttpGet("view/{id}")]
+        public async Task<IActionResult> ViewAsync([FromRoute] ulong id)
+        {
+            var art = await _context.AlbumOrSongArtFiles.FindAsync(id);
+            if (art == null) return NotFound();
+            var contentType = (art.FileExtension?.ToLowerInvariant()) switch
+            {
+                "png" => "image/png",
+                "jpg" or "jpeg" => "image/jpeg",
+                "webp" => "image/webp",
+                _ => "application/octet-stream"
             };
+            return File(art.FileData, contentType);
         }
     }
 }
