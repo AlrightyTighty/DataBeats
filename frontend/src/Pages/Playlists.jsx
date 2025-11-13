@@ -5,6 +5,7 @@ import Topnav from "../Components/Topnav";
 import { useNavigate } from "react-router";
 import API from "../lib/api";
 import ContextMenu from "../Components/ContextMenu";
+import AddButton from "../Components/AddButton"
 
 // Mock data for playlists
 /*const ownedPlaylists = [
@@ -89,7 +90,7 @@ export default function Playlists() {
 
         <main className={styles.content}>
           <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
-          <button onClick={() => navigate("/createplaylist")}> New Playlist </button>
+          <AddButton route="/createplaylist" />
         </main>
       </div>
     </>

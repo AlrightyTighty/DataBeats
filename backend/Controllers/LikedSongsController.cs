@@ -51,7 +51,7 @@ namespace backend.Controllers
             {
                 UserId = userId,
                 PlaylistName = LikedPlaylistName,
-                PlaylistDescription = "Songs you like",
+                PlaylistDescription = "Songs You Liked",
                 Access = "public",
                 NumOfSongs = 0,
                 TimestampCreated = DateTime.Now,

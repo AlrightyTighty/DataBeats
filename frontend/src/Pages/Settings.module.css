@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0c2e9a 6%, #0b1f5c 50%, #0a101d 100%);
+  /* background: linear-gradient(180deg, #0c2e9a 6%, #0b1f5c 50%, #0a101d 100%); */
   padding-top: 140px;
   padding-bottom: 80px;
   color: #fff;
@@ -15,15 +15,16 @@
 .left,
 .right {
   flex: 1;
-  background: rgba(12, 46, 154, 0.52);
+  /* background: rgba(12, 46, 154, 0.52); */
+  background: transparent;
+  border: 3px solid white;
   border-radius: 20px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-input,
-select {
+.input {
   width: 100%;
   height: 38px;
   border: none;

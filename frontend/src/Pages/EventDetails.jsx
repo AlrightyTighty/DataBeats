@@ -5,8 +5,11 @@ import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton';
 import DeleteButton from '../Components/DeleteButton';
 import '../css/EventDetails.css';
+import useAuthentication from '../hooks/useAuthentication.js';
 
 export default function EventDetails() {
+
+    const userInfo = useAuthentication();
 
     // get event id from route params
     const eventId = useParams().id;
@@ -210,12 +213,12 @@ export default function EventDetails() {
             <h3 className="event-desc">{event.eventDescription}</h3>
             <div className="musician-time-price">
                 <h2>
-                    {event.musicianName}
+                    Host: {event.musicianName}
                     <br></br>
-                    {(new Date(event.eventTime)).toLocaleString()}
+                    Time: {(new Date(event.eventTime)).toLocaleString()}
                     <br></br>
                     <br></br>
-                    ${event.ticketPrice}
+                    Admission: ${event.ticketPrice}
                 </h2>
             </div>
             <EditButton state={showEdit} clickFunction={toggleEditModal} modal={
@@ -260,9 +263,6 @@ export default function EventDetails() {
                     <button type="button" className="done" onClick={toggleEditModal}>DONE</button>
                 </div>
             }/>
-            <div className="share-link">
-                <a href={`http://localhost:5173/event/${event.eventId}`}>http://localhost:5173/event/{event.eventId}</a>
-            </div>
         </div>
         <DeleteButton strwhattodelete='event' api={api} state={showDelete} clickFunction={toggleDeleteModal}/>
     </div>

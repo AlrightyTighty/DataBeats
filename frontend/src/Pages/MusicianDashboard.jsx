@@ -120,9 +120,6 @@ export default function MusicianDashboard() {
                 <div className="musician-bio">
                     <Bio musician={musician} api={musicianURL}/>
                 </div>
-                <div className="share">
-                    <a href={`http://localhost:5173/artist/${musician.musicianId}`}>http://localhost:5173/artist/{musician.musicianId}</a>
-                </div>
             </div>
         </div>
     )

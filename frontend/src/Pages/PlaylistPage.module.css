@@ -2,7 +2,7 @@
   min-height: 100vh;
   padding: 96px 0 40px;
   box-sizing: border-box;
-  background: linear-gradient(135deg, #1a3a5f 0%, #2b6cb0 35%, #38bdf8 100%);
+  /* background: linear-gradient(135deg, #1a3a5f 0%, #2b6cb0 35%, #38bdf8 100%); */
 }
 
 .inner {
@@ -13,7 +13,7 @@
 
 /* Card that holds everything */
 .card {
-  background: rgba(15, 23, 42, 0.95);
+  /* background: rgba(15, 23, 42, 0.95); */
   border-radius: 0;   
   padding: 24px 28px 28px;
   width: 100%;
@@ -154,8 +154,8 @@
 .songRow {
   padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(52, 69, 110, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.636);
 }
 
 .songMain {
@@ -170,7 +170,7 @@
 
 .songMeta {
   font-size: 12px;
-  color: #9ca3af;
+  color: white;
 }
 
 .removeButton {
@@ -206,8 +206,8 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9ca3af;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  color: white;
+  border-bottom: 1px solid #cbd5f5;
   gap: 12px;
 
   align-items: end;      
@@ -227,7 +227,7 @@
 .colIndex {
   text-align: left;
   font-size: 13px;
-  color: #9ca3af;
+  color: white;
 }
 
 .colAlbumArt {
@@ -253,7 +253,7 @@
 
 .colAlbum {
   font-size: 13px;
-  color: #9ca3af;
+  color: white;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -261,13 +261,13 @@
 
 .colDuration {
   font-size: 13px;
-  color: #9ca3af;
+  color: white;
   text-align: center;
 }
 
 .colDate {
   font-size: 13px;
-  color: #9ca3af;
+  color: white;
 }
 
 .colActions {
@@ -281,7 +281,7 @@
 
 .songSub {
   font-size: 12px;
-  color: #9ca3af;
+  color: white;
 }
 
 

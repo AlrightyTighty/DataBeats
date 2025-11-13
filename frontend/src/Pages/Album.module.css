@@ -1,7 +1,7 @@
 .container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
-  color: #ffffff;
+  /* background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%); */
+  /* color: #ffffff; */
   padding: 60px 40px;
   margin: 100px auto 0; /* offset for fixed Topnav (95px) */
 }
@@ -38,7 +38,7 @@
 }
 
 .albumType {
-  color: #a0a0a0;
+  /* color: #a0a0a0; */
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -56,12 +56,12 @@
 
 .albumArtists {
   font-size: 24px;
-  color: #e0e0e0;
+  /* color: #e0e0e0; */
   font-weight: 500;
 }
 
 .albumDescription {
-  color: #b0b0b0;
+  /* color: #b0b0b0; */
   font-size: 16px;
   line-height: 1.6;
   max-width: 600px;
@@ -71,7 +71,7 @@
 
 .songsList {
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 24px;
   backdrop-filter: blur(10px);
 }
@@ -83,7 +83,7 @@
   padding: 12px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 8px;
-  color: #a0a0a0;
+  /* color: #a0a0a0; */
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;

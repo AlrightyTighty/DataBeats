@@ -2,12 +2,12 @@
   color: #fff;
   min-height: 100dvh;
   padding: 160px 6vw 100px;
-  background: linear-gradient(to bottom, #0c1c3f 0%, #000 80%);
+  /* background: linear-gradient(to bottom, #0c1c3f 0%, #000 80%); */
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
   gap: 60px;
-  font-family: "Poppins", sans-serif;
+  /* font-family: "Poppins", sans-serif; */
   overflow-x: hidden;
 }
 

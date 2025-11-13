@@ -1,6 +1,6 @@
 /* === Global Container === */
 #main {
-  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+  /* background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%); */
   color: #ffffff;
   padding: 60px 40px;
   margin: 100px auto 0 auto;
@@ -36,7 +36,7 @@
 
 .h2 {
   font-size: 20px;
-  color: #a0a0a0;
+  color: #d5cfcf;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -71,7 +71,7 @@
   padding: 20px;
   border-radius: 12px;
   font-size: 14pt;
-  color: #ccc;
+  color: #d5cfcf;
   transition: background 0.3s;
 }
 
@@ -81,7 +81,7 @@
 
 #album-art-file-input::file-selector-button {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: #d5cfcf;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 10px 16px;
   border-radius: 8px;
@@ -240,7 +240,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #b0b0b0;
+  color: #d5cfcf;
 }
 
 #no-song-info h1 {
@@ -250,7 +250,7 @@
 
 #no-song-info h2 {
   margin: 10px 0;
-  color: #a0a0a0;
+  color: #d5cfcf;
 }
 
 #no-song-info img {

@@ -148,6 +148,7 @@ export default function Settings() {
                 <div className={styles.picPlaceholder}>No Image</div>
               )}
               <input
+                className={styles.input}
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
@@ -160,6 +161,7 @@ export default function Settings() {
             <label>
               First Name
               <input
+                className={styles.input}
                 value={profile.fname}
                 onChange={(e) =>
                   setProfile({ ...profile, fname: e.target.value })
@@ -170,6 +172,7 @@ export default function Settings() {
             <label>
               Last Name
               <input
+                className={styles.input}
                 value={profile.lname}
                 onChange={(e) =>
                   setProfile({ ...profile, lname: e.target.value })
@@ -180,6 +183,7 @@ export default function Settings() {
             <label>
               Display Name
               <input
+                className={styles.input}
                 value={profile.username}
                 onChange={(e) =>
                   setProfile({ ...profile, username: e.target.value })
@@ -198,6 +202,7 @@ export default function Settings() {
             <label>
               Email
               <input
+                className={styles.input}
                 type="email"
                 value={auth.email}
                 onChange={(e) => setAuth({ ...auth, email: e.target.value })}
@@ -207,6 +212,7 @@ export default function Settings() {
             <label>
               Password
               <input
+                className={styles.input}
                 type="password"
                 value={auth.password}
                 onChange={(e) => setAuth({ ...auth, password: e.target.value })}
