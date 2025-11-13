@@ -197,13 +197,7 @@ export default function EventDetails() {
         setEditPrice(event.ticketPrice);
     }
 
-    // state for opening/closing delete modal
-    const [showDelete, setShowDelete] = useState(false);
-    const toggleDeleteModal = () => {
-        setShowDelete(!showDelete);
-    }
-
-    return <div className="event-details" onClick={() => {if (showEdit) toggleEditModal(); if (showDelete) toggleDeleteModal()}}>
+    return <div className="event-details" onClick={() => {if (showEdit) toggleEditModal()}}>
         <Topnav />
         <div className="banner">
             <img src={imgSrc} alt="concert promo" />
@@ -264,6 +258,6 @@ export default function EventDetails() {
                 </div>
             }/>
         </div>
-        <DeleteButton strwhattodelete='event' api={api} state={showDelete} clickFunction={toggleDeleteModal}/>
+        <DeleteButton strwhattodelete='event' api={api}/>
     </div>
 }
