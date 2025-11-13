@@ -4,7 +4,7 @@ import API from "../lib/api.js";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
-import { toggleLike } from "../lib/likesApi.js";
+import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
 
 const albumData = {
   title: "Midnight Echoes",
@@ -115,6 +115,19 @@ const Album = ({ setPlaybarState }) => {
       albumInfo.songs = songInfo;
       console.log(albumInfo);
       setAlbumData(albumInfo);
+
+      // Initialize like states for the songs on this album
+      try {
+        const songIds = (songInfo || []).map((s) => s.songId);
+        const likedSet = await getLikeStatuses(songIds);
+        const likesMap = {};
+        songIds.forEach((sid) => {
+          if (likedSet.has(sid)) likesMap[sid] = true;
+        });
+        setLikes(likesMap);
+      } catch (e) {
+        console.warn("Failed to fetch like statuses", e);
+      }
     })();
   }, [id]);
 

@@ -62,9 +62,6 @@ namespace backend.Controllers
 
             _context.Users.Add(newUser);
             _context.SaveChanges();
-<<<<<<< HEAD
-            return CreatedAtAction(nameof(GetById), new { id = newUser.UserId }, newUser.ToUserDtoFromUser());
-=======
 
             var likedPlaylist = new Playlist
             {
@@ -83,7 +80,6 @@ namespace backend.Controllers
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetById), new {id = newUser.UserId}, newUser.ToUserDtoFromUser());
->>>>>>> a8a61bf (LikedPlaylist is done)
         }
 
         // SOFT DELETE: lock account "forever" so user can't log in anymore
