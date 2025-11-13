@@ -1,5 +1,5 @@
-import { useParams } from 'react-router';               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
-import { useState, useEffect } from 'react';            // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
+import { useNavigate, useParams } from 'react-router';               // returns an object of key-value pairs of the dynamic params from the current URL that were matched by the routes
+import { useState, useEffect } from 'react';                         // react hooks - functions that let you "hook into" (access) React state and other features from components w/o using classes
 import API from '../lib/api.js';
 import '../css/MusicianDashboard.css';
 import Topnav from '../Components/Topnav';
@@ -8,14 +8,33 @@ import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName';
 import Bio from '../Components/Bio';
 import AddButton from '../Components/AddButton';
+import useAuthentication from '../hooks/useAuthentication.js';
 
 export default function MusicianDashboard() {
     // get musician id from path params - useParams returns an object containing the dynamic route parameters
     // if route /musician-dashboard/:id is matched by /musician-dashboard/17 then useParams() will return {id: '17'}, an object with all the route params as key-value pairs
-    const musicianId = useParams();
+    const paramsMusicianId = useParams();
+
+    // wait to load user info, then reroute if user not authorized
+    const [loading, setLoading] = useState(true);
+    const userInfo = useAuthentication();
+    const navigate = useNavigate();
+    useEffect(() => {
+        // userInfo not yet loaded from api call -> wait
+        if (userInfo === null) return;
+
+        // passed userInfo null check -> userInfo loaded
+        setLoading(false);
+
+        // user is not the musician at this route
+        if (userInfo.musicianId !== paramsMusicianId.id) {
+            console.log("Unauthorized!");
+            navigate('/dashboard');
+        }
+    }, [paramsMusicianId, userInfo]);
 
     // api endpoint urls
-    const musicianURL = `${API}/api/musician/${musicianId.id}`;      // access id from musicianId object returned by useParams() and append to api url
+    const musicianURL = `${API}/api/musician/${paramsMusicianId.id}`;      // access id from paramsMusicianId object returned by useParams() and append to api url
 
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
@@ -48,7 +67,7 @@ export default function MusicianDashboard() {
     const [albums, setAlbums] = useState([]);
     useEffect(() => {
         (async () => {
-            const response = await fetch(`${API}/api/album/by-musician/${musicianId.id}`);
+            const response = await fetch(`${API}/api/album/by-musician/${paramsMusicianId.id}`);
             if (!response.ok) {
                 console.log("Error fetching artist's albums...");
             }
@@ -63,7 +82,7 @@ export default function MusicianDashboard() {
     const [events, setEvents] = useState([]);
     useEffect(() => {
         (async () => {
-            const response = await fetch(`${API}/api/event/by-musician/${musicianId.id}`);
+            const response = await fetch(`${API}/api/event/by-musician/${paramsMusicianId.id}`);
             if (!response.ok) {
                 console.log("Error fetching artist's events...");
             }
@@ -73,6 +92,9 @@ export default function MusicianDashboard() {
         })();
     }, []);
     
+    // don't render dashboard until user is authenticated - cannot conditionally call hooks; always call them but conditionally render content AFTER hooks run
+    if (loading) return <div>Loading...</div>;
+
     return (
         <div className="dashboard">
             <Topnav />
