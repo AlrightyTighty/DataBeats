@@ -157,13 +157,50 @@ namespace backend.Controllers
 
             var likedPlaylist = await GetOrCreateLikedPlaylistAsync(userId);
 
-            // If you want full playlist data, include entries & map with ToPlaylistDto or PlaylistPageDto.
             var playlist = await _context.Playlists
                 .Include(p => p.PlaylistEntries)
                 .ThenInclude(pe => pe.Song)
                 .FirstAsync(p => p.PlaylistId == likedPlaylist.PlaylistId);
 
             return Ok(playlist.ToPlaylistDto());
+        }
+
+        // Returns like status for a batch of songIds for the current user
+        // GET api/likes/status?songIds=1,2,3
+        [HttpGet("status")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetLikeStatuses([FromQuery] string songIds)
+        {
+            if (string.IsNullOrWhiteSpace(songIds))
+            {
+                return BadRequest(new { error = "songIds query parameter is required" });
+            }
+
+            ulong userId = GetUserIdFromHeader();
+
+            // Parse and validate songIds
+            var idList = songIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(s => ulong.TryParse(s, out var id) ? (ulong?)id : null)
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .ToList();
+
+            if (idList.Count == 0)
+            {
+                return BadRequest(new { error = "No valid songIds provided" });
+            }
+
+            var likedIds = await _context.UserLikesSongs
+                .Where(uls => uls.UserId == userId
+                              && idList.Contains(uls.SongId)
+                              && uls.TimeUnliked == null)
+                .Select(uls => uls.SongId)
+                .Distinct()
+                .ToListAsync();
+
+            var result = likedIds.Select(id => new { songId = id, isLiked = true });
+            return Ok(new { likes = result });
         }
     }
 }

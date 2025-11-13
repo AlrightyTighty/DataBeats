@@ -17,3 +17,20 @@ export async function toggleLike(songId) {
 
   return await response.json();
 }
+
+// Fetch like status for a batch of songIds for the current user
+// Returns a Set of liked songIds for easy lookups
+export async function getLikeStatuses(songIds) {
+  if (!Array.isArray(songIds) || songIds.length === 0) return new Set();
+  const qs = encodeURIComponent(songIds.join(","));
+  const response = await fetch(`${API}/api/likes/status?songIds=${qs}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    return new Set();
+  }
+  const data = await response.json();
+  const likedIds = new Set((data?.likes || []).map((x) => x.songId));
+  return likedIds;
+}

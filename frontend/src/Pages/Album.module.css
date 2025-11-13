@@ -3,7 +3,7 @@
   background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
   color: #ffffff;
   padding: 60px 40px;
-  margin: 0 auto;
+  margin: 100px auto 0; /* offset for fixed Topnav (95px) */
 }
 
 .albumHeader {
