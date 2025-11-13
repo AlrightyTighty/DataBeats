@@ -10,7 +10,8 @@ const Searchbar = () => {
   const submitSearch = () => {
     if (!searchbarRef.current) return;
 
-    navigate(`/Search?query=${searchbarRef.current.value}`);
+    // Route paths are lowercase in App.jsx; use "/search" to avoid a 404 on deep link
+    navigate(`/search?query=${encodeURIComponent(searchbarRef.current.value)}`);
   };
 
   useEffect(() => {

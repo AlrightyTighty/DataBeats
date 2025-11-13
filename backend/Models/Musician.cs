@@ -29,6 +29,7 @@ public partial class Musician
 
     public ulong ProfilePictureFileId { get; set; }
 
+
     public virtual ICollection<AdminDeletesMusician> AdminDeletesMusicians { get; set; } = new List<AdminDeletesMusician>();
 
     public virtual ICollection<AlbumContainsSong> AlbumContainsSongs { get; set; } = new List<AlbumContainsSong>();
