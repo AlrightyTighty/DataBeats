@@ -1,0 +1,149 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using backend.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace backend.Controllers
+{
+    [Route("api/follow")]
+    [ApiController]
+    public class FollowController : ControllerBase
+    {
+        private readonly ApplicationDBContext _context;
+
+        public FollowController(ApplicationDBContext context)
+        {
+            _context = context;
+        }
+
+        [HttpPost("{followerId}/{followeeId}")]
+        public async Task<IActionResult> Follow([FromRoute] ulong followerId, [FromRoute] ulong followeeId)
+        {
+            if (followerId == followeeId)
+                return BadRequest("You cannot follow yourself.");
+
+            var follower = await _context.Users.FindAsync(followerId);
+            var followee = await _context.Users.FindAsync(followeeId);
+
+            if (follower == null || followee == null)
+                return NotFound("User not found.");
+
+            var now = DateTime.UtcNow;
+
+            var follow = await _context.UserFollowsUsers
+                .FirstOrDefaultAsync(f => f.Follower == followerId && f.Followee == followeeId);
+
+            if (follow == null)
+            {
+                follow = new UserFollowsUser
+                {
+                    Follower = followerId,
+                    Followee = followeeId,
+                    TimeFollowed = now,
+                    TimeUnfollowed = null
+                };
+                await _context.UserFollowsUsers.AddAsync(follow);
+            }
+            else if (follow.TimeUnfollowed != null)
+            {
+                follow.TimeUnfollowed = null;
+                follow.TimeFollowed = now;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete("{followerId}/{followeeId}")]
+        public async Task<IActionResult> Unfollow([FromRoute] ulong followerId, [FromRoute] ulong followeeId)
+        {
+            var follow = await _context.UserFollowsUsers
+                .FirstOrDefaultAsync(f =>
+                    f.Follower == followerId &&
+                    f.Followee == followeeId &&
+                    f.TimeUnfollowed == null);
+
+            if (follow == null)
+                return NotFound("Follow relation not found.");
+
+            follow.TimeUnfollowed = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet("is-following/{followerId}/{followeeId}")]
+        public async Task<IActionResult> IsFollowing([FromRoute] ulong followerId, [FromRoute] ulong followeeId)
+        {
+            var isFollowing = await _context.UserFollowsUsers
+                .AnyAsync(f =>
+                    f.Follower == followerId &&
+                    f.Followee == followeeId &&
+                    f.TimeUnfollowed == null);
+
+            return Ok(new { isFollowing });
+        }
+
+        [HttpGet("followers/{userId}")]
+        public async Task<IActionResult> GetFollowers([FromRoute] ulong userId)
+        {
+            var followers = await _context.UserFollowsUsers
+                .Include(f => f.FollowerNavigation)
+                .ThenInclude(u => u.Musicians)
+                .Where(f => f.Followee == userId && f.TimeUnfollowed == null)
+                .ToListAsync();
+
+            var result = followers.Select(f =>
+            {
+                var user = f.FollowerNavigation;
+                var musician = user.Musicians.FirstOrDefault();
+
+                return new
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Fname = user.Fname,
+                    Lname = user.Lname,
+                    HasMusicianProfile = musician != null,
+                    MusicianId = musician != null ? musician.MusicianId : (ulong?)null,
+                    MusicianName = musician != null ? musician.MusicianName : null,
+                    f.TimeFollowed
+                };
+            });
+
+            return Ok(result);
+        }
+
+        [HttpGet("following/{userId}")]
+        public async Task<IActionResult> GetFollowing([FromRoute] ulong userId)
+        {
+            var following = await _context.UserFollowsUsers
+                .Include(f => f.FolloweeNavigation)
+                .ThenInclude(u => u.Musicians)
+                .Where(f => f.Follower == userId && f.TimeUnfollowed == null)
+                .ToListAsync();
+
+            var result = following.Select(f =>
+            {
+                var user = f.FolloweeNavigation;
+                var musician = user.Musicians.FirstOrDefault();
+
+                return new
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Fname = user.Fname,
+                    Lname = user.Lname,
+                    HasMusicianProfile = musician != null,
+                    MusicianId = musician != null ? musician.MusicianId : (ulong?)null,
+                    MusicianName = musician != null ? musician.MusicianName : null,
+                    f.TimeFollowed
+                };
+            });
+
+            return Ok(result);
+        }
+    }
+}
