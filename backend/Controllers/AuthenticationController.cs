@@ -50,7 +50,7 @@ namespace backend.Controllers
 
             if (toLogin == null)
                 return Unauthorized("Invalid login info.");
-//delete
+            //delete
             var authInfo = _context.AuthenticationInformations
             .FirstOrDefault(a => a.UserId == toLogin.UserId);
 
@@ -77,9 +77,26 @@ namespace backend.Controllers
             _context.Sessions.Add(newSession);
             _context.SaveChanges();
 
-            Response.Cookies.Append("session-id", newSession.SessionId, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddDays(30), SameSite = SameSiteMode.None, Secure=true});
+            Response.Cookies.Append("session-id", newSession.SessionId, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddDays(30), SameSite = SameSiteMode.None, Secure = true });
 
             return CreatedAtAction(nameof(GetSessionById), new { id = newSession.SessionId }, newSession.ToSessionDTO());
+        }
+
+        [HttpDelete]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> LogoutAsync()
+        {
+            string sessionId = Request.Cookies["session-id"]!;
+            Session session = (await _context.Sessions.FindAsync(sessionId))!;
+            _context.Sessions.Remove(session);
+            Response.Cookies.Append("session-id", "", new CookieOptions()
+            {
+                Expires = DateTimeOffset.Now.AddDays(-1),
+                HttpOnly = true,
+            });
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
