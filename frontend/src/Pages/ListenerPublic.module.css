@@ -1,0 +1,120 @@
+.page {
+  min-height: 100vh;
+  padding-top: 140px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 80px;
+  color: #fff;
+  background: linear-gradient(
+    180deg,
+    #1a317a 6.07%,
+    #244199 31.25%,
+    #3d5398 56.73%,
+    #999 100%
+  );
+}
+
+.container {
+  width: 1300px;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.header {
+  display: flex;
+  gap: 30px;
+  background: rgba(121, 212, 247, 0.5);
+  border-radius: 20px;
+  padding: 30px;
+  align-items: center;
+  position: relative;
+}
+
+.kebabSlot {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.pic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #d9d9d9;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  opacity: 0.9;
+}
+
+.statButton {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.follow,
+.unfollow {
+  min-width: 120px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.follow {
+  background: #79d4f7;
+  color: #0a101d;
+}
+
+.unfollow {
+  background: rgba(255, 80, 80, 0.9);
+  color: #fff;
+}
+
+.status {
+  text-align: center;
+  color: #fff;
+}
+
+@media (max-width: 550px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pic {
+    width: 140px;
+    height: 140px;
+  }
+}
