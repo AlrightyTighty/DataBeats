@@ -756,6 +756,9 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.EventDescription)
                 .HasMaxLength(500)
                 .HasColumnName("event_description");
+            entity.Property(e => e.EventLocation)
+                .HasMaxLength(200)
+                .HasColumnName("event_location");
             entity.Property(e => e.EventPictureFileId).HasColumnName("event_picture_file_id");
             entity.Property(e => e.EventTime)
                 .HasColumnType("datetime")
