@@ -1,5 +1,6 @@
 using backend.Middleware;
 using backend.Models;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddHostedService<EmailService>();
 
 var app = builder.Build();
 
