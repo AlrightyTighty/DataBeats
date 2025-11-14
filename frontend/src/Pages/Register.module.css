@@ -67,3 +67,43 @@ body {
   text-align: center;
   font-style: italic;
 }
+
+/* ---------------- Register.module.css additions ---------------- */
+/* Add this below your existing CSS */
+
+.password-rules {
+  width: 80%;
+  margin: 0.5em auto;
+  list-style: none;
+  padding: 0;
+  font-size: 14pt;
+  text-align: left;
+  color: rgb(200, 200, 200);
+}
+
+.password-rules li {
+  margin: 4px 0;
+  transition: 0.25s;
+}
+
+.valid {
+  color: rgb(120, 255, 120);
+}
+
+.invalid {
+  color: rgb(255, 120, 120);
+}
+
+.password-error-box {
+  width: 80%;
+  margin: 0.5em auto;
+  padding: 0.5em;
+  border-radius: 10px;
+  background-color: rgba(255, 0, 0, 0.15);
+  color: rgb(255, 180, 180);
+  font-size: 14pt;
+}
+
+#register-button:hover {
+  cursor: pointer;
+}

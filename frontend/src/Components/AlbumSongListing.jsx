@@ -2,17 +2,7 @@ import { useNavigate } from "react-router";
 import styles from "./AlbumSongListing.module.css";
 import ReportButton from "./ReportButton.jsx";
 
-export const AlbumSongListing = ({
-  albumId,
-  number,
-  name,
-  artists,
-  streams,
-  id,
-  setPlaybarState,
-  isLiked,
-  onToggleLike
-}) => {
+export const AlbumSongListing = ({ songs, number, name, artists, streams, id, setPlaybarState, isLiked, onToggleLike }) => {
   const navigate = useNavigate();
 
   const formatStreams = (count) => {
@@ -31,27 +21,19 @@ export const AlbumSongListing = ({
   const handleRowClick = () => {
     setPlaybarState({
       songId: id,
-      albumId: albumId,
-      playlistId: null,
+      songList: songs,
       visible: true,
     });
-  }
+  };
 
-    const handleHeartClick = async (e) => {
+  const handleHeartClick = async (e) => {
     e.stopPropagation();
     await onToggleLike(id);
   };
 
   return (
     <div onClick={handleRowClick} className={styles.songItem}>
-      <button
-        type="button"
-        className={`${styles.songLike} ${
-          isLiked ? styles.songLikeActive : ""
-        }`}
-        onClick={handleHeartClick}
-        aria-label={isLiked ? "Unlike song" : "Like song"}
-      >
+      <button type="button" className={`${styles.songLike} ${isLiked ? styles.songLikeActive : ""}`} onClick={handleHeartClick} aria-label={isLiked ? "Unlike song" : "Like song"}>
         {isLiked ? "♥" : "♡"}
       </button>
 
@@ -59,7 +41,7 @@ export const AlbumSongListing = ({
       <div className={styles.songName}>{name}</div>
       <div className={styles.songArtists}>{formatArtists(artists)}</div>
       <div className={styles.songStreams}>{formatStreams(streams)}</div>
-      
+
       <div className={styles.reportButtonContainer}>
         <ReportButton contentId={id} reportType={"SONG"} />
       </div>

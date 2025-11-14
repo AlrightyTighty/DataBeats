@@ -99,7 +99,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      {playbarState.visible && <Playbar playbarState={playbarState} />}
+      {playbarState.visible && <Playbar playbarState={playbarState} setPlaybarState={setPlaybarState} />}
     </>
   );
 }
