@@ -17,8 +17,8 @@ namespace backend.DTOs.Friend
                 FrienderId = FrienderId,
                 FriendeeId = FriendeeId,
                 TimeFriended = now,
-                TimeAccepted = now,
-                FriendedState = "Accepted"
+                TimeAccepted = null,
+                FriendedState = "Pending"
             };
         }
     }

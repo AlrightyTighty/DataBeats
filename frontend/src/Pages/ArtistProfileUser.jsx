@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, Link } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistProfileUser.module.css";
@@ -9,65 +9,71 @@ import useFollow from "../hooks/useFollow.js";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 
 export default function ArtistProfileUser() {
-  const { id } = useParams(); // musicianId from route
+  const { id } = useParams();
   const musicianId = useMemo(() => Number(id), [id]);
 
   const { me } = useMe({ redirectIfMissing: true });
+  const viewerId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
   const [artist, setArtist] = useState(null);
   const [albums, setAlbums] = useState([]);
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // follow hook for ARTIST
   const {
+    isFollowing,
     label: followLabel,
     act: followAct,
     loading: followLoading,
+    canFollow,
   } = useFollow({
-    variant: "artist",
-    viewerId: me?.userId,
-    targetId: musicianId,
-    initialStatus: "none",
+    viewerId,
+    targetId: artist?.userId ?? null, // follow the artist's UserId
     apiBase: API,
   });
 
-  useEffect(() => {
+  const reloadArtist = useCallback(async () => {
     if (!musicianId) return;
 
-    (async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
 
-        // artist info
-        const artistRes = await fetch(`${API}/api/musician/${musicianId}`);
-        if (artistRes.ok) {
-          const a = await artistRes.json();
-          setArtist(a);
-        }
-
-        // albums by this musician (matches AlbumController: by-musician/{musicianId})
-        const albumRes = await fetch(
-          `${API}/api/album/by-musician/${musicianId}`
-        );
-        if (albumRes.ok) {
-          const data = await albumRes.json();
-          setAlbums(Array.isArray(data) ? data : []);
-        }
-
-        // songs by this artist (your existing route)
-        const songRes = await fetch(`${API}/api/song/artist/${musicianId}`);
-        if (songRes.ok) {
-          const data = await songRes.json();
-          setSongs(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        console.error("Error loading artist profile:", err);
-      } finally {
-        setLoading(false);
+      const artistRes = await fetch(`${API}/api/musician/${musicianId}`, {
+        credentials: "include",
+      });
+      if (artistRes.ok) {
+        const a = await artistRes.json();
+        setArtist(a);
       }
-    })();
+
+      // albums by this musician
+      const albumRes = await fetch(
+        `${API}/api/album/by-musician/${musicianId}`,
+        { credentials: "include" }
+      );
+      if (albumRes.ok) {
+        const data = await albumRes.json();
+        setAlbums(Array.isArray(data) ? data : []);
+      }
+
+      // songs by this artist
+      const songRes = await fetch(`${API}/api/song/artist/${musicianId}`, {
+        credentials: "include",
+      });
+      if (songRes.ok) {
+        const data = await songRes.json();
+        setSongs(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error("Error loading artist profile:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [musicianId]);
+
+  useEffect(() => {
+    reloadArtist();
+  }, [reloadArtist]);
 
   if (loading) {
     return (
@@ -114,12 +120,32 @@ export default function ArtistProfileUser() {
     location.href = `/report?type=artist&id=${musicianId}`;
   }
 
+  async function handleFollowClick() {
+    if (!canFollow || !artist) return;
+
+    const wasFollowing = isFollowing;
+    await followAct();
+
+    // update followerCount
+    setArtist((prev) => {
+      if (!prev) return prev;
+      const current = prev.followerCount ?? 0;
+      const delta = wasFollowing ? -1 : 1;
+      return {
+        ...prev,
+        followerCount: Math.max(0, current + delta),
+      };
+    });
+  }
+
+  const showFollowButton =
+    canFollow && viewerId && artist && viewerId !== artist.userId;
+
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          {/* Header block similar style */}
           <div className={styles.header}>
             {/* kebab in top-right corner */}
             <div className={styles.kebabSlot}>
@@ -135,7 +161,7 @@ export default function ArtistProfileUser() {
 
             {/* text + follow button */}
             <div className={styles.info}>
-              <h1>{artist.musicianName || "Artist Name"}</h1>
+              <h1>@{artist.musicianName || "Artist Name"}</h1>
               <p>{artist.bio || "No bio available."}</p>
 
               <div className={styles.stats}>
@@ -146,9 +172,9 @@ export default function ArtistProfileUser() {
               </div>
 
               <div className={styles.buttons}>
-                {me && me.userId !== artist.userId && (
+                {showFollowButton && (
                   <button
-                    onClick={followAct}
+                    onClick={handleFollowClick}
                     className={
                       followLabel === "Unfollow"
                         ? styles.unfollow
@@ -156,7 +182,7 @@ export default function ArtistProfileUser() {
                     }
                     disabled={followLoading}
                   >
-                    {followLoading ? "..." : followLabel}
+                    {followLoading ? "..." : followLabel || "Follow"}
                   </button>
                 )}
               </div>
@@ -219,7 +245,7 @@ export default function ArtistProfileUser() {
             </div>
           </div>
 
-          {/* Link to artist events */}
+          {/*artist events */}
           <div className={styles.bottom}>
             <Link to={`/artist-events/${id}`} className={styles.viewEvents}>
               View All Events

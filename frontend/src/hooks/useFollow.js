@@ -1,104 +1,124 @@
-import { useCallback, useMemo, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-export default function useFollow({
-  variant,
-  viewerId,
-  targetId,
-  initialStatus = "none",
-  apiBase = "http://localhost:5062",
-}) {
-  const [status, setStatus] = useState(initialStatus);
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
+
+export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState(null);
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState("");
 
-  const label = useMemo(() => {
-    if (variant === "artist") {
-      return status === "following" ? "Unfollow" : "Follow";
+  const canFollow = !!viewerId && !!targetId && viewerId !== targetId;
+
+  const refresh = useCallback(async () => {
+    if (!canFollow) {
+      setIsFollowing(false);
+      setChecking(false);
+      return;
     }
 
-    if (status === "following") return "Unfriend";
+    try {
+      setChecking(true);
+      setError("");
 
-    return "Add Friend";
-  }, [variant, status]);
+      const res = await fetch(
+        `${apiBase}/api/follow/is-following/${viewerId}/${targetId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        setIsFollowing(false);
+        return;
+      }
+
+      const data = await res.json();
+      setIsFollowing(Boolean(data.isFollowing));
+    } catch {
+      setIsFollowing(false);
+    } finally {
+      setChecking(false);
+    }
+  }, [canFollow, viewerId, targetId, apiBase]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const follow = useCallback(async () => {
-    setErr(null);
-    if (loading) return;
-    setLoading(true);
+    if (!canFollow) return false;
     try {
-      if (variant === "artist") {
-        const r = await fetch(`${apiBase}/api/musician/${targetId}/follow`, {
-          method: "POST",
-          credentials: "include",
-        });
-        if (!r.ok) throw new Error("Follow failed");
-        setStatus("following");
-      } else {
-        const r = await fetch(`${apiBase}/api/friend`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ frienderId: viewerId, friendeeId: targetId }),
-        });
-        if (!r.ok) throw new Error("Friend failed");
-        setStatus("following");
+      setLoading(true);
+      setError("");
+
+      const res = await fetch(`${apiBase}/api/follow/${viewerId}/${targetId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        setError("Could not follow.");
+        return false;
       }
-    } catch (e) {
-      setErr(e);
+
+      setIsFollowing(true);
+      return true;
+    } catch {
+      setError("Could not follow.");
+      return false;
     } finally {
       setLoading(false);
     }
-  }, [variant, viewerId, targetId, apiBase, loading]);
+  }, [canFollow, viewerId, targetId, apiBase]);
 
   const unfollow = useCallback(async () => {
-    setErr(null);
-    if (loading) return;
-    setLoading(true);
+    if (!canFollow) return false;
     try {
-      if (variant === "artist") {
-        await fetch(`${apiBase}/api/musician/${targetId}/unfollow`, {
-          method: "POST",
-          credentials: "include",
-        });
-        setStatus("none");
-      } else {
-        await fetch(`${apiBase}/api/friend/${viewerId}/${targetId}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-        setStatus("none");
+      setLoading(true);
+      setError("");
+
+      const res = await fetch(`${apiBase}/api/follow/${viewerId}/${targetId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        setError("Could not unfollow.");
+        return false;
       }
-    } catch (e) {
-      setErr(e);
+
+      setIsFollowing(false);
+      return true;
+    } catch {
+      setError("Could not unfollow.");
+      return false;
     } finally {
       setLoading(false);
     }
-  }, [variant, viewerId, targetId, apiBase, loading]);
+  }, [canFollow, viewerId, targetId, apiBase]);
 
-  const act = useCallback(() => {
-    if (variant === "artist") {
-      return status === "following" ? unfollow() : follow();
+  const label =
+    !canFollow || checking ? "" : isFollowing ? "Unfollow" : "Follow";
+
+  const act = useCallback(async () => {
+    if (!canFollow || checking) return;
+    if (isFollowing) {
+      await unfollow();
+    } else {
+      await follow();
     }
-
-    if (status === "following") return unfollow();
-
-    return follow();
-  }, [variant, status, follow, unfollow]);
-
-  const setDenied = useCallback(() => setStatus("denied"), []);
-  const setAccepted = useCallback(() => setStatus("following"), []);
+  }, [canFollow, checking, isFollowing, follow, unfollow]);
 
   return {
-    status,
-    label,
-    loading,
-    error: err,
-    act,
-    follow,
-    unfollow,
-    cancelRequest: () => {},
-    setDenied,
-    setAccepted,
-    setStatus,
+    isFollowing,
+    label, // "Follow" / "Unfollow" / ""
+    act, // toggle follow/unfollow
+    loading, // during POST/DELETE
+    checking, // during initial GET
+    error,
+    canFollow,
+    refresh,
   };
 }

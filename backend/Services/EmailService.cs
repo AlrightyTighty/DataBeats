@@ -6,15 +6,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+using System.Net;
+using System.Diagnostics;
 
 namespace backend.Services
 {
-    public class DatabaseCheckService : BackgroundService
+    public class EmailService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<DatabaseCheckService> _logger;
+        private readonly ILogger<EmailService> _logger;
 
-        public DatabaseCheckService(IServiceProvider serviceProvider, ILogger<DatabaseCheckService> logger)
+        public EmailService(IServiceProvider serviceProvider, ILogger<EmailService> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -36,10 +39,22 @@ namespace backend.Services
                         // Example: check if table has entries
                         List<Email> emails = await dbContext.Emails.Where(e => e.Sent == 0).ToListAsync();
 
+
+                        SmtpClient client = new SmtpClient("smtp.office365.com", 587)
+                        {
+                            Credentials = new NetworkCredential("joshua@baddle.fun", Environment.GetEnvironmentVariable("SMTPAppPassword")),
+                            EnableSsl = true
+                        };
+
                         foreach (Email email in emails)
                         {
-                            
+
+
+                            client.Send("support@baddle.fun", email.EmailTo, email.EmailSubject, email.EmailBody);
+                            email.Sent = 1;
                         }
+
+                        await dbContext.SaveChangesAsync();
                     }
                 }
                 catch (Exception ex)

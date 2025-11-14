@@ -27,8 +27,6 @@ import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
-import Followers from "./Pages/Followers.jsx";
-import Following from "./Pages/Following.jsx";
 import ArtistEvents from "./Pages/ArtistEvents.jsx";
 import ArtistAlbum from "./Pages/ArtistAlbum.jsx";
 import Settings from "./Pages/Settings.jsx";
@@ -40,6 +38,8 @@ import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
 import Playbar from "./Components/Playbar.jsx";
 import History from "./Pages/History.jsx";
+import Logout from "./Pages/Logout.jsx";
+import Follow from "./Pages/Follow.jsx";
 
 function App() {
   const [playbarState, setPlaybarState] = useState({
@@ -69,11 +69,9 @@ function App() {
     { path: "/admin", element: <Admin /> },
     { path: "/report", element: <Report /> },
     { path: "/dashboard", element: <Dashboard /> },
-    { path: "/me", element: <ListenerMe /> },
+    { path: "/me/:id", element: <ListenerMe /> },
     { path: "/user/:id", element: <ListenerPublic /> },
     { path: "/artist-user/:id", element: <ArtistProfileUser /> },
-    { path: "/followers/:id", element: <Followers /> },
-    { path: "/following/:id", element: <Following /> },
     { path: "/artist-events/:id", element: <ArtistEvents /> },
     { path: "/artist-albums/:id", element: <ArtistAlbum /> },
     { path: "/settings", element: <Settings /> },
@@ -92,12 +90,14 @@ function App() {
     { path: "/page-not-found", element: <NotFound /> },
     { path: "*", element: <NotFound /> },
     { path: "/history/:id", element: <History /> },
+    { path: "/logout", element: <Logout /> },
+    { path: "/follows/:id", element: <Follow /> },
   ]);
 
   return (
     <>
       <RouterProvider router={router} />
-      {playbarState.visible && <Playbar playbarState={playbarState} />}
+      {playbarState.visible && <Playbar playbarState={playbarState} setPlaybarState={setPlaybarState} />}
     </>
   );
 }

@@ -58,6 +58,10 @@ body {
   font-size: 20pt;
 }
 
+#login-button:hover {
+  cursor: pointer;
+}
+
 #register-text {
   display: block;
   margin: 1em auto;
