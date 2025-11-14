@@ -27,7 +27,7 @@ export default function MusicianDashboard() {
         setLoading(false);
 
         // user is not the musician at this route
-        if (userInfo.musicianId !== paramsMusicianId.id) {
+        if (userInfo.musicianId != paramsMusicianId.id) {
             console.log("Unauthorized!");
             navigate('/dashboard');
         }

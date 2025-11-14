@@ -9,13 +9,14 @@ import useAuthentication from '../hooks/useAuthentication.js';
 
 export default function EventDetails() {
 
+    // get event id from route params
+    const paramsEventId = useParams().id;
+
+    // get user auth info
     const userInfo = useAuthentication();
 
-    // get event id from route params
-    const eventId = useParams().id;
-
     // api endpoint
-    const api = `${API}/api/event/${eventId}`;
+    const api = `${API}/api/event/${paramsEventId}`;
 
     // allow for rerouting if event does not exist
     const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function EventDetails() {
                 setEvent(data);
             }
         })();
-    }, [eventId]);
+    }, [paramsEventId]);
 
     // temporary states to hold edits made to event
     const [editTitle, setEditTitle] = useState('');
@@ -203,6 +204,40 @@ export default function EventDetails() {
         setShowDelete(!showDelete);
     }
 
+    // check user auth details
+    const [isMusician, setIsMusician] = useState(false);
+    useEffect(() => {
+        if (userInfo === null) return;      // userInfo not yet loaded from db - wait for useEffect to run again after userInfo is loaded
+        if (userInfo.musicianId == event.musicianId) {
+            setIsMusician(true);
+        }
+    }, [paramsEventId, userInfo]);
+
+    // conditional render depending on whether user is the event's hosting musician - regular listeners cannot edit or delete
+    if (!isMusician) {
+        return <div className="event-details">
+            <Topnav />
+            <div className="banner">
+                <img src={imgSrc} alt="concert promo" />
+                <h1>{event.title}</h1>
+            </div>
+            <div className="info">
+                <h3 className="event-desc">{event.eventDescription}</h3>
+                <div className="musician-time-price">
+                    <h2>
+                        Host: {event.musicianName}
+                        <br></br>
+                        Time: {(new Date(event.eventTime)).toLocaleString()}
+                        <br></br>
+                        <br></br>
+                        Admission: ${event.ticketPrice}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    }
+
+    // user is event's hosting musician - can edit and delete
     return <div className="event-details" onClick={() => {if (showEdit) toggleEditModal(); if (showDelete) toggleDeleteModal()}}>
         <Topnav />
         <div className="banner">
