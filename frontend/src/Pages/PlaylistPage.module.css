@@ -70,7 +70,7 @@
   flex-wrap: wrap;
   gap: 12px;
   font-size: 13px;
-  color: #e70505;
+  color: #cbd5f5;
 }
 
 /* Add-song row */
@@ -206,8 +206,8 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9ca3af;
-  border-bottom: 1px solid rgba(1, 1, 1, 0.35);
+  color: white;
+  border-bottom: 1px solid #cbd5f5;
   gap: 12px;
 
   align-items: end;      
@@ -220,15 +220,14 @@
   display: grid;
   grid-template-columns: 40px 48px 3fr 2fr 140px 80px 80px;
   align-items: center;
-  color:
- /* gap: 12px; */
+  gap: 12px;
 }
 
 /* shared column helpers */
 .colIndex {
   text-align: left;
   font-size: 13px;
-  color: black;
+  color: white;
 }
 
 .colAlbumArt {
@@ -298,7 +297,6 @@
   .headerRow {
     flex-direction: column;
     align-items: flex-start;
-    color: black;
   }
 
   .coverWrapper {
