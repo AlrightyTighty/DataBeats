@@ -2,17 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./Playbar.module.css";
 import API from "../lib/api";
 
-import {
-  FaPlay,
-  FaPause,
-  FaStepBackward,
-  FaStepForward,
-  FaRedoAlt,
-  FaMusic,
-} from "react-icons/fa";
+import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaRedoAlt, FaMusic } from "react-icons/fa";
 
-const Playbar = ({ playbarState }) => {
-  const { songId, playlistId, albumId } = playbarState;
+const Playbar = ({ playbarState, setPlaybarState }) => {
+  const { songId, songList } = playbarState;
 
   const audioRef = useRef(null);
 
@@ -20,11 +13,12 @@ const Playbar = ({ playbarState }) => {
   const [songData, setSongData] = useState(null);
   const [albumCover, setAlbumCover] = useState(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(50);
-  const [progress, setProgress] = useState(0); // in seconds
-  const [duration, setDuration] = useState(0); // in seconds
+
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,11 +43,10 @@ const Playbar = ({ playbarState }) => {
       setSongInfo(songInfo);
       setSongData(songData);
 
-      const albumArtResponse = await fetch(
-        `${API}/api/art/${songInfo.albumArtId}`
-      );
+      const albumArtResponse = await fetch(`${API}/api/art/${songInfo.albumArtId}`);
 
       setAlbumCover((await albumArtResponse.json()).fileData);
+      setIsPlaying(true);
     })();
 
     return () => {
@@ -122,84 +115,86 @@ const Playbar = ({ playbarState }) => {
     };
   }, [songData, audioRef.current]);
 
+  const playNextSong = () => {
+    const nextSongId = songList[(songList.indexOf(songId) + 1) % songList.length];
+    if (nextSongId == songId) {
+      audioRef.current.currentTime = 0;
+      return;
+    }
+
+    const newPlaybarState = Object.assign({}, playbarState);
+    newPlaybarState.songId = nextSongId;
+
+    setPlaybarState(newPlaybarState);
+  };
+
+  const playPrevSong = () => {
+    // fucked up modulo wizardy because whoever made javascript was an inept ape
+    const nextSongId = songList[(((songList.indexOf(songId) - 1) % songList.length) + songList.length) % songList.length];
+    if (nextSongId == songId) {
+      audioRef.current.currentTime = 0;
+      return;
+    }
+
+    const newPlaybarState = Object.assign({}, playbarState);
+    newPlaybarState.songId = nextSongId;
+
+    setPlaybarState(newPlaybarState);
+  };
+
+  const onSongEnd = () => {
+    if (isLooping) {
+      audioRef.current.currentTime = 0;
+      return;
+    }
+
+    playNextSong();
+  };
+
   return (
     <div className={styles.playbar}>
       {(songInfo && songData && albumCover && (
         <>
-          {/* Left: Song Info */}
           <div className={styles.songInfo}>
-            <img
-              src={`data:image/png;base64,${albumCover}`}
-              alt="Album Art"
-              className={styles.albumArt}
-            />
+            <img src={`data:image/png;base64,${albumCover}`} alt="Album Art" className={styles.albumArt} />
             <div className={styles.textInfo}>
               <div className={styles.songTitle}>{songInfo.songName}</div>
-              <div className={styles.artistName}>
-                {songInfo.artistNames.join(", ")}
-              </div>
+              <div className={styles.artistName}>{songInfo.artistNames.join(", ")}</div>
             </div>
           </div>
 
-          {/* Center: Controls */}
           <div className={styles.controlsSection}>
             <div className={styles.controls}>
-              <button className={styles.controlButton}>
+              <button onClick={playPrevSong} className={styles.controlButton}>
                 <FaStepBackward />
               </button>
               <button className={styles.controlButton} onClick={togglePlay}>
                 {isPlaying ? <FaPause /> : <FaPlay />}
               </button>
-              <button className={styles.controlButton}>
+              <button onClick={playNextSong} className={styles.controlButton}>
                 <FaStepForward />
               </button>
-              <button
-                className={`${styles.controlButton} ${
-                  isLooping ? styles.active : ""
-                }`}
-                onClick={toggleLoop}
-              >
+              <button className={`${styles.controlButton} ${isLooping ? styles.active : ""}`} onClick={toggleLoop}>
                 <FaRedoAlt />
               </button>
             </div>
 
-            {/* Progress Bar */}
             <div className={styles.progressContainer}>
               <span className={styles.time}>{formatTime(progress)}</span>
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={progress}
-                onChange={handleProgressChange}
-                className={styles.progressBar}
-              />
+              <input type="range" min="0" max={duration || 0} value={progress} onChange={handleProgressChange} className={styles.progressBar} />
               <span className={styles.time}>{formatTime(duration)}</span>
             </div>
           </div>
 
-          {/* Right: Lyrics + Volume */}
           <div className={styles.rightControls}>
             <button className={styles.lyricsButton}>
               <FaMusic />
             </button>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              className={styles.volumeSlider}
-              onChange={handleVolumeChange}
-            />
+            <input type="range" min="0" max="100" value={volume} className={styles.volumeSlider} onChange={handleVolumeChange} />
           </div>
-
-          <audio
-            ref={audioRef}
-            autoPlay
-            src={`data:audio/mpeg;base64,${songData.fileData}`}
-          />
         </>
       )) || <div className="loader" />}
+      <audio ref={audioRef} autoPlay src={songData ? `data:audio/mpeg;base64,${songData.fileData}` : null} onEnded={onSongEnd} />
     </div>
   );
 };

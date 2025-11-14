@@ -10,10 +10,8 @@ const albumData = {
   title: "Midnight Echoes",
   artists: ["Luna Rivera", "The Midnight Collective"],
   type: "LP",
-  description:
-    "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
-  coverImage:
-    "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
+  description: "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
+  coverImage: "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
   songs: [
     {
       id: 1,
@@ -79,7 +77,6 @@ const albumData = {
 };
 
 const Album = ({ setPlaybarState }) => {
-
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
   };
@@ -104,9 +101,7 @@ const Album = ({ setPlaybarState }) => {
 
     isLoading.current = true;
     (async () => {
-      const albumInfoResponse = await fetch(
-        `${API}/api/album/${id}?includeImageData=true`
-      );
+      const albumInfoResponse = await fetch(`${API}/api/album/${id}?includeImageData=true`);
       const albumInfo = await albumInfoResponse.json();
 
       const songInfoResponse = await fetch(`${API}/api/album/songs/${id}`);
@@ -131,10 +126,10 @@ const Album = ({ setPlaybarState }) => {
     })();
   }, [id]);
 
-  async function handleToggleLike(songId){
-    try{
+  async function handleToggleLike(songId) {
+    try {
       const { isLiked } = await toggleLike(songId);
-      setLikes((prev)=> ({
+      setLikes((prev) => ({
         ...prev,
         [songId]: isLiked,
       }));
@@ -149,19 +144,13 @@ const Album = ({ setPlaybarState }) => {
       <div className={styles.container}>
         <div className={styles.albumHeader}>
           <div className={styles.albumCover}>
-            <img
-              src={`data:image/png;base64,${albumData.albumArtImage}`}
-              alt={albumData.albumTitle}
-              className={styles.coverImage}
-            />
+            <img src={`data:image/png;base64,${albumData.albumArtImage}`} alt={albumData.albumTitle} className={styles.coverImage} />
           </div>
 
           <div className={styles.albumInfo}>
             <div className={styles.albumType}>{albumData.albumType}</div>
             <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
-            <div className={styles.albumArtists}>
-              {formatArtists(albumData.artists)}
-            </div>
+            <div className={styles.albumArtists}>{formatArtists(albumData.artists)}</div>
           </div>
         </div>
 
@@ -184,7 +173,7 @@ const Album = ({ setPlaybarState }) => {
               artists={song.artistNames}
               streams={song.streams}
               id={song.songId}
-              albumId={id}
+              songs={albumData.songs.map((song) => song.songId)}
               isLiked={!!likes[song.songId]}
               onToggleLike={handleToggleLike}
             />

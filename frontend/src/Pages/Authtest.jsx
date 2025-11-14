@@ -13,6 +13,11 @@ const Authtest = () => {
         credentials: "include",
       });
 
+      if (!response.ok) {
+        navigate("/");
+        return;
+      }
+
       const info = await response.json();
 
       if (info.adminId != null) navigate("/admin");
@@ -23,7 +28,7 @@ const Authtest = () => {
 
   console.log(info);
 
-  return <div>{info ? info.username : "loading"}</div>;
+  return null;
 };
 
 export default Authtest;
