@@ -9,6 +9,12 @@
     border-radius: 20px;
 }
 
+.bio:hover {
+    background-color: rgba(237, 235, 235, 0.419);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
 .bio h2 {
     font-size: 4.5vh;
     color: white;

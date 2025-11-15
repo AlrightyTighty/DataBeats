@@ -63,7 +63,7 @@ export default function MusicianDashboard() {
     }, []);                                                     // useEffect runs after every render by default; empty array [] as 2nd param (dependency) means it runs once after first render - i.e. run this effect only if the values in [] have changed since last render
     
     // state to store array of albums by a musician
-    // albums is an array of Album object, each containing the albumId, albumTitle, albumArtImage, releaseDate, etc. of the album
+    // albums is an array of Album objects, each containing the albumId, albumTitle, albumArtImage, releaseDate, etc. of the album
     const [albums, setAlbums] = useState([]);
     useEffect(() => {
         (async () => {
@@ -72,13 +72,14 @@ export default function MusicianDashboard() {
                 console.log("Error fetching artist's albums...");
             }
             else {
-                response.json().then(data => setAlbums(data));
+                // set albums state to be the json data returned from the api - the array of Album objects - sorted by release date in ascending order
+                response.json().then(data => setAlbums(data.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate))));
             }
         })();
     }, []);
 
     // state to store array of events hosted by a musician
-    // events is an array of Event objects, each containing the eventId, title, eventDescription, eventPictureFileId, eventTime, ticketPrice, musicianName, etc. of the Event
+    // events is an array of Event objects, each containing the eventId, title, eventDescription, eventPictureFileId, eventLocation, eventTime, ticketPrice, musicianName, etc. of the Event
     const [events, setEvents] = useState([]);
     useEffect(() => {
         (async () => {
@@ -87,7 +88,8 @@ export default function MusicianDashboard() {
                 console.log("Error fetching artist's events...");
             }
             else {
-                response.json().then(data => setEvents(data));
+                // set events state to be the json data returned from the api - the array of Event objects - sorted by event time in ascending order
+                response.json().then(data => setEvents(data.sort((a, b) => new Date(a.eventTime) - new Date(b.eventTime))));
             }
         })();
     }, []);
