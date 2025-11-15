@@ -23,5 +23,7 @@ namespace backend.DTOs.Musician
 
         public ulong ProfilePictureFileId { get; set; }
 
+        public bool IsVerified { get; set; }
+
     }
 }

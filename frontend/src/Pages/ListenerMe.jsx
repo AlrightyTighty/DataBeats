@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Topnav from "../Components/Topnav";
+import verifiedBadge from "../assets/graphics/musician_verification.png";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
@@ -16,6 +17,7 @@ export default function ListenerMe() {
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
   const [user, setUser] = useState(null);
+  const [isVerifiedMusician, setIsVerifiedMusician] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
   const [followerCount, setFollowerCount] = useState(0);
@@ -74,6 +76,22 @@ export default function ListenerMe() {
         }
         const data = await res.json();
         setUser(data);
+        // If this user is a musician, fetch musician record to check verification
+        if (data?.musicianId) {
+          try {
+            const mRes = await fetch(`${API}/api/musician/${data.musicianId}`, { credentials: "include" });
+            if (mRes.ok) {
+              const m = await mRes.json();
+              if (m?.isVerified) setIsVerifiedMusician(true);
+            } else {
+              setIsVerifiedMusician(false);
+            }
+          } catch {
+            setIsVerifiedMusician(false);
+          }
+        } else {
+          setIsVerifiedMusician(false);
+        }
       } catch {
         setError("Error loading user.");
       } finally {
@@ -147,7 +165,16 @@ export default function ListenerMe() {
               )}
 
               <div className={styles.info}>
-                <h1>@{user.username}</h1>
+                <h1 className={styles.nameRow}>
+                  @{user.username}
+                  {isVerifiedMusician && (
+                    <img
+                      src={verifiedBadge}
+                      alt="Verified musician"
+                      className={styles.verifiedBadge}
+                    />
+                  )}
+                </h1>
                 <p>
                   {user.fname} {user.lname}
                 </p>

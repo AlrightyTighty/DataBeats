@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import API from '../lib/api.js'
 import '../css/MusicianPicName.css'
 import EditButton from './EditButton'
+import verifiedBadge from "../assets/graphics/musician_verification.png"
 
 export default function MusicianPicName({musician, api}) {
 
@@ -121,7 +122,16 @@ export default function MusicianPicName({musician, api}) {
 
     return <div className="pic-name">
         <img src={imgSrc} alt="profile picture" />
-        <h1>{name}</h1>            {/* element positioned last in html code is shown on top; want name (h1) to overlap above image */}
+        <h1 className="artist-name">
+            <span>{name}</span>
+            {musician?.isVerified && (
+                <img 
+                    src={verifiedBadge} 
+                    alt="Verified" 
+                    className="verified-badge"
+                />
+            )}
+        </h1>
         <EditButton state={show} clickFunction={toggleModal} modal={
             <div className="modal-picname">
                 <h2 className="name-section">Name</h2>
