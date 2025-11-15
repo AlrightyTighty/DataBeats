@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Topnav from "../Components/Topnav";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import styles from "./Stream.module.css";
 import API from "../lib/api";
 
@@ -211,7 +211,13 @@ const Stream = () => {
                   <div id={styles["song-right-text"]}>
                     <h1 id={styles["song-title"]}>{songInfo.songName}</h1>
                     <p className={styles["song-text-info-item"]}>
-                      From the album: {songInfo.albumName}
+                      From the album:{" "}
+                      <Link
+                        className={styles.link}
+                        to={`/album/${songInfo.albumId}`}
+                      >
+                        {songInfo.albumName}
+                      </Link>
                     </p>
                     <p className={styles["song-text-info-item"]}>
                       Artists: {songInfo.artistNames.join(", ")}

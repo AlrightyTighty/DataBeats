@@ -1,6 +1,9 @@
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  height: fit-content;
   margin: 0;
   padding: 0;
 
@@ -12,11 +15,15 @@ html, body, #root {
   color: rgba(255, 255, 255, 0.87);
 
   /* credits to https://alvarotrigo.com/blog/animated-backgrounds-css/ for this background :D */
-  background-size: 300% 300%;       /* allow bg movement */
-  background-image: linear-gradient(-45deg, rgb(95, 166, 196), rgb(121, 88, 146));       /* diagonal gradient (tilted -45 degrees) yellow -> pink */
-  -webkit-animation: AnimateBG 20s ease infinite;             /* older version */
-          animation: AnimateBG 20s ease infinite;             /* apply animation named AnimateBG that continuously moves gradient back and forth over 20 seconds, looping infinitely */
-  background-color: #242424;      /* fallback color */
+  background-size: 300% 300%; /* allow bg movement */
+  background-image: linear-gradient(
+    -45deg,
+    rgb(95, 166, 196),
+    rgb(121, 88, 146)
+  ); /* diagonal gradient (tilted -45 degrees) yellow -> pink */
+  -webkit-animation: AnimateBG 20s ease infinite; /* older version */
+  animation: AnimateBG 20s ease infinite; /* apply animation named AnimateBG that continuously moves gradient back and forth over 20 seconds, looping infinitely */
+  background-color: #242424; /* fallback color */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -99,7 +106,7 @@ h1 {
 @keyframes AnimateBG {
   /* start of animation */
   0% {
-    background-position: 0% 50%;        /* X Y positions */
+    background-position: 0% 50%; /* X Y positions */
   }
   /* halfway through animation */
   50% {
