@@ -1,11 +1,12 @@
 import { useState } from "react";
 import styles from "./AddUserModal.module.css";
 
-export default function AddUserModal({ isOpen, onClose, onAdd }) {
+export default function AddUserModal({ isOpen, onClose, onAdd, onRemove, collaborators = [], ownerName = "" }) {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [removingUserId, setRemovingUserId] = useState(null);
 
   if (!isOpen) return null;
 
@@ -51,11 +52,24 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
     onClose();
   }
 
+  async function handleRemove(userId) {
+    if (!onRemove || removingUserId) return;
+    
+    try {
+      setRemovingUserId(userId);
+      await onRemove(userId);
+    } catch (err) {
+      setError(String(err?.message || "Failed to remove collaborator"));
+    } finally {
+      setRemovingUserId(null);
+    }
+  }
+
   return (
     <div className={styles.overlay} onClick={handleClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3 className={styles.title}>Add user to playlist</h3>
+          <h3 className={styles.title}>Manage Collaborators</h3>
           <button className={styles.closeBtn} onClick={handleClose}>
             ✕
           </button>
@@ -64,38 +78,60 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
         <div className={styles.inputRow}>
           <input
             className={styles.textInput}
-            placeholder="Username"
+            placeholder="Enter username to add"
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
-    
               setError("");
               setStatus("");
             }}
             disabled={submitting}
           />
+          <button
+            className={styles.addBtnInline}
+            onClick={submit}
+            disabled={submitting}
+          >
+            {submitting ? "Adding..." : "Add"}
+          </button>
         </div>
 
         {/* show error or success */}
         {error && <div className={styles.error}>Error: {error}</div>}
         {!error && status && <div className={styles.status}>{status}</div>}
 
-        <div className={styles.actions}>
-          <button
-            className={styles.cancelBtn}
-            onClick={handleClose}
-            disabled={submitting}
-          >
-            Cancel
-          </button>
-          <button
-            className={styles.addBtn}
-            onClick={submit}
-            disabled={submitting}
-          >
-            {submitting ? "Adding..." : "Add User"}
-          </button>
+        {/* List of current collaborators */}
+        <div className={styles.collaboratorsList}>
+          <h4 className={styles.listTitle}>Current Collaborators</h4>
+          {collaborators.length === 0 ? (
+            <div className={styles.emptyText}>No collaborators yet</div>
+          ) : (
+            <div className={styles.list}>
+              {collaborators.map((collab) => (
+                <div key={collab.userId} className={styles.collabRow}>
+                  <div className={styles.collabInfo}>
+                    <span className={styles.collabName}>
+                      {collab.displayName || `User ${collab.userId}`}
+                    </span>
+                  </div>
+                  <button
+                    className={styles.removeBtn}
+                    onClick={() => handleRemove(collab.userId)}
+                    disabled={removingUserId === collab.userId}
+                  >
+                    {removingUserId === collab.userId ? "Removing..." : "Remove"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
+        {ownerName && (
+          <div className={styles.ownerInfo}>
+            Owner: <strong>{ownerName}</strong>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -22,22 +22,31 @@
     background-color: red;
 }
 
+/* MODAL */
+
 .modal-delete {
-    position: relative;
-    left: 30vw;
-    top: -70vh;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     box-sizing: border-box;
-    width: 40vw;
-    height: 30vh;
-    margin: 0;
-    padding: 0;
-    font-size: 3vh;
-    overflow: auto;
+    width: 400px;
+    max-width: 90vw;
+    padding: 32px 24px 24px;
+    font-size: 1.2rem;
     background-color: red;
     border: 3px double white;
     border-radius: 20px;
+    color: white;
+    text-align: center;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
+<<<<<<< HEAD
 .modal-delete h1 {
     position: absolute;
     top: 15%;
@@ -48,36 +57,49 @@
     font-size: xx-large;
 }
 
+=======
+/* title text (e.g. h2) */
+.modal-delete h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* subtitle line */
+>>>>>>> fe149a5 (Created /artist and /albums ; added buttons to /events ; removed Access from /playlist/{id} ; added a way to see current collaborators ; added delete button on /playlist/{id} ; added constrain to not add duplicate songs ; improved UX experiecne on /playlist/{id} ; fixed heart playlist issue)
 .modal-delete p {
-    position: absolute;
-    top: 45%;
-    width: 100%;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* button row */
+.modal-delete .button-row {
     display: flex;
     justify-content: center;
-    font-size: smaller;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 24px;
 }
 
-.modal-delete .cancel {
-    position: absolute;
-    bottom: 2vh;
-    left: 1vw;
-    color: white;
-    background-color: transparent;
-    border: 2px solid white;
-    border-radius: 20px;
-}
-
+.modal-delete .cancel,
 .modal-delete .confirm-delete {
-    position: absolute;
-    bottom: 2vh;
-    right: 1vw;
     color: white;
     background-color: transparent;
     border: 2px solid white;
     border-radius: 20px;
+    padding: 10px 32px;
+    min-width: 120px;
+    font-size: 1rem;
+    transition: background 0.2s, color 0.2s;
+    margin: 0;
+    box-sizing: border-box;
+    text-align: center;
 }
 
-.modal-delete .cancel:hover, .modal-delete .confirm-delete:hover {
+.modal-delete .cancel:hover,
+.modal-delete .confirm-delete:hover {
     color: red;
     background-color: white;
     cursor: pointer;

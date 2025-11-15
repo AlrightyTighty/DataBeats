@@ -138,8 +138,11 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> Delete([FromRoute] ulong id)
         {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+
             var playlist = await _context.Playlists.FindAsync(id);
             if (playlist == null)
             {
@@ -149,6 +152,11 @@ namespace backend.Controllers
             if (playlist.PlaylistName == LikedPlaylistName)
             {
                 return BadRequest("You cannot delete your liked playlist");
+            }
+
+            if (playlist.UserId != userId)
+            {
+                return Forbid("Only the playlist owner can delete this playlist");
             }
 
             playlist.TimestampDeleted = DateTime.UtcNow;

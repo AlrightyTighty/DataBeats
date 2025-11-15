@@ -86,7 +86,7 @@ export default function Dashboard() {
             <span>Like</span>
           </button>
 
-          <button onClick={() => navigate("/playlists")} className={styles.btn}>
+          <button onClick={() => navigate("/albums")} className={styles.btn}>
             <div className={styles.btnHighlight}></div>
             <span>Album</span>
           </button>

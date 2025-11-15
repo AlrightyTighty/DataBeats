@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import styles from "./CreateEvent.module.css";
 import Topnav from "../Components/Topnav";
 import API from "../lib/api";
@@ -11,6 +12,7 @@ async function jsonOrText(res) {
 }
 
 export default function CreateEvent() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [eventTime, setEventTime] = useState("");
@@ -137,7 +139,20 @@ export default function CreateEvent() {
         throw new Error(message);
       }
 
+      // Extract the event ID from the response
+      let eventId = null;
+      if (body && typeof body === "object") {
+        eventId = body.eventId || body.EventId || null;
+      }
+
       setMsg("Event created ✅");
+
+      // Redirect to the event page if we got an ID
+      if (eventId) {
+        setTimeout(() => {
+          navigate(`/event/${eventId}`);
+        }, 500);
+      }
 
     } catch (e) {
       setErr(e.message || String(e));

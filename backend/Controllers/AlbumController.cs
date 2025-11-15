@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace backend.Controllers
 {
     [Route("api/album")]
@@ -40,6 +41,33 @@ namespace backend.Controllers
             }
 
             return Ok(album.ToDTO());
+        }
+
+        // List all non-deleted albums with basic info + artist collaborators
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync([FromQuery] bool includeImageData = false)
+        {
+            var query = _context.Albums
+                .Where(a => a.TimestampDeleted == null)
+                .Include(a => a.MusicianWorksOnAlbums)
+                .ThenInclude(mwa => mwa.Musician);
+
+            // If image data requested, we still project individually to avoid loading huge blobs unnecessarily (could optimize later)
+            var albums = await query.ToListAsync();
+
+            if (!includeImageData)
+            {
+                return Ok(albums.Select(a => a.ToDTO()).ToArray());
+            }
+
+            // Load image file data for each
+            var withImages = new List<AlbumDto>(albums.Count);
+            foreach (var a in albums)
+            {
+                var file = await _context.AlbumOrSongArtFiles.FindAsync(a.AlbumOrSongArtFileId);
+                withImages.Add(a.ToDTOWithImageData(file?.FileData ?? Array.Empty<byte>()));
+            }
+            return Ok(withImages.ToArray());
         }
 
         [HttpGet("songs/{id}")]

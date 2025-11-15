@@ -6,6 +6,7 @@ using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -14,6 +15,34 @@ namespace backend.Controllers
     [ApiController]
     public class MusicianController : ControllerBase
     {
+        // GET /api/musician/all?includeImageData=true
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllMusiciansAsync([FromQuery] bool includeImageData = false)
+        {
+            var query = _context.Musicians.Where(m => m.TimestampDeleted == null);
+            var musicians = await query.ToListAsync();
+            if (!includeImageData)
+            {
+                return Ok(musicians.Select(m => new {
+                    m.MusicianId,
+                    m.MusicianName,
+                    m.ProfilePictureFileId
+                }).ToArray());
+            }
+            var withImages = new List<object>(musicians.Count);
+            foreach (var m in musicians)
+            {
+                var file = await _context.ProfilePictureFiles.FindAsync(m.ProfilePictureFileId);
+                withImages.Add(new {
+                    m.MusicianId,
+                    m.MusicianName,
+                    m.ProfilePictureFileId,
+                    profilePictureImage = file != null ? Convert.ToBase64String(file.FileData) : null,
+                    fileExtension = file?.FileExtension
+                });
+            }
+            return Ok(withImages.ToArray());
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMusicianAsync([FromRoute] ulong id)
         {

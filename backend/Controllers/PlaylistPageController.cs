@@ -76,7 +76,10 @@ namespace backend.Controllers
         // GET /api/playlistpage/{id}
         [HttpGet("{id}")]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> GetPlaylistPage([FromRoute] ulong id)
+        public async Task<IActionResult> GetPlaylistPage(
+            [FromRoute] ulong id,
+            [FromQuery] bool includeAlbumArt = false,
+            [FromQuery] bool includeLikeStatuses = false)
         {
             var userId = await ResolveUserIdAsync();
             if (!userId.HasValue)
@@ -92,6 +95,7 @@ namespace backend.Controllers
                         .ThenInclude(s => s.MusicianWorksOnSongs)
                             .ThenInclude(mws => mws.Musician)
                 .Include(p => p.UserIsCollaboratorOfPlaylists)
+                    .ThenInclude(c => c.User) // load collaborator usernames
                 .Include(p => p.User) // load owner
                 .FirstOrDefaultAsync(p => p.PlaylistId == id && p.TimestampDeleted == null);
 
@@ -105,7 +109,7 @@ namespace backend.Controllers
                 .Where(u => u.UserId == playlist.UserId)
                 .Select(u => u.Username)
                 .FirstOrDefaultAsync();
-            var dto = playlist.ToPlaylistPageDto(userId, ownerName);
+            var dto = playlist.ToPlaylistPageDto(userId, ownerName, includeAlbumArt, includeLikeStatuses, _context);
             return Ok(dto);
 
         }
@@ -156,6 +160,7 @@ namespace backend.Controllers
                             .ThenInclude(s => s.MusicianWorksOnSongs)
                                 .ThenInclude(mws => mws.Musician)
                     .Include(p => p.UserIsCollaboratorOfPlaylists)
+                        .ThenInclude(c => c.User) // load collaborator usernames
                     .Include(p => p.User) // load owner
                     .FirstAsync(p => p.PlaylistId == id);
 
@@ -208,6 +213,7 @@ namespace backend.Controllers
                             .ThenInclude(s => s.MusicianWorksOnSongs)
                                 .ThenInclude(mws => mws.Musician)
                     .Include(p => p.UserIsCollaboratorOfPlaylists)
+                        .ThenInclude(c => c.User) // load collaborator usernames
                     .Include(p => p.User) 
                     .FirstAsync(p => p.PlaylistId == id);
 
@@ -261,6 +267,51 @@ namespace backend.Controllers
                         .ThenInclude(s => s.MusicianWorksOnSongs)
                             .ThenInclude(mws => mws.Musician)
                 .Include(p => p.UserIsCollaboratorOfPlaylists)
+                    .ThenInclude(c => c.User) // load collaborator usernames
+                .Include(p => p.User)
+                .FirstAsync(p => p.PlaylistId == id);
+
+            var ownerName = await _context.Users
+                .Where(u => u.UserId == playlist.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync();
+            return Ok(reloaded.ToPlaylistPageDto(userId, ownerName));
+        }
+
+        // DELETE /api/playlistpage/{id}/collaborators/{collaboratorUserId}
+        [HttpDelete("{id}/collaborators/{collaboratorUserId}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> RemoveCollaborator([FromRoute] ulong id, [FromRoute] ulong collaboratorUserId)
+        {
+            var userId = await ResolveUserIdAsync();
+            if (!userId.HasValue) return Unauthorized("Authentication required.");
+
+            var playlist = await _context.Playlists
+                .Include(p => p.UserIsCollaboratorOfPlaylists)
+                .FirstOrDefaultAsync(p => p.PlaylistId == id && p.TimestampDeleted == null);
+            
+            if (playlist == null) return NotFound(new { error = "Playlist not found." });
+            if (playlist.UserId != userId.Value) return StatusCode(403, "Only the owner can remove collaborators.");
+
+            var collab = playlist.UserIsCollaboratorOfPlaylists
+                .FirstOrDefault(c => c.UserId == collaboratorUserId && c.TimeRemoved == null);
+            
+            if (collab == null) return NotFound(new { error = "Collaborator not found." });
+
+            collab.TimeRemoved = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            var reloaded = await _context.Playlists
+                .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                    .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.Album)
+                            .ThenInclude(a => a.AlbumOrSongArtFile)
+                .Include(p => p.PlaylistEntries.Where(pe => pe.TimeRemoved == null))
+                    .ThenInclude(pe => pe.Song)
+                        .ThenInclude(s => s.MusicianWorksOnSongs)
+                            .ThenInclude(mws => mws.Musician)
+                .Include(p => p.UserIsCollaboratorOfPlaylists)
+                    .ThenInclude(c => c.User) // load collaborator usernames
                 .Include(p => p.User)
                 .FirstAsync(p => p.PlaylistId == id);
 

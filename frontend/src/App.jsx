@@ -32,6 +32,8 @@ import ArtistAlbum from "./Pages/ArtistAlbum.jsx";
 import Settings from "./Pages/Settings.jsx";
 import NewReleases from "./Pages/NewReleases.jsx";
 import Album from "./Pages/Album.jsx";
+import Albums from "./Pages/Albums.jsx";
+import Artists from "./Pages/Artists.jsx";
 import PlaylistPage from "./Pages/PlaylistPage.jsx";
 import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
@@ -77,6 +79,8 @@ function App() {
     { path: "/settings", element: <Settings /> },
     { path: "/new", element: <NewReleases /> },
     { path: "/dashboard", element: <Dashboard /> },
+  { path: "/albums", element: <Albums /> },
+  { path: "/artists", element: <Artists /> },
     {
       path: "/album/:id",
       element: <Album setPlaybarState={setPlaybarState} />,

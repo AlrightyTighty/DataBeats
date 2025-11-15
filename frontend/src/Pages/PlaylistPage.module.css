@@ -2,6 +2,7 @@
   min-height: 100vh;
   padding: 96px 0 40px;
   box-sizing: border-box;
+  position: relative;
   /* background: linear-gradient(135deg, #1a3a5f 0%, #2b6cb0 35%, #38bdf8 100%); */
 }
 
@@ -200,7 +201,7 @@
 /* Header row above the songs list */
 .songsHeaderRow {
   display: grid;
-  grid-template-columns: 40px 48px 3fr 2fr 140px 80px 80px;
+  grid-template-columns: 60px 40px 48px 3fr 2fr 140px 80px 80px;
   padding: 0 12px;
   margin-bottom: 6px;
   font-size: 11px;
@@ -218,12 +219,38 @@
 /* Song rows use the same grid layout */
 .songRowGrid {
   display: grid;
-  grid-template-columns: 40px 48px 3fr 2fr 140px 80px 80px;
+  grid-template-columns: 60px 40px 48px 3fr 2fr 140px 80px 80px;
   align-items: center;
   gap: 12px;
 }
 
 /* shared column helpers */
+.colLike {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.likeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #ef4444;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.likeButton:hover {
+  transform: scale(1.15);
+  opacity: 0.8;
+}
+
+.likeButton:active {
+  transform: scale(0.95);
+}
+
 .colIndex {
   text-align: left;
   font-size: 13px;
@@ -320,12 +347,12 @@
 
   /* Simplify grid on mobile - hide some columns */
   .songsHeaderRow {
-    grid-template-columns: 40px 40px 1fr 60px;
+    grid-template-columns: 50px 30px 40px 1fr 60px;
     gap: 80px;
   }
 
   .songRowGrid {
-    grid-template-columns: 40px 40px 1fr 60px;
+    grid-template-columns: 50px 30px 40px 1fr 60px;
     gap: 8px;
   }
 

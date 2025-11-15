@@ -22,10 +22,12 @@ export default function DeleteButton({ strwhattodelete, api, state, clickFunctio
     }
 
     const modal = <div className="modal-delete">
-        <h1>Are you sure you'd like to delete this {strwhattodelete}?</h1>
+        <h1 style={{fontSize: '1.5rem', margin: '0 0 12px 0'}}>Are you sure you'd like to delete this {strwhattodelete}?</h1>
         <p>THIS ACTION CANNOT BE UNDONE</p>
-        <button type="button" className="cancel" onClick={clickFunction}>CANCEL</button>
-        <button type="button" className="confirm-delete" onClick={deletefn}>DELETE</button>
+        <div className="button-row">
+            <button type="button" className="cancel" onClick={clickFunction}>CANCEL</button>
+            <button type="button" className="confirm-delete" onClick={deletefn}>DELETE</button>
+        </div>
     </div>
 
     return <>
