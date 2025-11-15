@@ -41,6 +41,7 @@ export default function EventDetails() {
     const [editTitle, setEditTitle] = useState('');
     const [editPicFileId, setEditPicFileId] = useState('');
     const [editDesc, setEditDesc] = useState('');
+    const [editLocation, setEditLocation] = useState('');
     const [editTime, setEditTime] = useState('');
     const [editPrice, setEditPrice] = useState('');
 
@@ -142,6 +143,26 @@ export default function EventDetails() {
             }
         }
 
+        if (editLocation != event.eventLocation) {
+            const response = await fetch(api, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({eventLocation: editLocation}),
+                credentials: "include"
+            });
+            if (!response.ok) {
+                console.log("Error updating event location...");
+            }
+            else {
+                changed = true;
+                console.log("Event location updated!");
+                setEvent(prev => ({
+                    ...prev,
+                    eventLocation: editLocation
+                }));
+            }
+        }
+
         if (editTime != event.eventTime) {
             const response = await fetch(api, {
                 method: "PUT",
@@ -192,8 +213,9 @@ export default function EventDetails() {
     const toggleEditModal = () => {
         setShowEdit(!showEdit);
         setEditTitle(event.title);
-        setEditDesc(event.eventDescription);
         setEditPicFileId(event.eventPictureFileId);
+        setEditDesc(event.eventDescription);
+        setEditLocation(event.eventLocation);
         setEditTime(event.eventTime);
         setEditPrice(event.ticketPrice);
     }
@@ -223,9 +245,11 @@ export default function EventDetails() {
             </div>
             <div className="info">
                 <h3 className="event-desc">{event.eventDescription}</h3>
-                <div className="musician-time-price">
+                <div className="musician-loc-time-price">
                     <h2>
                         Host: {event.musicianName}
+                        <br></br>
+                        Location: {event.eventLocation}
                         <br></br>
                         Time: {(new Date(event.eventTime)).toLocaleString()}
                         <br></br>
@@ -238,7 +262,7 @@ export default function EventDetails() {
     }
 
     // user is event's hosting musician - can edit and delete
-    return <div className="event-details" onClick={() => {if (showEdit) toggleEditModal(); if (showDelete) toggleDeleteModal()}}>
+    return <div className="event-details">
         <Topnav />
         <div className="banner">
             <img src={imgSrc} alt="concert promo" />
@@ -246,9 +270,11 @@ export default function EventDetails() {
         </div>
         <div className="info">
             <h3 className="event-desc">{event.eventDescription}</h3>
-            <div className="musician-time-price">
+            <div className="musician-loc-time-price">
                 <h2>
                     Host: {event.musicianName}
+                    <br></br>
+                    Location: {event.eventLocation}
                     <br></br>
                     Time: {(new Date(event.eventTime)).toLocaleString()}
                     <br></br>
@@ -277,6 +303,14 @@ export default function EventDetails() {
                         maxLength={500}
                         value={editDesc}
                         onChange={(e) => setEditDesc(e.target.value)}
+                    />
+
+                    <h2 className="event-loc">Location</h2>
+                    <textarea className="edit-loc"
+                        placeholder="Where will the event be held?"
+                        maxLength={200}
+                        value={editLocation}
+                        onChange={(e) => setEditLocation(e.target.value)}
                     />
 
                     <h2 className="event-time">Date/Time</h2>

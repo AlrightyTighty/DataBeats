@@ -139,6 +139,10 @@ namespace backend.Controllers
             {
                 evt.EventDescription = updateDto.EventDescription;
             }
+            if (updateDto.EventLocation != null)
+            {
+                evt.EventLocation = updateDto.EventLocation;
+            }
             if (updateDto.EventTime != null)
             {
                 evt.EventTime = updateDto.EventTime.Value;
