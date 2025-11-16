@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistEvents.module.css";
+import "./Events.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
@@ -44,10 +45,20 @@ export default function ArtistEvents() {
     })();
   }, [id]);
 
+  useEffect(() => {
+    //use to load page rightly
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+  }, []);
+
   const artistDisplay = useMemo(() => {
     for (const e of events) {
       if (e.musicianName) return e.musicianName;
       if (e.musician?.musicianName) return e.musician.musicianName;
+      if (e.musician?.MusicianName) return e.musician.MusicianName;
     }
     return "Artist";
   }, [events]);
@@ -57,18 +68,29 @@ export default function ArtistEvents() {
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
+          {/*title*/}
           <h1 className={styles.title}>
             <button
               type="button"
-              className={styles.artistLink}
               onClick={() => navigate(`/artist/${id}`)}
               title={`View ${artistDisplay} profile`}
               aria-label={`View ${artistDisplay} profile`}
+              style={{
+                appearance: "none",
+                background: "none",
+                border: "none",
+                padding: 0,
+                margin: 0,
+                font: "inherit",
+                color: "#79D4F7",
+                cursor: "pointer",
+                textDecoration: "underline",
+                textUnderlineOffset: "4px",
+              }}
             >
               {artistDisplay}
-            </button>
-            <span className={styles.sep}> — </span>
-            <span>Events</span>
+            </button>{" "}
+            — Events
           </h1>
 
           {err && <div className={styles.centerText}>{err}</div>}
@@ -78,69 +100,87 @@ export default function ArtistEvents() {
           ) : events.length === 0 ? (
             <p className={styles.centerText}>No events found.</p>
           ) : (
-            <div className={styles.grid}>
-              {events.map((ev) => {
-                const imgFromId = ev.eventPictureFileId
-                  ? `${API}/api/event/file/view/${ev.eventPictureFileId}`
+            <div className="events-grid">
+              {events.map((e) => {
+                const inlineImg = e.imageBase64
+                  ? `data:image/${e.imageFileExtension || "jpeg"};base64,${
+                      e.imageBase64
+                    }`
                   : null;
-                const imgFromDto =
-                  ev.imageBase64 && ev.imageFileExtension
-                    ? `data:image/${ev.imageFileExtension};base64,${ev.imageBase64}`
-                    : null;
-                const coverSrc = imgFromId || imgFromDto;
+                const viewUrl = e.eventPictureFileId
+                  ? `${API}/api/event/file/view/${e.eventPictureFileId}`
+                  : null;
+                const imgSrc = inlineImg || viewUrl;
 
-                const dateStr = ev.eventTime
-                  ? new Date(ev.eventTime).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "short",
+                const dateStr = e.eventTime
+                  ? new Date(e.eventTime).toLocaleDateString(undefined, {
+                      month: "long",
                       day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
+                      year: "numeric",
                     })
                   : "—";
 
-                const priceStr =
-                  typeof ev.ticketPrice === "number"
-                    ? `$${ev.ticketPrice.toFixed(2)}`
-                    : ev.ticketPrice ?? "—";
+                const timeStr = e.eventTime
+                  ? new Date(e.eventTime).toLocaleTimeString(undefined, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : "";
 
-                const desc =
-                  ev.eventDescription ||
-                  ev.description ||
-                  ev.EventDescription ||
-                  "";
+                const priceStr = `$${Number(e.ticketPrice ?? 0).toFixed(2)}`;
 
                 return (
-                  <button
-                    key={ev.eventId}
-                    type="button"
-                    className={styles.card}
-                    onClick={() => navigate(`/event/${ev.eventId}`)}
-                    title={ev.title}
+                  <div
+                    key={e.eventId}
+                    className="event-card"
+                    onClick={() => navigate(`/event/${e.eventId}`)}
+                    tabIndex={0}
+                    onKeyDown={(ev) => {
+                      if (ev.key === "Enter" || ev.key === " ") {
+                        navigate(`/event/${e.eventId}`);
+                      }
+                    }}
                   >
-                    {coverSrc ? (
-                      <img
-                        src={coverSrc}
-                        alt={ev.title}
-                        className={styles.cover}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className={styles.coverPlaceholder} />
-                    )}
+                    <div className="media">
+                      <div className="media-inner">
+                        {imgSrc ? (
+                          <img src={imgSrc} alt={e.title} loading="lazy" />
+                        ) : (
+                          <img
+                            alt={e.title}
+                            loading="lazy"
+                            style={{
+                              background: "#e5e7eb",
+                              width: "100%",
+                              height: "160px",
+                              borderRadius: "12px",
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
 
-                    <div className={styles.body}>
-                      <h3 className={styles.eventTitle}>{ev.title}</h3>
-
-                      <div className={styles.meta}>
-                        <span className={styles.date}>{dateStr}</span>
-                        <span className={styles.dot}>•</span>
-                        <span className={styles.price}>{priceStr}</span>
+                    <div className="event-card-content">
+                      <div className="event-card-header">
+                        <div className="event-title">{e.title}</div>
+                        <div className="event-artist">
+                          {e.musicianName ?? e.MusicianName ?? artistDisplay}
+                        </div>
                       </div>
 
-                      {desc && <p className={styles.desc}>{desc}</p>}
+                      <div className="event-card-divider" />
+
+                      <div className="event-card-footer">
+                        <span className="event-meta">
+                          {dateStr}
+                          <br />
+                          {timeStr}
+                        </span>
+                        <span className="event-price-badge">{priceStr}</span>
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

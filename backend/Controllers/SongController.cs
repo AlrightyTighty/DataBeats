@@ -71,19 +71,44 @@ namespace backend.Controllers
             Console.WriteLine(foundSong);
             */
 
-            
+
 
             if (foundSong != null)
             {
                 if (foundSong.CreatedBy != ulong.Parse(Request.Headers["X-UserId"]!))
                     return Forbid();
-                    
+
                 foundSong.TimestampDeleted = DateTime.Now;
                 await _context.SaveChangesAsync();
                 return NoContent();
             }
             else
                 return NotFound();
+        }
+        
+        [HttpGet("artist/{musicianId}")]
+        public async Task<IActionResult> GetSongsByArtist([FromRoute] ulong musicianId)
+        {
+            var songs = await _context.Songs
+                .Where(s => s.TimestampDeleted == null)
+                .Where(s =>
+                    s.CreatedBy == musicianId ||
+                    s.MusicianWorksOnSongs.Any(mws => mws.MusicianId == musicianId)
+                )
+                .Include(s => s.Album)
+                .ToListAsync();
+
+            if (!songs.Any())
+                return Ok(Array.Empty<object>());
+
+            var dto = songs
+                .Select(s => s.ToSongDTOForStreaming(
+                    s.Album.AlbumOrSongArtFileId,
+                    s.Album.AlbumTitle
+                ))
+                .ToArray();
+
+            return Ok(dto);
         }
     }
 }

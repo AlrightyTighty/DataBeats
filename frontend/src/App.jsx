@@ -12,7 +12,6 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
-import Artist from "./Pages/ArtistProfileUser.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
@@ -23,6 +22,7 @@ import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
 import Report from "./Pages/Report.jsx";
+import UserPlaylists from "./Pages/UserPlaylists.jsx";
 import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
@@ -59,7 +59,6 @@ function App() {
     { path: "/authtest", element: <Authtest /> },
     { path: "/stream/:id", element: <Stream /> },
     { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
-    { path: "/artist/:id", element: <Artist /> },
     { path: "/streamtest", element: <StreamPopupTest /> },
     { path: "/events", element: <Events /> },
     { path: "/event/:id", element: <EventDetails /> },
@@ -71,16 +70,22 @@ function App() {
     { path: "/admin", element: <Admin /> },
     { path: "/report", element: <Report /> },
     { path: "/dashboard", element: <Dashboard /> },
-    { path: "/me/:id", element: <ListenerMe /> },
+    { path: "/user-playlists/:id", element: <UserPlaylists /> },
+    {
+      path: "/me/:id",
+      element: <ListenerMe setPlaybarState={setPlaybarState} />,
+    },
     { path: "/user/:id", element: <ListenerPublic /> },
-    { path: "/artist-user/:id", element: <ArtistProfileUser /> },
+    {
+      path: "/artist/:id",
+      element: <ArtistProfileUser setPlaybarState={setPlaybarState} />,
+    },
     { path: "/artist-events/:id", element: <ArtistEvents /> },
     { path: "/artist-albums/:id", element: <ArtistAlbum /> },
     { path: "/settings", element: <Settings /> },
     { path: "/new", element: <NewReleases /> },
     { path: "/dashboard", element: <Dashboard /> },
-  { path: "/albums", element: <Albums /> },
-  { path: "/artists", element: <Artists /> },
+    { path: "/albums", element: <Albums /> },
     {
       path: "/album/:id",
       element: <Album setPlaybarState={setPlaybarState} />,
@@ -101,7 +106,12 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      {playbarState.visible && <Playbar playbarState={playbarState} setPlaybarState={setPlaybarState} />}
+      {playbarState.visible && (
+        <Playbar
+          playbarState={playbarState}
+          setPlaybarState={setPlaybarState}
+        />
+      )}
     </>
   );
 }

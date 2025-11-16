@@ -23,7 +23,8 @@ namespace backend.Controllers
             var musicians = await query.ToListAsync();
             if (!includeImageData)
             {
-                return Ok(musicians.Select(m => new {
+                return Ok(musicians.Select(m => new
+                {
                     m.MusicianId,
                     m.MusicianName,
                     m.ProfilePictureFileId
@@ -33,7 +34,8 @@ namespace backend.Controllers
             foreach (var m in musicians)
             {
                 var file = await _context.ProfilePictureFiles.FindAsync(m.ProfilePictureFileId);
-                withImages.Add(new {
+                withImages.Add(new
+                {
                     m.MusicianId,
                     m.MusicianName,
                     m.ProfilePictureFileId,
@@ -43,14 +45,35 @@ namespace backend.Controllers
             }
             return Ok(withImages.ToArray());
         }
+        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMusicianAsync([FromRoute] ulong id)
         {
-            Musician? musician = await _context.Musicians.FindAsync(id);
+            var musician = await _context.Musicians
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.MusicianId == id && m.TimestampDeleted == null);
+
             if (musician == null)
                 return NotFound();
 
-            return Ok(musician.ToDto());
+            var cutoff = DateTime.UtcNow.AddDays(-30);
+
+            var monthlyListeners = await _context.UserListensToSongs
+                .AsNoTracking()
+                .Where(r => r.TimeListened >= cutoff)
+                .Where(r =>
+                    r.Song.CreatedBy == id
+                    || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == id)
+                )
+                .Select(r => r.UserId)
+                .Distinct()
+                .CountAsync();
+
+            var dto = musician.ToDto();
+            dto.MonthlyListenerCount = monthlyListeners;
+
+            return Ok(dto);
         }
         
         private ApplicationDBContext _context;

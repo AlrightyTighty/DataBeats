@@ -7,7 +7,7 @@ import useFollow from "../hooks/useFollow.js";
 import API from "../lib/api.js";
 import styles from "./ListenerPublic.module.css";
 
-export default function ListenerPublic() {
+export default function ListenerPublic({ setPlaybarState }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
@@ -16,10 +16,19 @@ export default function ListenerPublic() {
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
   const [user, setUser] = useState(null);
+  const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
+  const hasMusician = !!musicianId;
+
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
+
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+
+  const [userAvatarSrc, setUserAvatarSrc] = useState(null);
+  const [musician, setMusician] = useState(null);
+  const [musicianAvatarSrc, setMusicianAvatarSrc] = useState(null);
+  const [topSongs, setTopSongs] = useState([]);
 
   const {
     label: followLabel,
@@ -92,10 +101,108 @@ export default function ListenerPublic() {
     loadCounts();
   }, [loadCounts]);
 
-  const avatarSrc =
-    user && user.profilePictureFileId
-      ? `${API}/api/file/view/${user.profilePictureFileId}`
-      : null;
+  useEffect(() => {
+    if (!user?.profilePictureFileId) {
+      setUserAvatarSrc(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `${API}/api/images/profile-picture/${user.profilePictureFileId}`
+        );
+        if (!res.ok) {
+          setUserAvatarSrc(null);
+          return;
+        }
+        const data = await res.json();
+        const fileData = data.fileData ?? data.FileData;
+        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        if (!fileData) {
+          setUserAvatarSrc(null);
+          return;
+        }
+        setUserAvatarSrc(`data:image/${fileExt};base64,${fileData}`);
+      } catch {
+        setUserAvatarSrc(null);
+      }
+    })();
+  }, [user?.profilePictureFileId]);
+
+  useEffect(() => {
+    if (!musicianId) {
+      setMusician(null);
+      setMusicianAvatarSrc(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/musician/${musicianId}`);
+        if (!res.ok) {
+          setMusician(null);
+          return;
+        }
+        const m = await res.json();
+        setMusician(m);
+      } catch {
+        setMusician(null);
+      }
+    })();
+  }, [musicianId]);
+
+  useEffect(() => {
+    if (!musician?.profilePictureFileId) {
+      setMusicianAvatarSrc(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `${API}/api/images/profile-picture/${musician.profilePictureFileId}`
+        );
+        if (!res.ok) {
+          setMusicianAvatarSrc(null);
+          return;
+        }
+        const data = await res.json();
+        const fileData = data.fileData ?? data.FileData;
+        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        if (!fileData) {
+          setMusicianAvatarSrc(null);
+          return;
+        }
+        setMusicianAvatarSrc(`data:image/${fileExt};base64,${fileData}`);
+      } catch {
+        setMusicianAvatarSrc(null);
+      }
+    })();
+  }, [musician?.profilePictureFileId]);
+
+  useEffect(() => {
+    if (!profileUserId) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/history/top-songs?limit=5`, {
+          headers: {
+            "X-UserId": String(profileUserId),
+          },
+        });
+        if (!res.ok) {
+          setTopSongs([]);
+          return;
+        }
+        const data = await res.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+        setTopSongs(items);
+      } catch {
+        setTopSongs([]);
+      }
+    })();
+  }, [profileUserId]);
 
   const shareUrl = `${window.location.origin}/user/${profileUserId}`;
 
@@ -110,21 +217,31 @@ export default function ListenerPublic() {
     location.href = `/report?type=user&id=${profileUserId}`;
   }
 
-  function goToFollowers() {
-    navigate(`/followers/${profileUserId}`);
-  }
-
-  function goToFollowing() {
-    navigate(`/following/${profileUserId}`);
-  }
-
   async function handleFollowClick() {
     if (!canFollow) return;
     await followAct();
     await loadCounts();
   }
 
+  function handlePlaySong(song) {
+    if (!setPlaybarState) return;
+    const songId = song.songId ?? song.SongId;
+    const albumId = song.albumId ?? song.AlbumId ?? null;
+
+    setPlaybarState({
+      songId,
+      albumId,
+      playlistId: null,
+      visible: true,
+    });
+  }
+
+  function goToPlaylists() {
+    navigate(`/user-playlists/${profileUserId}`);
+  }
+
   const showFollowButton =
+    me &&
     canFollow &&
     currentUserId &&
     profileUserId &&
@@ -142,42 +259,149 @@ export default function ListenerPublic() {
           )}
 
           {user && (
-            <div className={styles.header}>
-              <div className={styles.kebabSlot}>
-                <KebabMenu onShare={onShare} onReport={onReport} />
-              </div>
-
-              {avatarSrc ? (
-                <img src={avatarSrc} alt="User" className={styles.pic} />
-              ) : (
-                <div className={styles.pic} />
-              )}
-
-              <div className={styles.info}>
-                <h1 className={styles.username}>@{user.username}</h1>
-
-                <div className={styles.stats}>
-                  <span>{followerCount} Followers</span>
-                  <span>{followingCount} Following</span>
+            <>
+              <div className={styles.header}>
+                <div className={styles.kebabSlot}>
+                  <KebabMenu onShare={onShare} onReport={onReport} />
                 </div>
 
-                <div className={styles.buttons}>
-                  {showFollowButton && (
+                {userAvatarSrc ? (
+                  <img src={userAvatarSrc} alt="User" className={styles.pic} />
+                ) : (
+                  <div className={styles.pic} />
+                )}
+
+                <div className={styles.info}>
+                  <h1>@{user.username}</h1>
+                  <p>
+                    {user.fname} {user.lname}
+                  </p>
+
+                  <div className={styles.stats}>
+                    <span>{followerCount} Followers</span>
+                    <span>{followingCount} Following</span>
+                  </div>
+
+                  <div className={styles.buttons}>
+                    {showFollowButton && (
+                      <button
+                        onClick={handleFollowClick}
+                        className={
+                          followLabel === "Unfollow"
+                            ? styles.unfollow
+                            : styles.follow
+                        }
+                        disabled={followLoading}
+                      >
+                        {followLoading ? "..." : followLabel || "Follow"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.sectionsRow}>
+                {hasMusician && musician && (
+                  <div className={styles.musicianCard}>
+                    <div className={styles.musicianHeader}>
+                      {musicianAvatarSrc ? (
+                        <img
+                          src={musicianAvatarSrc}
+                          alt={musician.musicianName}
+                          className={styles.musicianPic}
+                        />
+                      ) : (
+                        <div className={styles.musicianPic} />
+                      )}
+                      <div>
+                        <h2 className={styles.musicianName}>
+                          {musician.musicianName}
+                        </h2>
+                        <p className={styles.musicianStats}>
+                          {musician.monthlyListenerCount ?? 0} Monthly Listeners
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className={styles.musicianBio}>
+                      {musician.bio || "No bio available."}
+                    </p>
+
                     <button
-                      onClick={handleFollowClick}
-                      className={
-                        followLabel === "Unfollow"
-                          ? styles.unfollow
-                          : styles.follow
-                      }
-                      disabled={followLoading}
+                      type="button"
+                      className={styles.musicianProfileButton}
+                      onClick={() => navigate(`/artist/${musician.musicianId}`)}
                     >
-                      {followLoading ? "..." : followLabel || "Follow"}
+                      View Musician Profile
                     </button>
+                  </div>
+                )}
+
+                <div
+                  className={`${styles.topSongsCard} ${
+                    !hasMusician ? styles.topSongsFull : ""
+                  }`}
+                >
+                  <div className={styles.topSongsHeader}>
+                    <h2>Top Songs</h2>
+                  </div>
+
+                  {topSongs.length === 0 ? (
+                    <p className={styles.centerText}>
+                      No listening history yet.
+                    </p>
+                  ) : (
+                    <div className={styles.songList}>
+                      {topSongs.map((s, idx) => {
+                        const songId = s.songId ?? s.SongId;
+                        const title = s.songName ?? s.SongName;
+                        const artist =
+                          s.artistName ??
+                          s.ArtistName ??
+                          s.musicianName ??
+                          "Unknown";
+                        const album = s.albumTitle ?? s.AlbumTitle ?? "";
+
+                        return (
+                          <div key={songId ?? idx} className={styles.songRow}>
+                            <div className={styles.songInfo}>
+                              <span className={styles.songIndex}>
+                                {idx + 1}.
+                              </span>
+                              <div>
+                                <div className={styles.songTitle}>{title}</div>
+                                <div className={styles.songMeta}>
+                                  {artist}
+                                  {album ? ` • ${album}` : ""}
+                                </div>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              className={styles.playButton}
+                              onClick={() => handlePlaySong(s)}
+                            >
+                              ▶
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
+
+              <div className={styles.bottomRow}>
+                <button
+                  type="button"
+                  className={styles.viewPlaylists}
+                  onClick={goToPlaylists}
+                >
+                  View All Playlists
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

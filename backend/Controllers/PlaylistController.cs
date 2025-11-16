@@ -193,6 +193,25 @@ namespace backend.Controllers
 
             return Ok(new { OwnedPlaylists = userPlaylists, SavedPlaylists = savedPlaylists });
         }
+
+        [HttpGet("user/{userId}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetPlaylistsByUser([FromRoute] ulong userId)
+        {
+            var playlists = await _context.Playlists
+                .Where(p => p.UserId == userId && p.TimestampDeleted == null)
+                .Include(p => p.PlaylistPictureFile)
+                .Select(p => new UserPlaylistInformation(
+                    p.PlaylistId,
+                    p.PlaylistName,
+                    p.PlaylistPictureFile != null
+                        ? p.PlaylistPictureFile.FileData
+                        : Array.Empty<byte>()
+                ))
+                .ToArrayAsync();
+
+            return Ok(playlists);
+        }
     }
 
     public class UserPlaylistInformation
@@ -207,5 +226,7 @@ namespace backend.Controllers
             this.PlaylistTitle = title;
             this.PlaylistImage = image;
         }
+
+        
     }
 }

@@ -16,7 +16,7 @@ const Topnav = () => {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
         if (!r.ok) return;
         const me = await r.json();
-        if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
+        if (!dead && me?.userId) setAccountPath(`/me/${userId}`);
       } catch {}
     })();
     return () => {
