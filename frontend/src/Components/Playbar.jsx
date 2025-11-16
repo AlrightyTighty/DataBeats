@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./Playbar.module.css";
 import API from "../lib/api";
+import { useNavigate } from "react-router";
+import { usePlaybar } from "../contexts/PlaybarContext";
 
-import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaRedoAlt, FaMusic } from "react-icons/fa";
+import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaRedoAlt, FaInfoCircle, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 
-const Playbar = ({ playbarState, setPlaybarState }) => {
+const Playbar = () => {
+  const { playbarState, setPlaybarState } = usePlaybar();
   const { songId, songList } = playbarState;
 
   const audioRef = useRef(null);
+  const navigate = useNavigate();
 
   const [songInfo, setSongInfo] = useState(null);
   const [songData, setSongData] = useState(null);
@@ -16,6 +20,8 @@ const Playbar = ({ playbarState, setPlaybarState }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(50);
+  const [isMuted, setIsMuted] = useState(false);
+  const previousVolumeRef = useRef(50);
 
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -78,6 +84,29 @@ const Playbar = ({ playbarState, setPlaybarState }) => {
     const vol = e.target.value;
     setVolume(vol);
     if (audioRef.current) audioRef.current.volume = vol / 100;
+
+    // Automatically unmute when slider is moved
+    if (isMuted && vol > 0) {
+      setIsMuted(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+
+    if (isMuted) {
+      // Unmute: restore previous volume
+      const restoredVolume = previousVolumeRef.current;
+      setVolume(restoredVolume);
+      audioRef.current.volume = restoredVolume / 100;
+      setIsMuted(false);
+    } else {
+      // Mute: save current volume and set to 0
+      previousVolumeRef.current = volume;
+      setVolume(0);
+      audioRef.current.volume = 0;
+      setIsMuted(true);
+    }
   };
 
   const handleProgressChange = (e) => {
@@ -187,8 +216,11 @@ const Playbar = ({ playbarState, setPlaybarState }) => {
           </div>
 
           <div className={styles.rightControls}>
-            <button className={styles.lyricsButton}>
-              <FaMusic />
+            <button className={styles.lyricsButton} onClick={() => navigate(`/songinfo/${songId}`)}>
+              <FaInfoCircle />
+            </button>
+            <button className={styles.controlButton} onClick={toggleMute}>
+              {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
             </button>
             <input type="range" min="0" max="100" value={volume} className={styles.volumeSlider} onChange={handleVolumeChange} />
           </div>

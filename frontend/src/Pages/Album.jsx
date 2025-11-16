@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
 import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
+import { usePlaybar } from "../contexts/PlaybarContext.jsx";
 
 const albumData = {
   title: "Midnight Echoes",
@@ -78,7 +79,8 @@ const albumData = {
   ],
 };
 
-const Album = ({ setPlaybarState }) => {
+const Album = () => {
+  const { setPlaybarState } = usePlaybar();
 
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
