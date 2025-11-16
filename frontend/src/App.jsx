@@ -69,12 +69,12 @@ function App() {
         { path: "/user-playlists/:id", element: <UserPlaylists /> },
         {
           path: "/me/:id",
-          element: <ListenerMe setPlaybarState={setPlaybarState} />,
+          element: <ListenerMe />,
         },
         { path: "/user/:id", element: <ListenerPublic /> },
         {
           path: "/artist/:id",
-          element: <ArtistProfileUser setPlaybarState={setPlaybarState} />,
+          element: <ArtistProfileUser />,
         },
         { path: "/artist-events/:id", element: <ArtistEvents /> },
         { path: "/artist-albums/:id", element: <ArtistAlbum /> },
