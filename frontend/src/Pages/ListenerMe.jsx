@@ -18,12 +18,12 @@ export default function ListenerMe({ setPlaybarState }) {
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
   const [user, setUser] = useState(null);
-<<<<<<< HEAD
+  // musician id + flag
   const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
   const hasMusician = !!musicianId;
-=======
+
   const [isVerifiedMusician, setIsVerifiedMusician] = useState(false);
->>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
+
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
 
@@ -32,7 +32,7 @@ export default function ListenerMe({ setPlaybarState }) {
 
   const [userAvatarSrc, setUserAvatarSrc] = useState(null);
 
-  //musician
+  // musician
   const [musician, setMusician] = useState(null);
   const [musicianAvatarSrc, setMusicianAvatarSrc] = useState(null);
 
@@ -77,6 +77,7 @@ export default function ListenerMe({ setPlaybarState }) {
     }
   }, [profileUserId]);
 
+  // load user
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -92,22 +93,6 @@ export default function ListenerMe({ setPlaybarState }) {
         }
         const data = await res.json();
         setUser(data);
-        // If this user is a musician, fetch musician record to check verification
-        if (data?.musicianId) {
-          try {
-            const mRes = await fetch(`${API}/api/musician/${data.musicianId}`, { credentials: "include" });
-            if (mRes.ok) {
-              const m = await mRes.json();
-              if (m?.isVerified) setIsVerifiedMusician(true);
-            } else {
-              setIsVerifiedMusician(false);
-            }
-          } catch {
-            setIsVerifiedMusician(false);
-          }
-        } else {
-          setIsVerifiedMusician(false);
-        }
       } catch {
         setError("Error loading user.");
       } finally {
@@ -116,10 +101,12 @@ export default function ListenerMe({ setPlaybarState }) {
     })();
   }, [profileUserId]);
 
+  // load follower/following counts
   useEffect(() => {
     loadCounts();
   }, [loadCounts]);
 
+  // load user avatar
   useEffect(() => {
     if (!user?.profilePictureFileId) {
       setUserAvatarSrc(null);
@@ -151,27 +138,33 @@ export default function ListenerMe({ setPlaybarState }) {
 
   // musician
   useEffect(() => {
-    if (!user?.musicianId) {
+    if (!musicianId) {
       setMusician(null);
       setMusicianAvatarSrc(null);
+      setIsVerifiedMusician(false);
       return;
     }
 
     (async () => {
       try {
-        const res = await fetch(`${API}/api/musician/${user.musicianId}`);
+        // If this user is a musician, fetch musician record to check verification
+        const res = await fetch(`${API}/api/musician/${musicianId}`);
         if (!res.ok) {
           setMusician(null);
+          setIsVerifiedMusician(false);
           return;
         }
         const m = await res.json();
         setMusician(m);
+        setIsVerifiedMusician(!!m.isVerified);
       } catch {
         setMusician(null);
+        setIsVerifiedMusician(false);
       }
     })();
-  }, [user?.musicianId]);
+  }, [musicianId]);
 
+  // load musician avatar
   useEffect(() => {
     if (!musician?.profilePictureFileId) {
       setMusicianAvatarSrc(null);
@@ -286,43 +279,11 @@ export default function ListenerMe({ setPlaybarState }) {
           )}
 
           {user && (
-<<<<<<< HEAD
             <>
               {/* Top header */}
               <div className={styles.header}>
                 <div className={styles.kebabSlot}>
                   <KebabMenu onShare={onShare} onReport={onReport} />
-=======
-            <div className={styles.header}>
-              <div className={styles.kebabSlot}>
-                <KebabMenu onShare={onShare} onReport={onReport} />
-              </div>
-
-              {avatarSrc ? (
-                <img src={avatarSrc} alt="User" className={styles.pic} />
-              ) : (
-                <div className={styles.pic} />
-              )}
-
-              <div className={styles.info}>
-                <h1 className={styles.nameRow}>
-                  @{user.username}
-                  {isVerifiedMusician && (
-                    <img
-                      src={verifiedBadge}
-                      alt="Verified musician"
-                      className={styles.verifiedBadge}
-                    />
-                  )}
-                </h1>
-                <p>
-                  {user.fname} {user.lname}
-                </p>
-
-                <div className={styles.stats}>
-                  <span>{followerCount} Followers</span>
-                  <span>{followingCount} Following</span>
->>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
                 </div>
 
                 {userAvatarSrc ? (
@@ -332,7 +293,16 @@ export default function ListenerMe({ setPlaybarState }) {
                 )}
 
                 <div className={styles.info}>
-                  <h1>@{user.username}</h1>
+                  <h1 className={styles.nameRow}>
+                    @{user.username}
+                    {isVerifiedMusician && (
+                      <img
+                        src={verifiedBadge}
+                        alt="Verified musician"
+                        className={styles.verifiedBadge}
+                      />
+                    )}
+                  </h1>
                   <p>
                     {user.fname} {user.lname}
                   </p>
