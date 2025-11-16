@@ -1,7 +1,8 @@
 // src/Pages/ListenerMe.jsx
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import verifiedBadge from "../assets/graphics/musician_verification.png";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
@@ -17,8 +18,12 @@ export default function ListenerMe({ setPlaybarState }) {
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
   const [user, setUser] = useState(null);
+<<<<<<< HEAD
   const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
   const hasMusician = !!musicianId;
+=======
+  const [isVerifiedMusician, setIsVerifiedMusician] = useState(false);
+>>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
 
@@ -87,6 +92,22 @@ export default function ListenerMe({ setPlaybarState }) {
         }
         const data = await res.json();
         setUser(data);
+        // If this user is a musician, fetch musician record to check verification
+        if (data?.musicianId) {
+          try {
+            const mRes = await fetch(`${API}/api/musician/${data.musicianId}`, { credentials: "include" });
+            if (mRes.ok) {
+              const m = await mRes.json();
+              if (m?.isVerified) setIsVerifiedMusician(true);
+            } else {
+              setIsVerifiedMusician(false);
+            }
+          } catch {
+            setIsVerifiedMusician(false);
+          }
+        } else {
+          setIsVerifiedMusician(false);
+        }
       } catch {
         setError("Error loading user.");
       } finally {
@@ -265,11 +286,43 @@ export default function ListenerMe({ setPlaybarState }) {
           )}
 
           {user && (
+<<<<<<< HEAD
             <>
               {/* Top header */}
               <div className={styles.header}>
                 <div className={styles.kebabSlot}>
                   <KebabMenu onShare={onShare} onReport={onReport} />
+=======
+            <div className={styles.header}>
+              <div className={styles.kebabSlot}>
+                <KebabMenu onShare={onShare} onReport={onReport} />
+              </div>
+
+              {avatarSrc ? (
+                <img src={avatarSrc} alt="User" className={styles.pic} />
+              ) : (
+                <div className={styles.pic} />
+              )}
+
+              <div className={styles.info}>
+                <h1 className={styles.nameRow}>
+                  @{user.username}
+                  {isVerifiedMusician && (
+                    <img
+                      src={verifiedBadge}
+                      alt="Verified musician"
+                      className={styles.verifiedBadge}
+                    />
+                  )}
+                </h1>
+                <p>
+                  {user.fname} {user.lname}
+                </p>
+
+                <div className={styles.stats}>
+                  <span>{followerCount} Followers</span>
+                  <span>{followingCount} Following</span>
+>>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
                 </div>
 
                 {userAvatarSrc ? (

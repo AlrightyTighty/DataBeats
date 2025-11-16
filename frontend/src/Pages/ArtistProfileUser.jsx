@@ -6,6 +6,7 @@ import API from "../lib/api.js";
 import useMe from "../Components/UseMe.js";
 import useFollow from "../hooks/useFollow.js";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
+import verifiedBadge from "../assets/graphics/musician_verification.png";
 
 export default function ArtistProfileUser({ setPlaybarState }) {
   const { id } = useParams();
@@ -41,6 +42,8 @@ export default function ArtistProfileUser({ setPlaybarState }) {
       });
       if (artistRes.ok) {
         const a = await artistRes.json();
+        console.log("Artist data received:", a);
+        console.log("IsVerified:", a.isVerified);
         setArtist(a);
       }
 
@@ -193,7 +196,16 @@ export default function ArtistProfileUser({ setPlaybarState }) {
             )}
 
             <div className={styles.info}>
-              <h1>@{artist.musicianName || "Artist Name"}</h1>
+              <h1 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                @{artist.musicianName || "Artist Name"}
+                {artist.isVerified && (
+                  <img 
+                    src={verifiedBadge} 
+                    alt="Verified" 
+                    style={{ width: '55px', height: '55px' }} 
+                  />
+                )}
+              </h1>
               <p>{artist.bio || "No bio available."}</p>
 
               <div className={styles.stats}>

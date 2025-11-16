@@ -46,6 +46,18 @@
   gap: 14px;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.verifiedBadge {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
 .buttonsRow {
   display: flex;
   gap: 12px;
