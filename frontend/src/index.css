@@ -1,21 +1,15 @@
-<<<<<<< HEAD
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-=======
->>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
 html,
 body,
 #root {
   width: 100%;
   min-height: 100vh;
-<<<<<<< HEAD
-=======
   height: fit-content;
->>>>>>> cc84e53654ad095ac9b4eae8cc751f08f109d26d
   margin: 0;
   padding: 0;
 
