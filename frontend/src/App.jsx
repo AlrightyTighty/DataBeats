@@ -78,6 +78,7 @@ function App() {
         },
         { path: "/artist-events/:id", element: <ArtistEvents /> },
         { path: "/artist-albums/:id", element: <ArtistAlbum /> },
+        { path: "/artists", element: <Artists /> },
         { path: "/settings", element: <Settings /> },
         { path: "/new", element: <NewReleases /> },
         { path: "/albums", element: <Albums /> },

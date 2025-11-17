@@ -196,13 +196,13 @@ export default function ArtistProfileUser({ setPlaybarState }) {
             )}
 
             <div className={styles.info}>
-              <h1 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 @{artist.musicianName || "Artist Name"}
                 {artist.isVerified && (
-                  <img 
-                    src={verifiedBadge} 
-                    alt="Verified" 
-                    style={{ width: '55px', height: '55px' }} 
+                  <img
+                    src={verifiedBadge}
+                    alt="Verified"
+                    style={{ width: "55px", height: "55px" }}
                   />
                 )}
               </h1>
@@ -310,7 +310,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
               {albums.length === 0 ? (
                 <p>No albums yet.</p>
               ) : (
-                albums.slice(0, 4).map((a) => (
+                albums.slice(0, 5).map((a) => (
                   <a
                     key={a.albumId}
                     href={`/album/${a.albumId}`}
