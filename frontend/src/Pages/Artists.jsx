@@ -1,27 +1,77 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import API from "../lib/api";
 import styles from "./Artists.module.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
-
 export default function Artists() {
+  const navigate = useNavigate();
   const [artists, setArtists] = useState([]);
+  const [avatarMap, setAvatarMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
         setErr(null);
-        const res = await fetch(`${API}/api/musician/all?includeImageData=true`, { credentials: "include" });
-        if (!res.ok) throw new Error(`GET /api/musician/all failed (${res.status})`);
+        setLoading(true);
+
+        const res = await fetch(`${API}/api/musician/all`);
+        if (!res.ok) {
+          throw new Error(`GET /api/musician/all failed (${res.status})`);
+        }
+
         const data = await res.json();
-        setArtists(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+
+        list.sort((a, b) => {
+          const na = (a.musicianName ?? a.MusicianName ?? "").toLowerCase();
+          const nb = (b.musicianName ?? b.MusicianName ?? "").toLowerCase();
+          return na.localeCompare(nb);
+        });
+
+        setArtists(list);
+
+        const entries = await Promise.all(
+          list.map(async (m) => {
+            const picId =
+              m.profilePictureFileId ?? m.ProfilePictureFileId ?? null;
+            const id = m.musicianId ?? m.MusicianId;
+            if (!id || !picId) return null;
+
+            try {
+              const imgRes = await fetch(
+                `${API}/api/images/profile-picture/${picId}`
+              );
+              if (!imgRes.ok) return null;
+
+              const imgData = await imgRes.json();
+              const fileData = imgData.fileData ?? imgData.FileData;
+              const fileExt =
+                imgData.fileExtension ?? imgData.FileExtension ?? "png";
+              if (!fileData) return null;
+
+              return {
+                id,
+                src: `data:image/${fileExt};base64,${fileData}`,
+              };
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        const map = {};
+        for (const entry of entries) {
+          if (!entry) continue;
+          map[entry.id] = entry.src;
+        }
+        setAvatarMap(map);
       } catch (e) {
         setErr(e.message || String(e));
+        setArtists([]);
+        setAvatarMap({});
       } finally {
         setLoading(false);
       }
@@ -32,34 +82,62 @@ export default function Artists() {
     <>
       <Topnav />
       <div className={styles.page}>
-        <h1 className={styles.title}>Artists</h1>
-        {loading && <div className={styles.status}>Loading artists…</div>}
-        {err && <div className={styles.error}>{err}</div>}
-        {!loading && !err && artists.length === 0 && (
-          <div className={styles.empty}>No artists yet.</div>
-        )}
-        <div className={styles.grid}>
-          {artists.map(a => {
-            const imgSrc = a.profilePictureImage
-              ? `data:image/${a.fileExtension || "jpeg"};base64,${a.profilePictureImage}`
-              : undefined;
-            return (
-              <div
-                key={a.musicianId}
-                className={styles.card}
-                onClick={() => navigate(`/artist/${a.musicianId}`)}
-                tabIndex={0}
-                onKeyDown={(ev) => {
-                  if (ev.key === "Enter" || ev.key === " ") navigate(`/artist/${a.musicianId}`);
-                }}
-              >
-                <div className={styles.media}>{imgSrc && <img src={imgSrc} alt={a.musicianName} loading="lazy" />}</div>
-                <div className={styles.content}>
-                  <div className={styles.artistName}>{a.musicianName}</div>
-                </div>
-              </div>
-            );
-          })}
+        <div className={styles.container}>
+          <h1 className={styles.title}>Browse Artists</h1>
+
+          {err && <div className={styles.error}>{err}</div>}
+
+          {loading ? (
+            <p className={styles.status}>Loading artists...</p>
+          ) : artists.length === 0 ? (
+            <p className={styles.status}>No artists found.</p>
+          ) : (
+            <div className={styles.grid}>
+              {artists.map((m) => {
+                const id = m.musicianId ?? m.MusicianId;
+                const name = m.musicianName ?? m.MusicianName ?? "Unknown";
+                const handle = `@${name}`;
+
+                const followersRaw = m.followerCount ?? m.FollowerCount ?? 0;
+                const monthlyRaw =
+                  m.monthlyListenerCount ?? m.MonthlyListenerCount ?? 0;
+
+                const followers = Number(followersRaw) || 0;
+                const monthly = Number(monthlyRaw) || 0;
+
+                const avatarSrc = avatarMap[id] ?? null;
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className={styles.card}
+                    onClick={() => navigate(`/artist/${id}`)}
+                    title={name}
+                  >
+                    {avatarSrc ? (
+                      <img
+                        src={avatarSrc}
+                        alt={name}
+                        className={styles.avatar}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className={styles.avatarPlaceholder} />
+                    )}
+
+                    <div className={styles.text}>
+                      <h3 className={styles.name}>{handle}</h3>
+                      <p className={styles.statsLine}>
+                        {followers.toLocaleString()} followers •{" "}
+                        {monthly.toLocaleString()} monthly listeners
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </>

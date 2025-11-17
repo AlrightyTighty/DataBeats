@@ -78,7 +78,7 @@ export default function Follows({ defaultTab = "followers" }) {
   }
 
   function openMusician(musicianId) {
-    navigate(`/artist-user/${musicianId}`);
+    navigate(`/artist/${musicianId}`);
   }
 
   return (

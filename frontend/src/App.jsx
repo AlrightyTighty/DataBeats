@@ -42,6 +42,7 @@ import NotFound from "./Pages/NotFound.jsx";
 import History from "./Pages/History.jsx";
 import Logout from "./Pages/Logout.jsx";
 import Follow from "./Pages/Follow.jsx";
+import RecentPlays from "./Pages/RecentPlays.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -91,6 +92,7 @@ function App() {
         { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
+        { path: "recent-plays/:id", element: <RecentPlays /> },
       ],
     },
   ]);

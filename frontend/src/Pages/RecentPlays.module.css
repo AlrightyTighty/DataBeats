@@ -1,0 +1,185 @@
+.page {
+  min-height: 100vh;
+  padding-top: 120px;
+  padding-bottom: 80px;
+  display: flex;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.container {
+  width: 900px;
+  max-width: 100%;
+  margin: 0 16px;
+  padding: 20px 22px 24px 22px;
+  border-radius: 20px;
+  background: rgba(5, 12, 36, 0.88);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(121, 212, 247, 0.16);
+  border: 1px solid rgba(121, 212, 247, 0.55);
+}
+
+.status {
+  margin-top: 16px;
+  opacity: 0.9;
+}
+
+.error {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #ffb3b3;
+}
+
+.columns {
+  margin-top: 14px;
+  margin-bottom: 4px;
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: 60px 1fr 80px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.colIndex {
+  justify-self: flex-start;
+}
+
+.colTitle {
+}
+
+.colDuration {
+  justify-self: flex-end;
+}
+
+/* list + rows */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.row {
+  border: none;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.row:hover {
+  background: rgba(121, 212, 247, 0.12);
+  border-color: rgba(121, 212, 247, 0.55);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.index {
+  width: 24px;
+  text-align: right;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.textBlock {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.songTitle {
+  font-size: 0.98rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.songMeta {
+  font-size: 0.82rem;
+  opacity: 0.85;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.duration {
+  font-size: 0.85rem;
+  font-family: system-ui;
+  opacity: 0.9;
+}
+
+.playIcon {
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 18px 16px 20px 16px;
+  }
+
+  .columns {
+    grid-template-columns: 40px 1fr 60px;
+    font-size: 0.75rem;
+  }
+
+  .row {
+    grid-template-columns: 1fr 60px;
+    padding: 8px 8px;
+  }
+
+  .songTitle {
+    font-size: 0.9rem;
+  }
+
+  .songMeta,
+  .duration {
+    font-size: 0.78rem;
+  }
+}

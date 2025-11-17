@@ -154,7 +154,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
     setArtist((prev) => {
       if (!prev) return prev;
       const current = prev.followerCount ?? 0;
-      const delta = wasFollowing ? -1 : 1;
+      const delta = wasFollowing ? 0 : -1;
       return {
         ...prev,
         followerCount: Math.max(0, current + delta),

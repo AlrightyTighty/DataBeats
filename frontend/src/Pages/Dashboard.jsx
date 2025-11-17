@@ -169,7 +169,7 @@ export default function Dashboard() {
         }
         setRandomSongs(pick);
 
-        // Friends (mutual followers)
+        // Friends
         const followers = Array.isArray(followersResponse)
           ? followersResponse
           : [];
@@ -276,11 +276,11 @@ export default function Dashboard() {
 
             <button
               type="button"
-              onClick={() => navigate("/reports")}
+              onClick={() => navigate("/recent-plays/${profileUserId})")}
               className={styles.btn}
             >
               <div className={styles.btnHighlight} />
-              <span>Reports</span>
+              <span>Recent Plays</span>
             </button>
           </div>
 
