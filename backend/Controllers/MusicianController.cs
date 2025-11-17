@@ -27,7 +27,9 @@ namespace backend.Controllers
                 {
                     m.MusicianId,
                     m.MusicianName,
-                    m.ProfilePictureFileId
+                    m.ProfilePictureFileId,
+                    m.FollowerCount,
+                    m.MonthlyListenerCount
                 }).ToArray());
             }
             var withImages = new List<object>(musicians.Count);
