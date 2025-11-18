@@ -3,7 +3,16 @@ import reportSymbol from "../assets/graphics/report_button.png";
 import { useNavigate } from "react-router";
 import styles from "./ReportButton.module.css";
 
-const ReportButton = ({ right, left, top, bottom, reportType, width, height, contentId }) => {
+const ReportButton = ({
+  right,
+  left,
+  top,
+  bottom,
+  reportType,
+  width,
+  height,
+  contentId,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -14,7 +23,15 @@ const ReportButton = ({ right, left, top, bottom, reportType, width, height, con
       }}
       className={styles["report-button"]}
       src={reportSymbol}
-      style={{ width: width ?? "30px", height: height ?? "30px", right: right, left: left, top: top, bottom: bottom, position: "absolute" }}
+      style={{
+        width: width ?? "30px",
+        height: height ?? "30px",
+        right: right,
+        left: left,
+        top: top,
+        bottom: bottom,
+        position: "absolute",
+      }}
     />
   );
 };

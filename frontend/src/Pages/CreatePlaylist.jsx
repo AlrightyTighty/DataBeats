@@ -1,10 +1,14 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import styles from "./CreatePlaylist.module.css";
 import Topnav from "../Components/Topnav";
 import playlistArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
 import API from "../lib/api";
+import { useModal } from "../contexts/ModalContext";
 
 const CreatePlaylist = () => {
+  const navigate = useNavigate();
+  const { showAlert } = useModal();
   const [playlistCreatorIDs, setPlaylistCreatorIDs] = useState([]);
   const trackInfo = useRef([]);
   const playlistInfo = useRef({
@@ -92,8 +96,19 @@ const CreatePlaylist = () => {
         const txt = await response.text();
         throw new Error(txt || `Create failed (${response.status})`);
       }
+
+      const responseData = await response.json();
+      const playlistId = responseData.playlistId || responseData.PlaylistId;
+
+      // Navigate to the created playlist
+      if (playlistId) {
+        navigate(`/playlist/${playlistId}`);
+      } else {
+        throw new Error("Playlist created but ID not returned");
+      }
     } catch (err) {
       setCreateError(err.message);
+      showAlert("Error", err.message || "Failed to create playlist");
     } finally {
       setCreating(false);
     }

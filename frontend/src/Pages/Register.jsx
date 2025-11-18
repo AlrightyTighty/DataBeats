@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import styles from "./Register.module.css";
 import API from "../lib/api";
 import DataBeatsLogo from "../assets/graphics/DataBeats_Logo.png";
+import { useModal } from "../contexts/ModalContext";
 
 const Register = () => {
   const usernameRef = useRef();
@@ -14,6 +15,8 @@ const Register = () => {
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const navigate = useNavigate();
+
+  const { showAlert } = useModal();
 
   const defaultBorderColor = "rgb(122, 122, 122)";
   const usernameRegex = /^.{1,20}$/;
@@ -85,7 +88,7 @@ const Register = () => {
     });
 
     if (!response.ok) {
-      alert("Failed to register account.");
+      showAlert("Failed to register account.");
       return;
     }
 

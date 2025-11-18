@@ -220,7 +220,7 @@ export default function ListenerPublic({ setPlaybarState }) {
   }
 
   function onReport() {
-    location.href = `/report?type=user&id=${profileUserId}`;
+    location.href = `/report?type=USER&id=${profileUserId}`;
   }
 
   async function handleFollowClick() {

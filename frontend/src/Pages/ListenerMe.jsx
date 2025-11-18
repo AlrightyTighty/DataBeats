@@ -234,7 +234,7 @@ export default function ListenerMe({ setPlaybarState }) {
   }
 
   function onReport() {
-    location.href = `/report?type=user&id=${profileUserId}`;
+    location.href = `/report?type=USER&id=${profileUserId}`;
   }
 
   function goToConnections() {

@@ -20,9 +20,15 @@ export default function Admin() {
             </Link>
             <button
               className={styles.navButton}
+              onClick={() => navigate("/admin/report")}
+            >
+              Generate Activity Report
+            </button>
+            <button
+              className={styles.navButton}
               onClick={() => navigate("/admin/generate-report")}
             >
-              Generate Report
+              Generate Popularity Report
             </button>
           </div>
         </header>

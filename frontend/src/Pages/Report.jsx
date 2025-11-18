@@ -2,12 +2,15 @@ import { useState } from "react";
 import styles from "./Report.module.css";
 import { useSearchParams } from "react-router";
 import Topnav from "../Components/Topnav";
+import { useModal } from "../contexts/ModalContext";
 
 export default function Report() {
   const [comment, setComment] = useState("");
   const [reportReason, setReportReason] = useState("");
 
   const [params, setParams] = useSearchParams();
+
+  const { showAlert } = useModal();
 
   // These would be filled in by the site itself
   const entityType = params.get("type");
@@ -34,7 +37,7 @@ export default function Report() {
 
     if (response.ok) {
       console.log("Report submitted:", reportData);
-      alert("Report submitted successfully!");
+      showAlert("Report submitted successfully!");
 
       // Reset form
       setComment("");
@@ -59,12 +62,22 @@ export default function Report() {
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
               <label className={styles.label}>Entity Type</label>
-              <input type="text" value={entityType} disabled className={`${styles.input} ${styles.inputDisabled}`} />
+              <input
+                type="text"
+                value={entityType}
+                disabled
+                className={`${styles.input} ${styles.inputDisabled}`}
+              />
             </div>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Report Reason *</label>
-              <select value={reportReason} onChange={(e) => setReportReason(e.target.value)} required className={styles.select}>
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                required
+                className={styles.select}
+              >
                 <option value="">Select a reason...</option>
                 <option value="INAPPROPRIATE">Inappropriate</option>
                 <option value="HARASSMENT">Harassment</option>
@@ -77,7 +90,12 @@ export default function Report() {
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Additional Comments</label>
-              <textarea value={comment} onChange={handleCommentChange} placeholder="Please provide additional details about your report..." className={styles.textarea} />
+              <textarea
+                value={comment}
+                onChange={handleCommentChange}
+                placeholder="Please provide additional details about your report..."
+                className={styles.textarea}
+              />
               <div className={styles.charCount}>{comment.length} / 500</div>
             </div>
 
