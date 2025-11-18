@@ -18,12 +18,12 @@
   gap: 24px;
   margin-bottom: 2rem;
   flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .title {
@@ -44,11 +44,11 @@
   align-items: flex-end;
   gap: 12px;
   flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .filterField {
@@ -145,12 +145,12 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -159,8 +159,8 @@
 
 .card:hover {
   transform: translateY(-4px);
-  border-color: rgba(167, 139, 250, 0.3);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .cardTitle {
@@ -189,19 +189,19 @@
   flex-wrap: wrap;
   margin-bottom: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 12px;
 }
 
 .tableWrapper {
   overflow-x: auto;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .tableWrapper::-webkit-scrollbar {
@@ -229,7 +229,7 @@
 }
 
 .table thead {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.8);
   backdrop-filter: blur(10px);
 }
 
