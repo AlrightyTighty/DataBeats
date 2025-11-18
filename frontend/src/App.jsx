@@ -1,6 +1,6 @@
 import "./App.css";
 
-import _appLogo from "./assets/graphics/DatabeatsLogo.png";
+import _appLogo from "./assets/graphics/DataBeats_Logo.png";
 
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";

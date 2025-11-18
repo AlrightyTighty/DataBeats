@@ -6,7 +6,6 @@ import Searchbar from "./Searchbar";
 import AppLogo from "../assets/graphics/DataBeats_Logo.png";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
-
 const Topnav = () => {
   const [accountPath, setAccountPath] = useState("/login");
 
