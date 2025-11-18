@@ -248,6 +248,15 @@ namespace backend.Controllers
             if (playlist.UserIsCollaboratorOfPlaylists.Any(c => c.UserId == targetUser.UserId && c.TimeRemoved == null))
                 return BadRequest("User already a collaborator.");
 
+            // Check if the target user is following the playlist owner
+            var isFollowing = await _context.UserFollowsUsers
+                .AnyAsync(f => f.Follower == targetUser.UserId && 
+                              f.Followee == playlist.UserId && 
+                              f.TimeUnfollowed == null);
+            
+            if (!isFollowing)
+                return BadRequest($"{targetUser.Username} is not your friend");
+
             var collab = new UserIsCollaboratorOfPlaylist
             {
                 PlaylistId = playlist.PlaylistId,
