@@ -12,8 +12,14 @@ export default function ListenerPublic({ setPlaybarState }) {
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
 
-  const { me } = useMe();
+  const { me, loading: authLoading } = useMe();
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+
+  useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
   const musicianId = user?.musicianId ?? user?.MusicianId ?? null;

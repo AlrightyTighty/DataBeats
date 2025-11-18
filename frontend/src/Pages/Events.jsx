@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
+import useAuthentication from "../hooks/useAuthentication";
 import "./Events.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
@@ -15,6 +19,8 @@ export default function Events() {
   const [endDate, setEndDate] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const userInfo = useAuthentication();
+  const [contextMenuRef, contextMenu, setContextMenu] = useContextMenu();
 
   useEffect(() => {
     (async () => {
@@ -81,6 +87,7 @@ export default function Events() {
 
   return (
     <>
+      <ContextMenu ref={contextMenuRef} items={contextMenu.items} functions={contextMenu.functions} x={contextMenu.x} y={contextMenu.y} visible={contextMenu.visible} />
       <Topnav />
 
     <div className="events-page">
@@ -164,6 +171,17 @@ export default function Events() {
           const now = new Date();
           const isPastEvent = eventDate < now;
           
+          // Context menu for event
+          const eventContextItems = [];
+          const eventContextFunctions = [];
+          
+          if (userInfo && userInfo.musicianId !== e.musicianId) {
+            eventContextItems.push("Report Event");
+            eventContextFunctions.push(() => {
+              navigate(`/report?id=${e.eventId}&type=EVENT`);
+            });
+          }
+          
   //added pathway to /events/id
   return (
 <div
@@ -176,12 +194,24 @@ export default function Events() {
       navigate(`/event/${e.eventId}`);
     }
   }}
-  style={isPastEvent ? {
-    backgroundColor: '#fd8c8cff',
-    borderColor: '#f24848ff',
-    border: '1px solid #f24848ff'
-  } : {}}
+  style={{
+    position: 'relative',
+    ...(isPastEvent ? {
+      backgroundColor: '#fd8c8cff',
+      borderColor: '#f24848ff',
+      border: '1px solid #f24848ff'
+    } : {})
+  }}
 >
+  {userInfo && eventContextItems.length > 0 && (
+    <ContextMenuButton 
+      right="10px" 
+      top="10px" 
+      functions={eventContextFunctions} 
+      items={eventContextItems} 
+      setContextMenu={setContextMenu} 
+    />
+  )}
   <div className="media">
     <div className="media-inner">
       <img src={imgSrc} alt={e.title} loading="lazy" />

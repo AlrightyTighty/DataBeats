@@ -37,6 +37,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHostedService<EmailService>();
 
+builder.Services.AddScoped<IAdminReportService, AdminReportService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -106,6 +108,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/playlist") 
 );
 
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin/report"), appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();
 }

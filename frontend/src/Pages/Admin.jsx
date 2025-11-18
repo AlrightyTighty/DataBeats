@@ -9,9 +9,16 @@ export default function Admin() {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Admin Dashboard</h1>
-        <Link className={styles.title} to={"/dashboard"}>
-          See User View
-        </Link>
+
+        <div className={styles.headerActions}>
+          <Link className={styles.reportButton} to="/admin/report">
+            DataBeats Activity Report
+          </Link>
+
+          <Link className={styles.title} to={"/dashboard"}>
+            See User View
+          </Link>
+        </div>
       </header>
 
       <main className={styles.main}>

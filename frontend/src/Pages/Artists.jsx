@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
+import useAuthentication from "../hooks/useAuthentication";
 import API from "../lib/api";
 import styles from "./Artists.module.css";
 import verifiedBadge from "../assets/graphics/musician_verification.png";
@@ -13,6 +17,8 @@ export default function Artists() {
   const [err, setErr] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'verified'
   const [sortBy, setSortBy] = useState('name'); // 'name', 'followers', 'monthly'
+  const userInfo = useAuthentication();
+  const [contextMenuRef, contextMenu, setContextMenu] = useContextMenu();
 
   useEffect(() => {
     (async () => {
@@ -115,6 +121,7 @@ export default function Artists() {
 
   return (
     <>
+      <ContextMenu ref={contextMenuRef} items={contextMenu.items} functions={contextMenu.functions} x={contextMenu.x} y={contextMenu.y} visible={contextMenu.visible} />
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
@@ -173,6 +180,17 @@ export default function Artists() {
 
                 const avatarSrc = avatarMap[id] ?? null;
 
+                // Context menu for artist
+                const artistContextItems = [];
+                const artistContextFunctions = [];
+                
+                if (userInfo && userInfo.musicianId !== id) {
+                  artistContextItems.push("Report Artist");
+                  artistContextFunctions.push(() => {
+                    navigate(`/report?id=${id}&type=ARTIST`);
+                  });
+                }
+
                 return (
                   <button
                     key={id}
@@ -180,7 +198,17 @@ export default function Artists() {
                     className={styles.card}
                     onClick={() => navigate(`/artist/${id}`)}
                     title={name}
+                    style={{ position: 'relative' }}
                   >
+                    {userInfo && artistContextItems.length > 0 && (
+                      <ContextMenuButton 
+                        right="10px" 
+                        top="10px" 
+                        functions={artistContextFunctions} 
+                        items={artistContextItems} 
+                        setContextMenu={setContextMenu} 
+                      />
+                    )}
                     {avatarSrc ? (
                       <img
                         src={avatarSrc}

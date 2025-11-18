@@ -64,6 +64,8 @@ export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
       }
 
       setIsFollowing(true);
+      // Refresh the follow status to ensure consistency
+      await refresh();
       return true;
     } catch {
       setError("Could not follow.");
@@ -71,7 +73,7 @@ export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
     } finally {
       setLoading(false);
     }
-  }, [canFollow, viewerId, targetId, apiBase]);
+  }, [canFollow, viewerId, targetId, apiBase, refresh]);
 
   const unfollow = useCallback(async () => {
     if (!canFollow) return false;
@@ -90,6 +92,8 @@ export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
       }
 
       setIsFollowing(false);
+      // Refresh the follow status to ensure consistency
+      await refresh();
       return true;
     } catch {
       setError("Could not unfollow.");
@@ -97,7 +101,7 @@ export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
     } finally {
       setLoading(false);
     }
-  }, [canFollow, viewerId, targetId, apiBase]);
+  }, [canFollow, viewerId, targetId, apiBase, refresh]);
 
   const label =
     !canFollow || checking ? "" : isFollowing ? "Unfollow" : "Follow";

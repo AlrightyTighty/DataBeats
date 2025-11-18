@@ -15,8 +15,7 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import SongInfo from "./Pages/SongInfo.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
-import MusicianReport from "./Pages/MusicianReport.jsx"
-import Artist from "./Pages/ArtistProfileUser.jsx";
+import MusicianReport from "./Pages/MusicianReport.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
@@ -45,10 +44,10 @@ import PlaylistPage from "./Pages/PlaylistPage.jsx";
 import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
-import History from "./Pages/History.jsx";
 import Logout from "./Pages/Logout.jsx";
 import Follow from "./Pages/Follow.jsx";
 import RecentPlays from "./Pages/RecentPlays.jsx";
+import AdminReport from "./Pages/AdminReport.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -97,11 +96,11 @@ function App() {
         { path: "/admin/generate-report", element: <GenerateReport /> },
         { path: "/admin/report-result", element: <ReportResult /> },
         { path: "/page-not-found", element: <NotFound /> },
-        { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
         { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
+        { path: "/admin/report", element: <AdminReport /> },
         { path: "*", element: <NotFound /> },
       ],
     },
