@@ -72,14 +72,39 @@ namespace backend.Controllers
                 NumOfSongs = 0,
                 TimestampCreated = DateTime.Now,
                 Duration = new TimeOnly(0, 0),
-                PlaylistPictureFileId  = DefaultPlaylistPictureFileId
+                PlaylistPictureFileId = DefaultPlaylistPictureFileId
 
             };
-            
+
             _context.Playlists.Add(likedPlaylist);
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetById), new {id = newUser.UserId}, newUser.ToUserDtoFromUser());
+            return CreatedAtAction(nameof(GetById), new { id = newUser.UserId }, newUser.ToUserDtoFromUser());
+        }
+        
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] ulong id, [FromBody] UpdateUserDto dto)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            if (!string.IsNullOrWhiteSpace(dto.Username))
+                user.Username = dto.Username;
+
+            if (!string.IsNullOrWhiteSpace(dto.Fname))
+                user.Fname = dto.Fname;
+
+            if (!string.IsNullOrWhiteSpace(dto.Lname))
+                user.Lname = dto.Lname;
+
+            if (dto.ProfilePictureFileId.HasValue)
+                user.ProfilePictureFileId = dto.ProfilePictureFileId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(user.ToUserDtoFromUser());
         }
 
         // SOFT DELETE: lock account "forever" so user can't log in anymore
