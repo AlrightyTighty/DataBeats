@@ -102,6 +102,7 @@ function App() {
         { path: "recent-plays/:id", element: <RecentPlays /> },
         { path: "/admin/report", element: <AdminReport /> },
         { path: "*", element: <NotFound /> },
+   
       ],
     },
   ]);
