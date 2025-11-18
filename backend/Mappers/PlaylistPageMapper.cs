@@ -27,7 +27,7 @@ namespace backend.Mappers
                                  collaboratorUserIds.Contains(currentUserId.Value);
 
             var activeEntries = (playlist.PlaylistEntries ?? Enumerable.Empty<PlaylistEntry>())
-                                .Where(pe => pe.TimeRemoved == null)
+                                .Where(pe => pe.TimeRemoved == null && pe.Song?.TimestampDeleted == null)
                                 .ToList();
 
             // Get like statuses if requested

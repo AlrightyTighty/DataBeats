@@ -29,6 +29,7 @@ namespace backend.Controllers
 
             var songsQuery = _context.Songs
                 .AsNoTracking() //hopefully makes this faster
+                .Where(s => s.TimestampDeleted == null) // Exclude deleted songs
                 .Include(s => s.Album)
                     .ThenInclude(a => a.AlbumOrSongArtFile)
                 .Include(s => s.MusicianWorksOnSongs)
@@ -53,7 +54,12 @@ namespace backend.Controllers
         [HttpGet("{song_id}")]
         public async Task<IActionResult> GetSongById([FromRoute] ulong song_id)
         {
-            Song? foundSong = await _context.Songs.Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(worksOn => worksOn.Musician).FirstOrDefaultAsync(song => song.SongId == song_id);
+            Song? foundSong = await _context.Songs
+                .Where(song => song.TimestampDeleted == null) // Exclude deleted songs
+                .Include(song => song.Album)
+                .Include(song => song.MusicianWorksOnSongs)
+                .ThenInclude(worksOn => worksOn.Musician)
+                .FirstOrDefaultAsync(song => song.SongId == song_id);
             if (foundSong != null)
                 return Ok(foundSong.ToSongDTOForStreaming(foundSong.Album.AlbumOrSongArtFileId, foundSong.Album.AlbumTitle));
             else
