@@ -91,7 +91,7 @@ export default function UserMenu() {
       navigate(`/musician-dashboard/${musicianId}`);
       return;
     }
-    showMessage("No musician account. Go to Settings to create one.");
+    showMessage("No musician account. Go to dashboard to create one.");
   }
 
   async function handleAdmin() {
@@ -140,9 +140,11 @@ export default function UserMenu() {
           <button type="button" onClick={handleMusician}>
             Musician
           </button>
-          <button type="button" onClick={handleAdmin}>
-            Admin
-          </button>
+          {(me?.adminId || me?.AdminId) && (
+            <button type="button" onClick={handleAdmin}>
+              Admin
+            </button>
+          )}
           <button type="button" onClick={handleSettings}>
             Settings
           </button>

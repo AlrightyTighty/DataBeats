@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.DTOs.Musician;
 using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Cors;
@@ -120,7 +121,7 @@ namespace backend.Controllers
 
         [HttpPost]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> CreateMusicianAsync()
+        public async Task<IActionResult> CreateMusicianAsync([FromBody] CreateMusicianDto dto)
         {
             string userIdString = Request.Headers["X-UserId"]!;
             ulong userId = ulong.Parse(userIdString);
@@ -133,12 +134,15 @@ namespace backend.Controllers
             Musician newMusician = new Musician
             {
                 UserId = userId,
-                MusicianName = user.Username,
-                ProfilePictureFileId = (ulong)user.ProfilePictureFileId!,
+                MusicianName = dto.MusicianName,
+                Bio = dto.Bio,
+                Label = dto.Label,
+                ProfilePictureFileId = dto.ProfilePictureFileId,
                 CreatedBy = userId,
                 TimestampCreated = DateTime.Now,
                 FollowerCount = 0,
                 MonthlyListenerCount = 0,
+                IsVerified = false
             };
 
             _context.Musicians.Add(newMusician);

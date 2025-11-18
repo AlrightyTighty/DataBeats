@@ -124,7 +124,7 @@ export default function Playlists() {
             <PlaylistSection title="Collaborative Playlists" playlists={collaborativePlaylists} />
           )}
 
-          <AddButton route="/createplaylist" />
+          <AddButton pos={styles.addPlaylistButton} route="/createplaylist" />
         </main>
       </div>
     </>

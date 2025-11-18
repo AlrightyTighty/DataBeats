@@ -10,10 +10,10 @@ namespace backend.DTOs.Musician
         public ulong UserId { get; set; }
         public string MusicianName { get; set; } = null!;
 
-        public string? Bio { get; set; }
+        public string Bio { get; set; } = null!;
 
         public ulong ProfilePictureFileId { get; set; }
-        public string? Label { get; set; }
+        public string Label { get; set; } = null!;
         
     }
 }
