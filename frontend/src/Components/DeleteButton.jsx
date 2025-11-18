@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { createPortal } from 'react-dom';
 import '../css/DeleteButton.css'
 
-export default function DeleteButton({ strwhattodelete, api, state, clickFunction }) {
+export default function DeleteButton({ strwhattodelete, api, state, clickFunction, styles }) {
 
     const navigate = useNavigate();
 
@@ -17,7 +17,8 @@ export default function DeleteButton({ strwhattodelete, api, state, clickFunctio
         }
         else {
             console.log(`${strwhattodelete.charAt(0).toUpperCase()}${strwhattodelete.slice(1)} deleted!`)
-            navigate('/page-not-found');
+            if (strwhattodelete == 'account') navigate('/register');
+            else navigate('/page-not-found');
         }
     }
 
@@ -31,7 +32,7 @@ export default function DeleteButton({ strwhattodelete, api, state, clickFunctio
     </div>
 
     return <>
-        <button type="button" className="delete-button" onClick={clickFunction}>DELETE {strwhattodelete.toUpperCase()}</button>
+        <button type="button" className={`delete-button ${styles}`} onClick={clickFunction}>DELETE {strwhattodelete.toUpperCase()}</button>
         {state && createPortal(modal, document.body)}
     </>
 }

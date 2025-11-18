@@ -3,8 +3,12 @@ import API from '../lib/api.js'
 import Topnav from "../Components/Topnav";
 import styles from "./Settings.module.css";
 import useAuthentication from "../hooks/useAuthentication.js";
+import DeleteButton from "../Components/DeleteButton.jsx";
+import { useNavigate } from "react-router";
 
 export default function Settings() {
+
+    const navigate = useNavigate();
 
     // state for profile details
     const [fname, setFname] = useState('');
@@ -131,34 +135,6 @@ export default function Settings() {
 
     const [message, setMessage] = useState("");
 
-/*     useEffect(() => {
-        (async () => {
-            const res = await fetch(`${API}/api/user/${userInfo.userId}`);
-            if (res.ok) {
-                const data = await res.json();
-                setProfile({
-                    username: data.username || "",
-                    fname: data.fname || "",
-                    lname: data.lname || "",
-                    profilePictureFileId: data.profilePictureFileId || null,
-                });
-                if (data.profilePictureFileId)
-                    setimgSrc(`${API}/api/file/view/${data.profilePictureFileId}`);
-            }
-
-            const resAuth = await fetch(
-                `${API}/api/authentication/${userInfo.userId}`
-            );
-            if (resAuth.ok) {
-                const data = await resAuth.json();
-                setAuth({
-                    email: data.email || "",
-                    password: "",
-                });
-            }
-        })();
-    }, []); */
-
     async function uploadProfilePic() {
         if (!file) return null;
         const formData = new FormData();
@@ -212,7 +188,7 @@ export default function Settings() {
         );
     }
 
-    //soft delete / disable account
+    /* //soft delete / disable account
     async function deleteAccount() {
         setMessage("");
 
@@ -239,6 +215,12 @@ export default function Settings() {
         } catch (e) {
             setMessage("Error deleting account.");
         }
+    } */
+
+    // state for opening/closing delete modal
+    const [showDelete, setShowDelete] = useState(false);
+    const toggleDeleteModal = () => {
+        setShowDelete(!showDelete);
     }
 
     if (loading) return <div>Loading...</div>
@@ -319,9 +301,7 @@ export default function Settings() {
                         </button>
 
                         {/*delete account button */}
-                        <button className={styles.delete} onClick={deleteAccount}>
-                            Delete Account
-                        </button>
+                        <DeleteButton strwhattodelete='account' api={`${API}/api/user/${userInfo.userId}`} state={showDelete} clickFunction={toggleDeleteModal} styles={styles.delete}/>
 
                         {message && <p style={{ marginTop: "10px" }}>{message}</p>}
                     </div>
