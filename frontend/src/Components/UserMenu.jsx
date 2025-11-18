@@ -140,9 +140,11 @@ export default function UserMenu() {
           <button type="button" onClick={handleMusician}>
             Musician
           </button>
-          <button type="button" onClick={handleAdmin}>
-            Admin
-          </button>
+          {(me?.adminId || me?.AdminId) && (
+            <button type="button" onClick={handleAdmin}>
+              Admin
+            </button>
+          )}
           <button type="button" onClick={handleSettings}>
             Settings
           </button>

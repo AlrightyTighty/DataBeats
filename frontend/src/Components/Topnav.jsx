@@ -29,11 +29,11 @@ const Topnav = () => {
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
         <img className={styles["app-logo"]} src={AppLogo} />
-        <Link className={styles["link"]} to="/authtest">
+        <Link className={styles["link"]} to="/dashboard">
           Dashboard
         </Link>
         <Link className={styles["link"]} to={accountPath}>
-          Account
+          Profile
         </Link>
         <Link className={styles["link"]} to="/albums">
           Albums
