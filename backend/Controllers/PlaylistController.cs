@@ -167,32 +167,52 @@ namespace backend.Controllers
         }
 
         [Route("me")]
-        [HttpGet]
+        [HttpGet("me")]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> GetUserPlaylistsAsync([FromRoute] ulong id)
+        public async Task<IActionResult> GetUserPlaylistsAsync()
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
-            UserPlaylistInformation[] userPlaylists = await _context.Playlists
-                                                        .Where(playlist => playlist.UserId == userId)
-                                                        .Include(playList => playList.PlaylistPictureFile)
-                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
-                                                        .ToArrayAsync();
+            var userPlaylists = await _context.Playlists
+                .Where(playlist => playlist.UserId == userId && playlist.TimestampDeleted == null)
+                .Include(playList => playList.PlaylistPictureFile)
+                .Include(playlist => playlist.UserIsCollaboratorOfPlaylists)
+                .Select(playlist => new UserPlaylistInformation(
+                    playlist.PlaylistId, 
+                    playlist.PlaylistName, 
+                    playlist.PlaylistPictureFile != null ? playlist.PlaylistPictureFile.FileData : Array.Empty<byte>(),
+                    playlist.UserIsCollaboratorOfPlaylists.Any(c => c.TimeRemoved == null) // Check if has active collaborators
+                ))
+                .ToArrayAsync();
 
-            /*UserPlaylistInformation[] collaboratorPlaylists = await _context.Playlists
-                                                        .Include(playlist => playlist.UserIsCollaboratorOfPlaylists)
-                                                        .Where(playlist => playlist.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId))
-                                                        .Include(playList => playList.PlaylistPictureFile)
-                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
-                                                        .ToArrayAsync();*/
+            var collaboratorPlaylists = await _context.Playlists
+                .Include(playlist => playlist.UserIsCollaboratorOfPlaylists)
+                .Where(playlist => playlist.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId && collaborator.TimeRemoved == null) && playlist.TimestampDeleted == null)
+                .Include(playList => playList.PlaylistPictureFile)
+                .Select(playlist => new UserPlaylistInformation(
+                    playlist.PlaylistId, 
+                    playlist.PlaylistName, 
+                    playlist.PlaylistPictureFile != null ? playlist.PlaylistPictureFile.FileData : Array.Empty<byte>(),
+                    false // These are collaborative playlists, not owned
+                ))
+                .ToArrayAsync();
 
-            UserPlaylistInformation[] savedPlaylists = await _context.Playlists
-                                                        .Include(playlist => playlist.UserSavesPlaylists)
-                                                        .Where(playlist => playlist.UserSavesPlaylists.Any(saver => saver.UserId == userId))
-                                                        .Include(playList => playList.PlaylistPictureFile)
-                                                        .Select(playlist => new UserPlaylistInformation(playlist.PlaylistId, playlist.PlaylistName, playlist.PlaylistPictureFile.FileData))
-                                                        .ToArrayAsync();
+            var savedPlaylists = await _context.Playlists
+                .Include(playlist => playlist.UserSavesPlaylists)
+                .Where(playlist => playlist.UserSavesPlaylists.Any(saver => saver.UserId == userId) && playlist.TimestampDeleted == null)
+                .Include(playList => playList.PlaylistPictureFile)
+                .Select(playlist => new UserPlaylistInformation(
+                    playlist.PlaylistId, 
+                    playlist.PlaylistName, 
+                    playlist.PlaylistPictureFile != null ? playlist.PlaylistPictureFile.FileData : Array.Empty<byte>(),
+                    false
+                ))
+                .ToArrayAsync();
 
-            return Ok(new { OwnedPlaylists = userPlaylists, SavedPlaylists = savedPlaylists });
+            return Ok(new { 
+                OwnedPlaylists = userPlaylists, 
+                ContributorPlaylists = collaboratorPlaylists,
+                SavedPlaylists = savedPlaylists 
+            });
         }
 
         [HttpGet("user/{userId}")]
@@ -202,12 +222,14 @@ namespace backend.Controllers
             var playlists = await _context.Playlists
                 .Where(p => p.UserId == userId && p.TimestampDeleted == null)
                 .Include(p => p.PlaylistPictureFile)
+                .Include(p => p.UserIsCollaboratorOfPlaylists)
                 .Select(p => new UserPlaylistInformation(
                     p.PlaylistId,
                     p.PlaylistName,
                     p.PlaylistPictureFile != null
                         ? p.PlaylistPictureFile.FileData
-                        : Array.Empty<byte>()
+                        : Array.Empty<byte>(),
+                    p.UserIsCollaboratorOfPlaylists.Any(c => c.TimeRemoved == null)
                 ))
                 .ToArrayAsync();
 
@@ -220,14 +242,14 @@ namespace backend.Controllers
         public ulong PlaylistId { get; set; }
         public string PlaylistTitle { get; set; } = null!;
         public byte[] PlaylistImage { get; set; } = null!;
+        public bool HasCollaborators { get; set; }
 
-        public UserPlaylistInformation(ulong id, string title, byte[] image)
+        public UserPlaylistInformation(ulong id, string title, byte[] image, bool hasCollaborators = false)
         {
             this.PlaylistId = id;
             this.PlaylistTitle = title;
             this.PlaylistImage = image;
+            this.HasCollaborators = hasCollaborators;
         }
-
-        
     }
 }
