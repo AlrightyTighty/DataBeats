@@ -14,6 +14,7 @@ export const PlaybarProvider = ({ children }) => {
   return (
     <PlaybarContext.Provider value={{ playbarState, setPlaybarState }}>
       {children}
+      {playbarState.visible && <div styles={{ height: "100px" }} />}
     </PlaybarContext.Provider>
   );
 };

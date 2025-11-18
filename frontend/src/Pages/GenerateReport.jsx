@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import styles from "./GenerateReport.module.css";
 import API from "../lib/api";
+import Topnav from "../Components/Topnav";
 
 export default function GenerateReport() {
   const navigate = useNavigate();
@@ -44,13 +45,18 @@ export default function GenerateReport() {
   };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Generate Popularity Report</h1>
-      </header>
+    <>
+      <Topnav />
+      <div className={styles.container}>
+        <header className={styles.pageHeader}>
+          <h1 className={styles.title}>Generate Popularity Report</h1>
+          <Link className={styles.backButton} to="/admin">
+            Back to Admin
+          </Link>
+        </header>
 
-      <main className={styles.main}>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <main className={styles.main}>
+          <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.fieldGroup}>
             <label>From Date:</label>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
@@ -81,6 +87,7 @@ export default function GenerateReport() {
           </button>
         </form>
       </main>
-    </div>
+      </div>
+    </>
   );
 }

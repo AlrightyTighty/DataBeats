@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router";
 import styles from "./ReportResult.module.css";
+import Topnav from "../Components/Topnav";
 
 export default function ReportResult() {
   const [report, setReport] = useState(null);
@@ -11,26 +13,47 @@ export default function ReportResult() {
 
   if (!report) {
     return (
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Report Results</h1>
-        </header>
-        <main className={styles.main}>
-          <p>No report data found. Please generate a report first.</p>
-        </main>
-      </div>
+      <>
+        <Topnav />
+        <div className={styles.container}>
+          <header className={styles.pageHeader}>
+            <h1 className={styles.title}>Report Results</h1>
+            <div className={styles.headerButtons}>
+              <Link className={styles.navButton} to="/admin/generate-report">
+                Generate New Report
+              </Link>
+              <Link className={styles.navButton} to="/admin">
+                Back to Admin
+              </Link>
+            </div>
+          </header>
+          <main className={styles.main}>
+            <p>No report data found. Please generate a report first.</p>
+          </main>
+        </div>
+      </>
     );
   }
 
   const { genreReport, artistReport, albumReport } = report;
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Popularity Report Results</h1>
-      </header>
+    <>
+      <Topnav />
+      <div className={styles.container}>
+        <header className={styles.pageHeader}>
+          <h1 className={styles.title}>Popularity Report Results</h1>
+          <div className={styles.headerButtons}>
+            <Link className={styles.navButton} to="/admin/generate-report">
+              Generate New Report
+            </Link>
+            <Link className={styles.navButton} to="/admin">
+              Back to Admin
+            </Link>
+          </div>
+        </header>
 
-      <main className={styles.main}>
+        <main className={styles.main}>
         <section className={styles.section}>
           <h2>Top Genres</h2>
           <div className={styles.list}>
@@ -74,6 +97,7 @@ export default function ReportResult() {
           </div>
         </section>
       </main>
-    </div>
+      </div>
+    </>
   );
 }

@@ -52,6 +52,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<MusicianHostsEvent> MusicianHostsEvents { get; set; }
 
+    public virtual DbSet<MusicianReport> MusicianReports { get; set; }
+
     public virtual DbSet<MusicianWorksOnAlbum> MusicianWorksOnAlbums { get; set; }
 
     public virtual DbSet<MusicianWorksOnSong> MusicianWorksOnSongs { get; set; }
@@ -95,6 +97,18 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<UserRatesSong> UserRatesSongs { get; set; }
 
     public virtual DbSet<UserSavesPlaylist> UserSavesPlaylists { get; set; }
+
+    public virtual DbSet<VwAlbumActivity> VwAlbumActivities { get; set; }
+
+    public virtual DbSet<VwEventActivity> VwEventActivities { get; set; }
+
+    public virtual DbSet<VwMusicianAccountActivity> VwMusicianAccountActivities { get; set; }
+
+    public virtual DbSet<VwPlaylistActivity> VwPlaylistActivities { get; set; }
+
+    public virtual DbSet<VwSongActivity> VwSongActivities { get; set; }
+
+    public virtual DbSet<VwUserAccountActivity> VwUserAccountActivities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
@@ -894,6 +908,33 @@ public partial class ApplicationDBContext : DbContext
                 .HasConstraintName("musician_hosts_event_ibfk1");
         });
 
+        modelBuilder.Entity<MusicianReport>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("musician_report");
+
+            entity.Property(e => e.AlbumId).HasColumnName("album_id");
+            entity.Property(e => e.AlbumTitle)
+                .HasMaxLength(50)
+                .HasColumnName("album_title");
+            entity.Property(e => e.AvgRating).HasColumnName("avg_rating");
+            entity.Property(e => e.Genres)
+                .HasColumnType("mediumtext")
+                .HasColumnName("genres");
+            entity.Property(e => e.Likes).HasColumnName("likes");
+            entity.Property(e => e.MusicianIds)
+                .HasColumnType("text")
+                .HasColumnName("musician_ids");
+            entity.Property(e => e.ReleaseDate)
+                .HasColumnType("datetime")
+                .HasColumnName("release_date");
+            entity.Property(e => e.SongName)
+                .HasMaxLength(50)
+                .HasColumnName("song_name");
+            entity.Property(e => e.Streams).HasColumnName("streams");
+        });
+
         modelBuilder.Entity<MusicianWorksOnAlbum>(entity =>
         {
             entity.HasKey(e => e.MusicianWorksOnAlbumId).HasName("PRIMARY");
@@ -1110,6 +1151,9 @@ public partial class ApplicationDBContext : DbContext
             entity.Property(e => e.ComplaintId).HasColumnName("complaint_id");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.ReviewComment)
+                .HasMaxLength(500)
+                .HasColumnName("review_comment");
             entity.Property(e => e.TimestampCreated)
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp_created");
@@ -1765,6 +1809,130 @@ public partial class ApplicationDBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserSavesPlaylists)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("user_saves_playlist_ibfk_!");
+        });
+
+        modelBuilder.Entity<VwAlbumActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_AlbumActivity");
+
+            entity.Property(e => e.AlbumId).HasColumnName("album_id");
+            entity.Property(e => e.AlbumTitle)
+                .HasMaxLength(50)
+                .HasColumnName("album_title");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.NumSongs).HasColumnName("num_songs");
+            entity.Property(e => e.ReleaseDate)
+                .HasColumnType("datetime")
+                .HasColumnName("release_date");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+            entity.Property(e => e.TimestampDeleted)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_deleted");
+        });
+
+        modelBuilder.Entity<VwEventActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_EventActivity");
+
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.EventTime)
+                .HasColumnType("datetime")
+                .HasColumnName("event_time");
+            entity.Property(e => e.MusicianId).HasColumnName("musician_id");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+            entity.Property(e => e.TimestampDeleted)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_deleted");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .HasColumnName("title");
+        });
+
+        modelBuilder.Entity<VwMusicianAccountActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_MusicianAccountActivity");
+
+            entity.Property(e => e.FollowerCount).HasColumnName("follower_count");
+            entity.Property(e => e.MonthlyListenerCount).HasColumnName("monthly_listener_count");
+            entity.Property(e => e.MusicianId).HasColumnName("musician_Id");
+            entity.Property(e => e.MusicianName)
+                .HasMaxLength(50)
+                .HasColumnName("musician_name");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+            entity.Property(e => e.TimestampDeleted)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_deleted");
+            entity.Property(e => e.UserId).HasColumnName("user_Id");
+        });
+
+        modelBuilder.Entity<VwPlaylistActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_PlaylistActivity");
+
+            entity.Property(e => e.PlaylistId).HasColumnName("playlist_id");
+            entity.Property(e => e.PlaylistName)
+                .HasMaxLength(100)
+                .HasColumnName("playlist_name");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+            entity.Property(e => e.TimestampDeleted)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_deleted");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+        });
+
+        modelBuilder.Entity<VwSongActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_SongActivity");
+
+            entity.Property(e => e.AlbumId).HasColumnName("album_id");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.SongId).HasColumnName("song_id");
+            entity.Property(e => e.SongName)
+                .HasMaxLength(50)
+                .HasColumnName("song_name");
+            entity.Property(e => e.Streams).HasColumnName("streams");
+            entity.Property(e => e.TimestampCreated)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_created");
+            entity.Property(e => e.TimestampDeleted)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp_deleted");
+        });
+
+        modelBuilder.Entity<VwUserAccountActivity>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_UserAccountActivity");
+
+            entity.Property(e => e.TimeCreated)
+                .HasColumnType("timestamp")
+                .HasColumnName("time_created");
+            entity.Property(e => e.TimeDeleted)
+                .HasColumnType("timestamp")
+                .HasColumnName("time_deleted");
+            entity.Property(e => e.UserId).HasColumnName("user_Id");
+            entity.Property(e => e.Username)
+                .HasMaxLength(20)
+                .HasColumnName("username");
         });
 
         OnModelCreatingPartial(modelBuilder);

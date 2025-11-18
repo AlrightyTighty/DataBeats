@@ -149,7 +149,7 @@ const SongInfo = () => {
   if (userInfo && songInfo && userInfo.adminId != null) {
     songContextItems.push("Delete (as admin)");
     songContextFunctions.push(() => {
-      console.log("admin deleting isn't implemented ermmm");
+      navigate(`/admin/delete?type=SONG&id=${songInfo.songId}`);
     });
   }
 
@@ -253,7 +253,9 @@ const SongInfo = () => {
                       const reviewFunctions = [];
                       const reviewItems = [];
 
+                      // Delete (for review author)
                       if (userInfo.userId == review.userId) {
+                        reviewItems.push("Delete");
                         reviewFunctions.push(async () => {
                           await fetch(`${API}/api/rating/${review.userRatesSongId}`, {
                             method: "delete",
@@ -264,8 +266,22 @@ const SongInfo = () => {
                           setReviews(reviews.slice());
                           setContextMenu({ visible: false });
                         });
+                      }
 
-                        reviewItems.push("Delete");
+                      // Report Rating (for non-authors)
+                      if (userInfo.userId !== review.userId) {
+                        reviewItems.push("Report Rating");
+                        reviewFunctions.push(() => {
+                          navigate(`/report?type=RATING&id=${review.userRatesSongId}`);
+                        });
+                      }
+
+                      // Delete (as admin)
+                      if (userInfo.adminId != null) {
+                        reviewItems.push("Delete (as admin)");
+                        reviewFunctions.push(() => {
+                          navigate(`/admin/delete?type=RATING&id=${review.userRatesSongId}`);
+                        });
                       }
 
                       return (
