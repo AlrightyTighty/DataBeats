@@ -113,7 +113,8 @@ namespace backend.Controllers
                 .ThenInclude(pe => pe.Song)
                 .FirstOrDefaultAsync(p => p.PlaylistId == playlistId && (p.UserId == userId || p.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId)));
 
-            var song = await _context.Songs.FindAsync(songId);
+            var song = await _context.Songs
+                .FirstOrDefaultAsync(s => s.SongId == songId && s.TimestampDeleted == null);
 
             if (playlist == null || song == null)
             {

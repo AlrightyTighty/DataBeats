@@ -21,26 +21,59 @@ namespace backend.Controllers
         {
             var query = _context.Musicians.Where(m => m.TimestampDeleted == null);
             var musicians = await query.ToListAsync();
+            var cutoff = DateTime.UtcNow.AddDays(-30);
+            
             if (!includeImageData)
             {
-                return Ok(musicians.Select(m => new
+                var result = new List<object>();
+                foreach (var m in musicians)
                 {
-                    m.MusicianId,
-                    m.MusicianName,
-                    m.ProfilePictureFileId,
-                    m.FollowerCount,
-                    m.MonthlyListenerCount
-                }).ToArray());
+                    var monthlyListeners = await _context.UserListensToSongs
+                        .AsNoTracking()
+                        .Where(r => r.TimeListened >= cutoff)
+                        .Where(r =>
+                            r.Song.CreatedBy == m.MusicianId
+                            || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == m.MusicianId)
+                        )
+                        .Select(r => r.UserId)
+                        .Distinct()
+                        .CountAsync();
+                    
+                    result.Add(new
+                    {
+                        m.MusicianId,
+                        m.MusicianName,
+                        m.ProfilePictureFileId,
+                        m.FollowerCount,
+                        MonthlyListenerCount = monthlyListeners,
+                        m.IsVerified,
+                    });
+                }
+                return Ok(result.ToArray());
             }
             var withImages = new List<object>(musicians.Count);
             foreach (var m in musicians)
             {
+                var monthlyListeners = await _context.UserListensToSongs
+                    .AsNoTracking()
+                    .Where(r => r.TimeListened >= cutoff)
+                    .Where(r =>
+                        r.Song.CreatedBy == m.MusicianId
+                        || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == m.MusicianId)
+                    )
+                    .Select(r => r.UserId)
+                    .Distinct()
+                    .CountAsync();
+                
                 var file = await _context.ProfilePictureFiles.FindAsync(m.ProfilePictureFileId);
                 withImages.Add(new
                 {
                     m.MusicianId,
                     m.MusicianName,
                     m.ProfilePictureFileId,
+                    m.FollowerCount,
+                    MonthlyListenerCount = monthlyListeners,
+                    m.IsVerified,
                     profilePictureImage = file != null ? Convert.ToBase64String(file.FileData) : null,
                     fileExtension = file?.FileExtension
                 });

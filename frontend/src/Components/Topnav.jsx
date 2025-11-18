@@ -3,6 +3,7 @@ import styles from "./Topnav.module.css";
 import { appLogo } from "../App";
 import { Link } from "react-router";
 import Searchbar from "./Searchbar";
+import AppLogo from "../assets/graphics/DataBeats_Logo.png";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
@@ -27,7 +28,7 @@ const Topnav = () => {
   return (
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
-        <img className={styles["app-logo"]} src={appLogo} />
+        <img className={styles["app-logo"]} src={AppLogo} />
         <Link className={styles["link"]} to="/authtest">
           Dashboard
         </Link>
