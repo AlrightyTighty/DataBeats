@@ -26,11 +26,14 @@ const Album = () => {
             background: 'none',
             border: 'none',
             color: 'inherit',
-            textDecoration: 'underline',
+            textDecoration: 'none',
             cursor: 'pointer',
             padding: 0,
-            font: 'inherit'
+            font: 'inherit',
+            transition: 'text-decoration 0.2s ease'
           }}
+          onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+          onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
         >
           {artist.artistName}
         </button>
