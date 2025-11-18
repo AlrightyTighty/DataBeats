@@ -17,7 +17,7 @@ export default function DeleteButton({ strwhattodelete, api, state, clickFunctio
         }
         else {
             console.log(`${strwhattodelete.charAt(0).toUpperCase()}${strwhattodelete.slice(1)} deleted!`)
-            if (strwhattodelete == 'account') navigate('/register');
+            if (strwhattodelete == 'account') navigate('/logout');
             else navigate('/page-not-found');
         }
     }
