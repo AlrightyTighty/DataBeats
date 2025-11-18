@@ -24,6 +24,12 @@
   margin: 0 auto;
 }
 
+.addPlaylistButton {
+  position: absolute;
+  top: 1vh;
+  left: 20vw;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 20px;

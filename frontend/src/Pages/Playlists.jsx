@@ -90,7 +90,7 @@ export default function Playlists() {
 
         <main className={styles.content}>
           <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
-          <AddButton route="/createplaylist" />
+          <AddButton pos={styles.addPlaylistButton} route="/createplaylist" />
         </main>
       </div>
     </>
