@@ -26,18 +26,33 @@ export default function Playlists() {
 
   const contextMenuRef = useRef(null);
 
-  const ownedPlaylists = playlistInfo.ownedPlaylists;
-  const contributorPlaylists = playlistInfo.contributorPlaylists;
+  const ownedPlaylists = playlistInfo.ownedPlaylists || [];
+  const contributorPlaylists = playlistInfo.contributorPlaylists || [];
   const navigate = useNavigate();
-
-  const loaded = useRef(false);
 
   console.log(playlistInfo);
 
-  useEffect(() => {
-    if (loaded.current) return;
+  // Organize playlists into categories
+  const likedPlaylist = ownedPlaylists.find(p => {
+    const name = p.playlistName || p.PlaylistName || p.playlistTitle || p.PlaylistTitle;
+    return name === "Your Liked Playlist";
+  });
 
-    loaded.current = true;
+  const yourPlaylists = ownedPlaylists.filter(p => {
+    const name = p.playlistName || p.PlaylistName || p.playlistTitle || p.PlaylistTitle;
+    const hasCollaborators = p.hasCollaborators || p.HasCollaborators;
+    return name !== "Your Liked Playlist" && !hasCollaborators;
+  });
+
+  const sharedPlaylists = ownedPlaylists.filter(p => {
+    const name = p.playlistName || p.PlaylistName || p.playlistTitle || p.PlaylistTitle;
+    const hasCollaborators = p.hasCollaborators || p.HasCollaborators;
+    return name !== "Your Liked Playlist" && hasCollaborators;
+  });
+
+  const collaborativePlaylists = contributorPlaylists || [];
+
+  useEffect(() => {
     (async () => {
       const playlistsResponse = await fetch(`${API}/api/playlist/me`, {
         method: "GET",
@@ -89,7 +104,26 @@ export default function Playlists() {
         </header>
 
         <main className={styles.content}>
-          <PlaylistSection title="Your Playlists" playlists={ownedPlaylists} />
+          {/* Liked Playlist - Pinned at the top */}
+          {likedPlaylist && (
+            <PlaylistSection title="Liked Playlist" playlists={[likedPlaylist]} />
+          )}
+
+          {/* Your Playlists - No collaborators */}
+          {yourPlaylists.length > 0 && (
+            <PlaylistSection title="Your Playlists" playlists={yourPlaylists} />
+          )}
+
+          {/* Shared Playlists - You own and others collaborate */}
+          {sharedPlaylists.length > 0 && (
+            <PlaylistSection title="Shared Playlists" playlists={sharedPlaylists} />
+          )}
+
+          {/* Collaborative Playlists - You collaborate but don't own */}
+          {collaborativePlaylists.length > 0 && (
+            <PlaylistSection title="Collaborative Playlists" playlists={collaborativePlaylists} />
+          )}
+
           <AddButton route="/createplaylist" />
         </main>
       </div>
