@@ -122,19 +122,12 @@ export default function Settings() {
         }
     }
     
-    const [profile, setProfile] = useState({
-        fname: "",
-        lname: "",
-        profilePictureFileId: null,
-    });
-
+    // --
     const [auth, setAuth] = useState({
         email: "",
         password: "",
     });
-
     const [message, setMessage] = useState("");
-
     async function uploadProfilePic() {
         if (!file) return null;
         const formData = new FormData();
@@ -149,29 +142,6 @@ export default function Settings() {
         }
         return null;
     }
-
-   /*  async function saveProfile() {
-        setMessage("");
-        let newPicId = profile.profilePictureFileId;
-        if (file) {
-            const uploaded = await uploadProfilePic();
-            if (uploaded) newPicId = uploaded;
-        }
-
-        const res = await fetch(`${API}/api/user/${userInfo.userId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                username: profile.username,
-                fname: profile.fname,
-                lname: profile.lname,
-                profilePictureFileId: newPicId,
-            }),
-        });
-
-        setMessage(res.ok ? "Profile info updated." : "Error updating profile.");
-    } */
-
     async function saveAuth() {
         setMessage("");
         const res = await fetch(`${API}/api/authentication/${userInfo.userId}`, {
@@ -187,35 +157,7 @@ export default function Settings() {
             res.ok ? "Account info updated." : "Error updating account info."
         );
     }
-
-    /* //soft delete / disable account
-    async function deleteAccount() {
-        setMessage("");
-
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete your account? " +
-                "You will not be able to log in again."
-        );
-        if (!confirmDelete) return;
-
-        try {
-            const res = await fetch(`${API}/api/user/${userInfo.userId}`, {
-                method: "DELETE",
-            });
-
-            if (res.ok || res.status === 204) {
-                setMessage("Account deleted. You will be signed out.");
-                // redirect after a short delay
-                setTimeout(() => {
-                    window.location.href = "/login";
-                }, 1200);
-            } else {
-                setMessage("Error deleting account.");
-            }
-        } catch (e) {
-            setMessage("Error deleting account.");
-        }
-    } */
+    // --
 
     // state for opening/closing delete modal
     const [showDelete, setShowDelete] = useState(false);
