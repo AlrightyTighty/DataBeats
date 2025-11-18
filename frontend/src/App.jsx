@@ -92,6 +92,7 @@ function App() {
         { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
+        { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
       ],
     },
