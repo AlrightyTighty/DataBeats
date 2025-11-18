@@ -1,12 +1,37 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { FaTrash } from "react-icons/fa";
 import styles from "./CreateAlbum.module.css";
 import Topnav from "../Components/Topnav";
 import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
 import API from "../lib/api";
+import useAuthentication from "../hooks/useAuthentication";
 
 const CreateAlbum = () => {
   const navigate = useNavigate();
+  const user = useAuthentication();
+
+  // Current user's musician name
+  const [currentMusicianName, setCurrentMusicianName] = useState(null);
+
+  // Fetch current user's musician name
+  useEffect(() => {
+    if (!user || !user.musicianId) return;
+
+    const fetchMusicianName = async () => {
+      try {
+        const response = await fetch(`${API}/api/musician/${user.musicianId}`);
+        const data = await response.json();
+        if (data && data.musicianName) {
+          setCurrentMusicianName(data.musicianName);
+        }
+      } catch (err) {
+        console.error("Failed to fetch musician name:", err);
+      }
+    };
+
+    fetchMusicianName();
+  }, [user]);
 
   // Album-level contributing musician names (was albumArtistIDs)
   const [albumArtistNames, setAlbumArtistNames] = useState([]);
@@ -33,6 +58,7 @@ const CreateAlbum = () => {
 
   const [albumArtURL, setAlbumArtURL] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   // Generic "comma-delimited entry" handler for names (album-level)
   const onNameFieldChange = (event, namesArray, setNames) => {
@@ -41,6 +67,11 @@ const CreateAlbum = () => {
     if (raw[raw.length - 1] === ",") {
       const name = raw.slice(0, -1).trim();
       if (name.length === 0) {
+        event.target.value = "";
+        return;
+      }
+      // Prevent duplicates (check against existing names and current user's name)
+      if (namesArray.includes(name) || name === currentMusicianName) {
         event.target.value = "";
         return;
       }
@@ -61,6 +92,20 @@ const CreateAlbum = () => {
 
     // initialize genres per-song empty
     genresPerSong.push([]);
+    setGenresPerSong(genresPerSong.slice());
+  };
+
+  // Remove a song from the list
+  const removeSong = (index) => {
+    // Remove from all arrays
+    songKeys.splice(index, 1);
+    songInfo.current.splice(index, 1);
+    musiciansPerSong.splice(index, 1);
+    genresPerSong.splice(index, 1);
+
+    // Update state
+    setSongKeys(songKeys.slice());
+    setMusiciansPerSong(musiciansPerSong.slice());
     setGenresPerSong(genresPerSong.slice());
   };
 
@@ -132,6 +177,11 @@ const CreateAlbum = () => {
       return;
     }
     if (musiciansPerSong[index] == null) musiciansPerSong[index] = [];
+    // Prevent duplicates (check against existing names and current user's name)
+    if (musiciansPerSong[index].includes(nameToAdd) || nameToAdd === currentMusicianName) {
+      event.target.value = "";
+      return;
+    }
     musiciansPerSong[index].push(nameToAdd);
     setMusiciansPerSong(musiciansPerSong.slice());
     event.target.value = "";
@@ -139,6 +189,8 @@ const CreateAlbum = () => {
 
   const removeSongMusicianName = (index, nameIndex) => {
     if (!musiciansPerSong[index]) return;
+    // Prevent removal of current user's name (though it shouldn't be in the array)
+    if (musiciansPerSong[index][nameIndex] === currentMusicianName) return;
     musiciansPerSong[index].splice(nameIndex, 1);
     musiciansPerSong[index] = musiciansPerSong[index].slice();
     setMusiciansPerSong(musiciansPerSong.slice());
@@ -177,8 +229,33 @@ const CreateAlbum = () => {
 
   // remove album-level musician name
   const removeAlbumMusicianName = (index) => {
+    // Prevent removal of current user's name (though it shouldn't be in the array)
+    if (albumArtistNames[index] === currentMusicianName) return;
     albumArtistNames.splice(index, 1);
     setAlbumArtistNames(albumArtistNames.slice());
+  };
+
+  // Validate album before submission
+  const validateAlbum = () => {
+    // Check if album has a title
+    if (!albumInfo.current.albumTitle || !albumInfo.current.albumTitle.trim()) {
+      return "Album title is required";
+    }
+
+    // Check if there is at least one song
+    if (songKeys.length === 0) {
+      return "At least one song is required";
+    }
+
+    // Check if each song has at least one genre
+    for (let i = 0; i < songKeys.length; i++) {
+      const genres = genresPerSong[i] || [];
+      if (genres.length === 0) {
+        return `Song ${i + 1} must have at least one genre`;
+      }
+    }
+
+    return null; // No errors
   };
 
   // When submitting, pass:
@@ -188,6 +265,15 @@ const CreateAlbum = () => {
   // songs from songInfo.current
   const uploadAlbum = async () => {
     if (isSubmitting) return;
+
+    // Validate album before submitting
+    const error = validateAlbum();
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+
+    setValidationError("");
     setIsSubmitting(true);
 
     const createAlbumInfo = albumInfo.current;
@@ -262,6 +348,11 @@ const CreateAlbum = () => {
           <h3>Contributing Musicians (separate by commas)</h3>
           <input onChange={onAlbumNameFieldChange} type="text" placeholder="Enter musician names, comma to add" className={styles["album-text-input"]} />
           <div className={styles["artist-ids"]}>
+            {currentMusicianName && (
+              <div className={styles["current-user-artist"]} key="current-user">
+                {currentMusicianName}
+              </div>
+            )}
             {albumArtistNames.map((name, index) => {
               return (
                 <div
@@ -298,6 +389,13 @@ const CreateAlbum = () => {
 
                 return (
                   <div key={key} className={styles["songs-list-entry"]}>
+                    <div className={styles["song-entry-header"]}>
+                      <h2>Song {index + 1}</h2>
+                      <button className={styles["delete-song-button"]} onClick={() => removeSong(index)} aria-label="Delete song">
+                        <FaTrash />
+                      </button>
+                    </div>
+
                     <h2>Song Name</h2>
                     <input type="text" className={styles["song-text-input"]} onChange={(event) => updateSongName(index, event.target.value)} />
 
@@ -310,6 +408,11 @@ const CreateAlbum = () => {
                     <h2>Contributing Musicians (separate by commas)</h2>
                     <input onChange={(event) => addSongMusicianName(index, event)} type="text" className={styles["song-text-input"]} placeholder="Type a name, end with comma" />
                     <div className={styles["artist-ids"]}>
+                      {currentMusicianName && (
+                        <div className={styles["current-user-artist"]} key={`song-${index}-current-user`}>
+                          {currentMusicianName}
+                        </div>
+                      )}
                       {musiciansForThisSong.map((mName, innerIndex) => {
                         return (
                           <div
@@ -355,6 +458,8 @@ const CreateAlbum = () => {
           {/* global loader (your global css already has styling for `.loader`) */}
           {isSubmitting && <div className="loader" aria-hidden="true" />}
         </div>
+
+        {validationError && <div className={styles["validation-error"]} style={{ marginTop: "12px", color: "#ff6b6b", fontSize: "14pt" }}>{validationError}</div>}
       </main>
     </>
   );

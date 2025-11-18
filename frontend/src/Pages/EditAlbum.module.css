@@ -137,24 +137,6 @@
   border-color: rgba(255, 80, 80, 0.4);
 }
 
-/* === Current User Artist (Non-removable) === */
-.current-user-artist {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 6px;
-  padding: 6px 12px;
-  color: rgba(200, 200, 200, 0.6) !important;
-  font-size: 14px;
-  cursor: default !important;
-}
-
-.current-user-artist:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  text-decoration: none !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: rgba(200, 200, 200, 0.6) !important;
-}
-
 /* === Songs List Container === */
 #songs-list {
   margin-top: 60px;
@@ -384,6 +366,35 @@
 
 .submit-button:disabled,
 .submit-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+  pointer-events: none;
+}
+
+.delete-album-button {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  background: linear-gradient(180deg, rgba(255, 80, 80, 0.15), rgba(255, 80, 80, 0.08));
+  color: #ff6b6b;
+  font-size: 16pt;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 0, 0, 0.2);
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+.delete-album-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, rgba(255, 80, 80, 0.25), rgba(255, 80, 80, 0.15));
+}
+
+.delete-album-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.delete-album-button:disabled,
+.delete-album-button[aria-disabled="true"] {
   opacity: 0.5;
   cursor: default;
   transform: none;
