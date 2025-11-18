@@ -203,9 +203,16 @@
     /* border: 3px dashed blue; */
 }
 
+.modal-event .char-count {
+    position: absolute;
+    top: 41vh;
+    right: 2vw;
+    font-size: 1.7vh;
+}
+
 .modal-event .event-loc {
     position: absolute;
-    top: 42vh;
+    top: 44vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -220,7 +227,7 @@
     width: 97%;
     height: 8%;
     position: absolute;
-    top: 50vh;
+    top: 52vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -236,7 +243,7 @@
 
 .modal-event .event-time {
     position: absolute;
-    top: 55vh;
+    top: 57vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -252,7 +259,7 @@
     width: 97%;
     height: 8%;
     position: absolute;
-    top: 63vh;
+    top: 65vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -263,13 +270,14 @@
     font-size: 2vh;
     color: black;
     background-color: rgba(205, 204, 204, 0.904);
+    border-color: transparent;
     border-radius: 10px;
     /* border: 3px dashed pink; */
 }
 
 .modal-event .event-price {
     position: absolute;
-    top: 68vh;
+    top: 70vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -285,7 +293,7 @@
     width: 97%;
     height: 8%;
     position: absolute;
-    top: 76vh;
+    top: 78vh;
     left: 0;
     margin: 0;
     margin-left: 1vw;
@@ -302,7 +310,7 @@
 
 .modal-event .save {
     position: absolute;
-    top: 81vh;
+    top: 83vh;
     right: 2vw;
     background-color: rgb(87, 87, 124);
     border: none;

@@ -83,6 +83,13 @@
     /* border: 3px dashed orange; */
 }
 
+.modal-bio .char-count {
+    position: absolute;
+    bottom: 8vh;
+    left: 2vw;
+    font-size: 2vh;
+}
+
 .modal-bio .save {
     position: absolute;
     bottom: 8.5vh;

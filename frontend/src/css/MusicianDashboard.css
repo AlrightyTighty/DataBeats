@@ -96,6 +96,12 @@
     /* border: 3px dashed brown; */
 }
 
+.stats-button {
+    position: absolute;
+    left: 1vw;
+    bottom: 2vh;
+}
+
 .albums-events {
     position: absolute;
     top: 45vh;

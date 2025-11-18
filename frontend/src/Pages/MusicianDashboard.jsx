@@ -8,6 +8,7 @@ import EventCard from '../Components/EventCard';
 import MusicianPicName from '../Components/MusicianPicName';
 import Bio from '../Components/Bio';
 import AddButton from '../Components/AddButton';
+import ViewStats from '../Components/ViewStatsButton.jsx';
 import useAuthentication from '../hooks/useAuthentication.js';
 
 export default function MusicianDashboard() {
@@ -109,6 +110,7 @@ export default function MusicianDashboard() {
                     <h1>{musician.monthlyListenerCount}</h1>
                     <p>MONTHLY LISTENERS</p>
                 </div>
+                <ViewStats pos="stats-button" route="/stats"/>
             </div>
             <div className="albums-events">
                 <div className="albums">
@@ -118,7 +120,7 @@ export default function MusicianDashboard() {
                     </div>
                     <div className="album-cards">
                         {albums.map((album) => {
-                            return <AlbumCard album={album}/>;
+                            return <AlbumCard key={album.albumId} album={album}/>;
                         })}
                     </div>
                 </div>
@@ -129,7 +131,7 @@ export default function MusicianDashboard() {
                     </div>
                     <div className="event-cards">
                         {events.map((event) => {
-                            return <EventCard event={event}/>;
+                            return <EventCard key={event.eventId} event={event}/>;
                         })}
                     </div>
                 </div>

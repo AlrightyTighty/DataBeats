@@ -12,6 +12,7 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import Stream from "./Pages/Stream.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
+import MusicianReport from "./Pages/MusicianReport.jsx"
 import Artist from "./Pages/ArtistProfileUser.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
@@ -57,6 +58,7 @@ function App() {
     { path: "/authtest", element: <Authtest /> },
     { path: "/stream/:id", element: <Stream /> },
     { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
+    { path: "/stats", element: <MusicianReport /> },
     { path: "/artist/:id", element: <Artist /> },
     { path: "/streamtest", element: <StreamPopupTest /> },
     { path: "/events", element: <Events /> },
@@ -88,10 +90,10 @@ function App() {
     { path: "/admin/generate-report", element: <GenerateReport /> },
     { path: "/admin/report-result", element: <ReportResult /> },
     { path: "/page-not-found", element: <NotFound /> },
-    { path: "*", element: <NotFound /> },
     { path: "/history/:id", element: <History /> },
     { path: "/logout", element: <Logout /> },
     { path: "/follows/:id", element: <Follow /> },
+    { path: "*", element: <NotFound /> },
   ]);
 
   return (

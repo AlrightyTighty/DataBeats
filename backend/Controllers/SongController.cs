@@ -60,6 +60,18 @@ namespace backend.Controllers
                 return NotFound();
         }
 
+        [HttpGet("genres/by-musician/{musicianId}")]
+        public async Task<IActionResult> GetGenresByMusician([FromRoute] ulong musicianId)
+        {
+            var genres = await _context.SongGenres
+                .Where(sg => sg.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == musicianId))
+                .Select(sg => sg.Genre)
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(genres);
+        }
+
         [HttpDelete("{song_id}")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> DeleteSongById([FromRoute] ulong song_id)
