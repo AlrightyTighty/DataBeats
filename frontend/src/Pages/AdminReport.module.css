@@ -80,7 +80,7 @@
 
 .filterField input:focus,
 .filterField select:focus {
-  border-color: #a78bfa;
+  border-color: #220e5e;
   box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
 }
 
