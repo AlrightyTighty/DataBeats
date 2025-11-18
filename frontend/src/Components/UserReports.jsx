@@ -93,8 +93,10 @@ const getReasonStyle = (priority) => {
 
 export function UserReports() {
   const [selectedReport, setSelectedReport] = useState(null);
-
   const [reports, setReports] = useState([]);
+  const [resolutionNote, setResolutionNote] = useState("");
+  const [resolvingReportId, setResolvingReportId] = useState(null);
+  const [showResolveModal, setShowResolveModal] = useState(false);
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -125,16 +127,59 @@ export function UserReports() {
     loaded.current = false;
   }, []);
 
-  const resolveReport = async (reportId) => {};
+  const handleResolveClick = (e, reportId) => {
+    e.stopPropagation();
+    setResolvingReportId(reportId);
+    setResolutionNote("");
+    setShowResolveModal(true);
+  };
+
+  const handleConfirmResolve = () => {
+    resolveReport(resolvingReportId, resolutionNote);
+    setShowResolveModal(false);
+    setResolvingReportId(null);
+    setResolutionNote("");
+  };
+
+  const handleCancelResolve = () => {
+    setShowResolveModal(false);
+    setResolvingReportId(null);
+    setResolutionNote("");
+  };
+
+  const resolveReport = async (reportId, note) => {
+    try {
+      const response = await fetch(`${API}/api/admin/reports/${reportId}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(note),
+      });
+
+      if (response.ok) {
+        // Remove the resolved report from the list
+        setReports(reports.filter(report => report.id !== reportId));
+      } else {
+        console.error("Failed to resolve report:", response.status);
+        alert("Failed to resolve report. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error resolving report:", error);
+      alert("An error occurred while resolving the report.");
+    }
+  };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>User Reports</h2>
-        <span className={styles.count}>{reports.length} pending</span>
-      </div>
+    <>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>User Reports</h2>
+          <span className={styles.count}>{reports.length} pending</span>
+        </div>
 
-      <div className={styles.reportsList}>
+        <div className={styles.reportsList}>
         {reports.map((report) => {
           const statusStyle = getStatusStyle(report.status);
           const reasonStyle = getReasonStyle(report.reason);
@@ -153,7 +198,12 @@ export function UserReports() {
                   >
                     {report.reason}
                   </span>
-                  <button onClick={() => {}}>Resolve</button>
+                  <button
+                    className={styles.resolveButton}
+                    onClick={(e) => handleResolveClick(e, report.id)}
+                  >
+                    Resolve
+                  </button>
                   <span
                     className={styles.status}
                     style={{
@@ -185,7 +235,41 @@ export function UserReports() {
             </div>
           );
         })}
+        </div>
       </div>
-    </div>
+
+      {showResolveModal && (
+        <div className={styles.modalOverlay} onClick={handleCancelResolve}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2 className={styles.modalTitle}>Resolve Report</h2>
+            <div className={styles.modalBody}>
+              <label className={styles.modalLabel}>
+                Resolution Notes
+                <textarea
+                  value={resolutionNote}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 500) {
+                      setResolutionNote(e.target.value);
+                    }
+                  }}
+                  placeholder="Describe what actions were taken to resolve this report..."
+                  className={styles.modalTextarea}
+                  rows={6}
+                />
+                <div className={styles.charCount}>{resolutionNote.length} / 500</div>
+              </label>
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.modalCancelButton} onClick={handleCancelResolve}>
+                Cancel
+              </button>
+              <button className={styles.modalConfirmButton} onClick={handleConfirmResolve}>
+                Confirm Resolution
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -402,16 +402,17 @@ namespace backend.Controllers
             }
 
             // Update NumSongs, AlbumType, and Duration
-            int totalSongs = await _context.Songs
-                .Where(s => s.AlbumId == id && s.TimestampDeleted == null)
-                .CountAsync();
-            albumToEdit.NumSongs = totalSongs;
-            albumToEdit.AlbumType = totalSongs == 1 ? "SINGLE" : totalSongs < 5 ? "EP" : "ALBUM";
+            // Use ChangeTracker to get uncommitted changes (added, modified, soft-deleted songs)
+            var allActiveSongs = _context.ChangeTracker.Entries<Song>()
+                .Where(e => e.Entity.AlbumId == id &&
+                            e.State != EntityState.Deleted &&
+                            e.Entity.TimestampDeleted == null)
+                .Select(e => e.Entity)
+                .ToList();
 
-            var allSongs = await _context.Songs
-                .Where(s => s.AlbumId == id && s.TimestampDeleted == null)
-                .ToListAsync();
-            albumToEdit.Duration = new TimeOnly(allSongs.Sum(song => song.Duration.Ticks));
+            albumToEdit.NumSongs = allActiveSongs.Count;
+            albumToEdit.AlbumType = allActiveSongs.Count == 1 ? "SINGLE" : allActiveSongs.Count < 5 ? "EP" : "ALBUM";
+            albumToEdit.Duration = new TimeOnly(allActiveSongs.Sum(song => song.Duration.Ticks));
 
             await _context.SaveChangesAsync();
 

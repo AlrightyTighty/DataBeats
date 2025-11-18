@@ -23,6 +23,8 @@ public partial class Review
 
     public ulong DeletedBy { get; set; }
 
+    public string ReviewComment { get; set; } = null!;
+
     public virtual Admin? Admin { get; set; }
 
     public virtual ICollection<AdminDeletesRating> AdminDeletesRatings { get; set; } = new List<AdminDeletesRating>();

@@ -73,10 +73,10 @@ namespace backend.Controllers
         [Route("reports")]
         [HttpPost("{id}")]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> ReviewReportAsync([FromRoute] ulong id)
+        public async Task<IActionResult> ReviewReportAsync([FromRoute] ulong id, [FromBody] string comment)
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
-            if (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId) == null)
+            if ((await _context.Users.FirstOrDefaultAsync(user => user.UserId == userId))!.AdminId == null)
                 return NotFound();
 
             Admin reviewingAdmin = (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId))!;
@@ -90,6 +90,7 @@ namespace backend.Controllers
                 Complaint = reviewedComplaint,
                 TimestampCreated = DateTime.Now,
                 CreatedByNavigation = reviewingAdmin.User,
+                ReviewComment = comment
             };
 
             await _context.Reviews.AddAsync(complaintReview);
@@ -117,7 +118,8 @@ namespace backend.Controllers
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "SONG",
-                                                                    TargetId = action.SongId
+                                                                    TargetId = action.SongId,
+                                                                    Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
             AdminAction[] userDeletes = await _context.AdminManagesUsers
@@ -129,7 +131,8 @@ namespace backend.Controllers
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "USER",
-                                                                    TargetId = action.UserId
+                                                                    TargetId = action.UserId,
+                                                                    Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
             AdminAction[] albumDeletes = await _context.AdminDeletesAlbums
@@ -141,7 +144,8 @@ namespace backend.Controllers
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "ALBUM",
-                                                                    TargetId = action.AlbumId
+                                                                    TargetId = action.AlbumId,
+                                                                    Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
             AdminAction[] playlistDeletes = await _context.AdminDeletesPlaylists
@@ -153,7 +157,8 @@ namespace backend.Controllers
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "USER",
-                                                                    TargetId = action.PlaylistId
+                                                                    TargetId = action.PlaylistId,
+                                                                    Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
             AdminAction[] ratingDeletes = await _context.AdminDeletesRatings
@@ -166,6 +171,7 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "USER",
                                                                     TargetId = action.ReviewId,
+                                                                    Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
             AdminAction[] musicianDeletes = await _context.AdminDeletesMusicians
@@ -178,6 +184,21 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "USER",
                                                                     TargetId = action.MusicianId,
+                                                                    Comment = action.Reason
+                                                                })
+                                                                .ToArrayAsync();
+
+            AdminAction[] adminReviews = await _context.Reviews
+                                                                .Include(action => action.Admin!)
+                                                                .ThenInclude(admin => admin.User)
+                                                                .Select(action => new AdminAction
+                                                                {
+                                                                    Action = "Reviews",
+                                                                    AdminId = action.AdminId ?? 0,
+                                                                    AdminName = action.Admin!.User.Username,
+                                                                    TargetEntity = "REVIEW",
+                                                                    TargetId = action.ReviewId,
+                                                                    Comment = action.ReviewComment
                                                                 })
                                                                 .ToArrayAsync();
 
@@ -336,5 +357,7 @@ namespace backend.Controllers
         public string AdminName { get; set; } = null!;
 
         public DateTime TimeStamp { get; set; }
+
+        public string Comment { get; set; } = null!;
     }
 }

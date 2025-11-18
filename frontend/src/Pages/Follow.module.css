@@ -5,13 +5,13 @@
   padding-right: 24px;
   padding-bottom: 80px;
   color: #fff;
-  background: linear-gradient(
+  /*background: linear-gradient(
     180deg,
     #1a317a 6.07%,
     #244199 31.25%,
     #3d5398 56.73%,
     #999 100%
-  );
+  );*/
 }
 
 .container {
@@ -26,7 +26,7 @@
 .tabs {
   display: inline-flex;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(82, 13, 13, 0.08);
   padding: 4px;
   border-radius: 999px;
   align-self: flex-start;
@@ -43,7 +43,7 @@
 }
 
 .tabButton:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(49, 5, 144, 0.12);
 }
 
 .tabActive {
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(85, 4, 74, 0.08);
   border-radius: 14px;
   border: none;
   cursor: pointer;
@@ -90,7 +90,7 @@
 }
 
 .card:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(26, 34, 128, 0.14);
 }
 
 .avatar {
@@ -123,14 +123,14 @@
   gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(121, 212, 247, 0.3);
+  background: rgba(48, 112, 138, 0.3);
   border: 1px solid rgba(121, 212, 247, 0.8);
   cursor: pointer;
   font-size: 14px;
 }
 
 .musicianCard:hover {
-  background: rgba(121, 212, 247, 0.5);
+  background: rgba(73, 170, 208, 0.5);
 }
 
 .musicianLabel {

@@ -63,11 +63,6 @@ export default function Report() {
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.label}>Entity ID</label>
-              <input type="text" value={entityId} disabled className={`${styles.input} ${styles.inputDisabled}`} />
-            </div>
-
-            <div className={styles.formGroup}>
               <label className={styles.label}>Report Reason *</label>
               <select value={reportReason} onChange={(e) => setReportReason(e.target.value)} required className={styles.select}>
                 <option value="">Select a reason...</option>

@@ -2,96 +2,38 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./AdminActivity.module.css";
 import API from "../lib/api";
 
-const activityData = [
-  {
-    id: 1,
-    admin: "Sarah Chen",
-    action: "Banned user",
-    target: "@toxic_user_123",
-    timestamp: "2 minutes ago",
-    type: "ban",
-  },
-  {
-    id: 2,
-    admin: "Michael Torres",
-    action: "Deleted post",
-    target: "Post #45892",
-    timestamp: "15 minutes ago",
-    type: "delete",
-  },
-  {
-    id: 3,
-    admin: "Sarah Chen",
-    action: "Resolved report",
-    target: "Report #3421",
-    timestamp: "28 minutes ago",
-    type: "resolve",
-  },
-  {
-    id: 4,
-    admin: "James Wilson",
-    action: "Updated community guidelines",
-    target: "Section 4.2",
-    timestamp: "1 hour ago",
-    type: "update",
-  },
-  {
-    id: 5,
-    admin: "Emily Rodriguez",
-    action: "Warned user",
-    target: "@spammer_99",
-    timestamp: "1 hour ago",
-    type: "warn",
-  },
-  {
-    id: 6,
-    admin: "Michael Torres",
-    action: "Removed comment",
-    target: "Comment #78234",
-    timestamp: "2 hours ago",
-    type: "delete",
-  },
-  {
-    id: 7,
-    admin: "Sarah Chen",
-    action: "Unbanned user",
-    target: "@reformed_user",
-    timestamp: "3 hours ago",
-    type: "unban",
-  },
-  {
-    id: 8,
-    admin: "James Wilson",
-    action: "Created announcement",
-    target: "System Maintenance",
-    timestamp: "4 hours ago",
-    type: "create",
-  },
-];
-
-const getActionColor = (type) => {
-  switch (type) {
-    case "ban":
-      return "#ef4444";
+const getActionColor = (action) => {
+  switch (action.toLowerCase()) {
     case "delete":
       return "#f59e0b";
-    case "resolve":
-      return "#10b981";
-    case "update":
+    case "manage":
       return "#3b82f6";
-    case "warn":
-      return "#f59e0b";
+    case "ban":
+      return "#ef4444";
     case "unban":
       return "#10b981";
-    case "create":
-      return "#8b5cf6";
     default:
-      return "#6b7280";
+      return "#8b5cf6";
   }
+};
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 };
 
 export function AdminActivity() {
   const [activity, setActivity] = useState([]);
+  const [expandedActivity, setExpandedActivity] = useState(null);
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -110,26 +52,48 @@ export function AdminActivity() {
     loaded.current = false;
   }, []);
 
+  const handleActivityClick = (actId) => {
+    setExpandedActivity(expandedActivity === actId ? null : actId);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>Recent Admin Activity</h2>
-        <span className={styles.count}>{activityData.length} activities</span>
+        <span className={styles.count}>{activity.length} activities</span>
       </div>
 
       <div className={styles.activityList}>
-        {activityData.map((activity) => (
-          <div key={activity.id} className={styles.activityItem}>
-            <div className={styles.indicator} style={{ backgroundColor: getActionColor(activity.type) }}></div>
-            <div className={styles.content}>
-              <div className={styles.mainInfo}>
-                <span className={styles.admin}>{activity.admin}</span>
-                <span className={styles.action}>{activity.action}</span>
-                <span className={styles.target}>{activity.target}</span>
+        {activity.map((act) => {
+          const isExpanded = expandedActivity === act.AdminId + act.TargetId + act.TimeStamp;
+          const actionColor = getActionColor(act.Action);
+
+          return (
+            <div
+              key={act.AdminId + act.TargetId + act.TimeStamp}
+              className={styles.activityItem}
+              onClick={() => handleActivityClick(act.AdminId + act.TargetId + act.TimeStamp)}
+            >
+              <div className={styles.activityRow}>
+                <div className={styles.indicator} style={{ backgroundColor: actionColor }}></div>
+                <div className={styles.content}>
+                  <div className={styles.mainInfo}>
+                    <span className={styles.admin}>{act.AdminName}</span>
+                    <span className={styles.action}>{act.Action}</span>
+                    <span className={styles.target}>{act.TargetEntity} #{act.TargetId}</span>
+                  </div>
+                  <span className={styles.timestamp}>{formatTimestamp(act.TimeStamp)}</span>
+                </div>
               </div>
+              {isExpanded && act.Comment && (
+                <div className={styles.commentSection}>
+                  <div className={styles.commentLabel}>Comment:</div>
+                  <div className={styles.commentText}>{act.Comment}</div>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
