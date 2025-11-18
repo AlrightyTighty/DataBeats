@@ -6,6 +6,7 @@ import Topnav from "../Components/Topnav";
 import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
 import API from "../lib/api";
 import useAuthentication from "../hooks/useAuthentication";
+import { useModal } from "../contexts/ModalContext";
 
 const CreateAlbum = () => {
   const navigate = useNavigate();
