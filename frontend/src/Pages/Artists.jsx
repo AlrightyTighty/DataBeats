@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import API from "../lib/api";
 import styles from "./Artists.module.css";
+import verifiedBadge from "../assets/graphics/musician_verification.png";
 
 export default function Artists() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function Artists() {
   const [avatarMap, setAvatarMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+  const [filter, setFilter] = useState('all'); // 'all', 'verified'
+  const [sortBy, setSortBy] = useState('name'); // 'name', 'followers', 'monthly'
 
   useEffect(() => {
     (async () => {
@@ -24,12 +27,13 @@ export default function Artists() {
 
         const data = await res.json();
         const list = Array.isArray(data) ? data : [];
-
-        list.sort((a, b) => {
-          const na = (a.musicianName ?? a.MusicianName ?? "").toLowerCase();
-          const nb = (b.musicianName ?? b.MusicianName ?? "").toLowerCase();
-          return na.localeCompare(nb);
-        });
+        
+        // Debug: log the data to see IsVerified field
+        console.log('Artists data:', list);
+        if (list.length > 0) {
+          console.log('First artist IsVerified field:', list[0].IsVerified);
+          console.log('Sample artist:', list[0]);
+        }
 
         setArtists(list);
 
@@ -78,32 +82,94 @@ export default function Artists() {
     })();
   }, []);
 
+  // Filtering and sorting logic
+  let filteredArtists = artists;
+  
+  // Apply filters
+  if (filter === 'verified') {
+    console.log('Filtering for verified artists. Total artists:', filteredArtists.length);
+    filteredArtists.forEach(m => {
+      console.log(`Artist ${m.MusicianName}: IsVerified = ${m.IsVerified}, isVerified = ${m.isVerified}, type: ${typeof m.IsVerified}`);
+    });
+    filteredArtists = filteredArtists.filter(m => m.IsVerified === true || m.isVerified === true);
+    console.log('After filtering, verified artists:', filteredArtists.length);
+  }
+  
+  // Apply sorting
+  filteredArtists.sort((a, b) => {
+    if (sortBy === 'followers') {
+      const followersA = Number(a.FollowerCount ?? a.followerCount ?? 0);
+      const followersB = Number(b.FollowerCount ?? b.followerCount ?? 0);
+      return followersB - followersA; // Descending order
+    } else if (sortBy === 'monthly') {
+      const monthlyA = Number(a.MonthlyListenerCount ?? a.monthlyListenerCount ?? 0);
+      const monthlyB = Number(b.MonthlyListenerCount ?? b.monthlyListenerCount ?? 0);
+      return monthlyB - monthlyA; // Descending order
+    } else {
+      // Sort by name (default)
+      const na = (a.musicianName ?? a.MusicianName ?? "").toLowerCase();
+      const nb = (b.musicianName ?? b.MusicianName ?? "").toLowerCase();
+      return na.localeCompare(nb);
+    }
+  });
+
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          <h1 className={styles.title}>Browse Artists</h1>
+          <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',marginBottom:20,gap:12,justifyContent:'space-between'}}>
+            <h1 className={styles.title} style={{margin:0}}>Browse Artists</h1>
+            <div style={{display:'flex',gap:8,alignItems:'center'}}>
+              <button 
+                onClick={()=>setFilter('all')} 
+                style={{padding:'6px 14px',borderRadius:8,border:'none',background:filter==='all'?'#2563eb':'#e5e7eb',color:filter==='all'?'#fff':'#222',fontWeight:600,cursor:'pointer'}}
+              >
+                All Artists
+              </button>
+              <button 
+                onClick={()=>setFilter('verified')} 
+                style={{padding:'6px 14px',borderRadius:8,border:'none',background:filter==='verified'?'#2563eb':'#e5e7eb',color:filter==='verified'?'#fff':'#222',fontWeight:600,cursor:'pointer'}}
+              >
+                Verified Only
+              </button>
+              <button 
+                onClick={()=>setSortBy('followers')} 
+                style={{padding:'6px 14px',borderRadius:8,border:'none',background:sortBy==='followers'?'#10b981':'#e5e7eb',color:sortBy==='followers'?'#fff':'#222',fontWeight:600,cursor:'pointer'}}
+              >
+                Sort by Followers
+              </button>
+              <button 
+                onClick={()=>setSortBy('monthly')} 
+                style={{padding:'6px 14px',borderRadius:8,border:'none',background:sortBy==='monthly'?'#10b981':'#e5e7eb',color:sortBy==='monthly'?'#fff':'#222',fontWeight:600,cursor:'pointer'}}
+              >
+                Sort by Monthly Listeners
+              </button>
+            </div>
+          </div>
+          <div style={{marginBottom:12,fontSize:13,color:'#374151'}}>
+            Showing {filteredArtists.length} artist{filteredArtists.length===1?'':'s'}{filter==='verified' ? ' (verified only)' : ' (all)'}
+            {sortBy === 'followers' ? ' - sorted by followers' : sortBy === 'monthly' ? ' - sorted by monthly listeners' : ''}
+          </div>
 
           {err && <div className={styles.error}>{err}</div>}
 
           {loading ? (
             <p className={styles.status}>Loading artists...</p>
-          ) : artists.length === 0 ? (
-            <p className={styles.status}>No artists found.</p>
+          ) : filteredArtists.length === 0 ? (
+            <p className={styles.status}>No artists found{filter === 'verified' ? ' (try showing all artists)' : ''}.</p>
           ) : (
             <div className={styles.grid}>
-              {artists.map((m) => {
+              {filteredArtists.map((m) => {
                 const id = m.musicianId ?? m.MusicianId;
                 const name = m.musicianName ?? m.MusicianName ?? "Unknown";
                 const handle = `@${name}`;
 
-                const followersRaw = m.followerCount ?? m.FollowerCount ?? 0;
-                const monthlyRaw =
-                  m.monthlyListenerCount ?? m.MonthlyListenerCount ?? 0;
+                const followersRaw = m.FollowerCount ?? m.followerCount ?? 0;
+                const monthlyRaw = m.MonthlyListenerCount ?? m.monthlyListenerCount ?? 0;
 
-                const followers = Number(followersRaw) || 0;
-                const monthly = Number(monthlyRaw) || 0;
+                const followers = Number(followersRaw);
+                const monthly = Number(monthlyRaw);
 
                 const avatarSrc = avatarMap[id] ?? null;
 
@@ -127,7 +193,16 @@ export default function Artists() {
                     )}
 
                     <div className={styles.text}>
-                      <h3 className={styles.name}>{handle}</h3>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <h3 className={styles.name}>{handle}</h3>
+                        {(m.IsVerified === true || m.IsVerified === "true" || m.isVerified === true) && (
+                          <img 
+                            src={verifiedBadge} 
+                            alt="Verified" 
+                            style={{width: '30px', height: '30px'}}
+                          />
+                        )}
+                      </div>
                       <p className={styles.statsLine}>
                         {followers.toLocaleString()} followers •{" "}
                         {monthly.toLocaleString()} monthly listeners
