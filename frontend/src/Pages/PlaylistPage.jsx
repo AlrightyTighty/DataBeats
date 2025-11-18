@@ -7,6 +7,7 @@ import {
   removeSongFromPlaylist,
 } from "../lib/playlistPageApi.js";
 import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
+import { usePlaybar } from "../contexts/PlaybarContext.jsx";
 import Topnav from "../Components/Topnav.jsx";
 import AddSongModal from "../Components/AddSongModal.jsx";
 import AddUserModal from "../Components/AddUserModal.jsx";
@@ -18,6 +19,7 @@ import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
 export default function PlaylistPage() {
   const { id } = useParams();
   const playlistId = useMemo(() => Number(id), [id]);
+  const { setPlaybarState } = usePlaybar();
 
   const [loading, setLoading] = useState(true);
   const [playlist, setPlaylist] = useState(null);
@@ -132,6 +134,15 @@ export default function PlaylistPage() {
 
   function toggleDeleteModal() {
     setShowDelete(!showDelete);
+  }
+
+  function handleSongClick(songId) {
+    setPlaybarState({
+      songId,
+      songList: playlist.songs,
+      playlistId: playlistId,
+      visible: true,
+    });
   }
 
   if (loading || error || !playlist) {
@@ -317,12 +328,17 @@ export default function PlaylistPage() {
                             `${s.songId}-${s.timeAddedUtc}`
                           }
                           className={`${styles.songRow} ${styles.songRowGrid}`}
+                          onClick={() => handleSongClick(s.songId)}
+                          style={{ cursor: 'pointer' }}
                         >
                           {/* like button */}
                           <div className={styles.colLike}>
                             <button
                               className={styles.likeButton}
-                              onClick={() => handleToggleLike(s.songId)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleLike(s.songId);
+                              }}
                               aria-label={
                                 likes[s.songId]
                                   ? "Unlike this song"
@@ -374,7 +390,10 @@ export default function PlaylistPage() {
                           <div className={styles.colActions}>
                             {canEdit && (
                               <button
-                                onClick={() => onRemove(s.songId)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRemove(s.songId);
+                                }}
                                 className={styles.removeButton}
                               >
                                 ❌ Remove

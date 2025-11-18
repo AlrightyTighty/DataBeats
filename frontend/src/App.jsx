@@ -25,6 +25,7 @@ import SearchResult from "./Pages/SearchResult.jsx";
 import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
 import Admin from "./Pages/Admin.jsx";
+import AdminDelete from "./Pages/AdminDelete.jsx";
 import Report from "./Pages/Report.jsx";
 import UserPlaylists from "./Pages/UserPlaylists.jsx";
 import ListenerMe from "./Pages/ListenerMe.jsx";
@@ -69,6 +70,7 @@ function App() {
         { path: "/playlists", element: <Playlists /> },
         { path: "/createplaylist", element: <CreatePlaylist /> },
         { path: "/admin", element: <Admin /> },
+        { path: "/admin/delete", element: <AdminDelete /> },
         { path: "/report", element: <Report /> },
         { path: "/dashboard", element: <Dashboard /> },
         { path: "/user-playlists/:id", element: <UserPlaylists /> },

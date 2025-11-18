@@ -17,6 +17,26 @@ const Album = () => {
     return artists.map((artist) => artist.artistName).join(", ");
   };
 
+  const formatDuration = (timeString) => {
+    if (!timeString) return "0:00";
+    const parts = timeString.split(":");
+    if (parts.length < 2) return "0:00";
+
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    const seconds = parseInt(parts[2]?.split(".")[0] || "0", 10);
+
+    if (hours > 0) {
+      return `${hours} hr ${minutes} min`;
+    }
+    return `${minutes} min ${seconds} sec`;
+  };
+
+  const getYear = (dateString) => {
+    if (!dateString) return "";
+    return new Date(dateString).getFullYear();
+  };
+
   const [albumData, setAlbumData] = useState({
     title: null,
     artists: [],
@@ -95,6 +115,23 @@ const Album = () => {
             <div className={styles.albumArtists}>
               {formatArtists(albumData.artists)}
             </div>
+            <div className={styles.albumMetadata}>
+              {albumData.releaseDate && (
+                <span>{getYear(albumData.releaseDate)}</span>
+              )}
+              {albumData.numSongs !== undefined && (
+                <>
+                  <span className={styles.metadataDot}>•</span>
+                  <span>{albumData.numSongs} {albumData.numSongs === 1 ? 'song' : 'songs'}</span>
+                </>
+              )}
+              {albumData.duration && (
+                <>
+                  <span className={styles.metadataDot}>•</span>
+                  <span>{formatDuration(albumData.duration)}</span>
+                </>
+              )}
+            </div>
             {user && user.musicianId === albumData.createdBy && (
               <button
                 className={styles.editButton}
@@ -121,6 +158,7 @@ const Album = () => {
           {albumData.songs.map((song, index) => (
             <AlbumSongListing
               setPlaybarState={setPlaybarState}
+              songs={albumData.songs}
               key={song.songId}
               number={index + 1}
               name={song.songName}

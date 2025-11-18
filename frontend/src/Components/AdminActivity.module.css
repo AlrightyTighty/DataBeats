@@ -1,16 +1,18 @@
 .container {
-  background-color: #151515;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .header {
   padding: 1.5rem;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,7 +27,7 @@
 
 .count {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #d1d5db;
 }
 
 .activityList {
@@ -39,30 +41,40 @@
 }
 
 .activityList::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
 }
 
 .activityList::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
 .activityList::-webkit-scrollbar-thumb:hover {
-  background: #3a3a3a;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .activityItem {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 0.5rem;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
 }
 
 .activityItem:hover {
-  background-color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.activityRow {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
 }
 
 .indicator {
@@ -92,17 +104,51 @@
 }
 
 .action {
-  color: #a0a0a0;
+  color: #d1d5db;
   font-size: 0.95rem;
 }
 
 .target {
-  color: #6366f1;
+  color: #a78bfa;
   font-size: 0.95rem;
   font-family: monospace;
 }
 
 .timestamp {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #d1d5db;
+}
+
+.commentSection {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border-left: 3px solid #a78bfa;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.commentLabel {
+  font-weight: 600;
+  color: #a78bfa;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.commentText {
+  color: #e5e5e5;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }

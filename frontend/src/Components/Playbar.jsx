@@ -145,28 +145,45 @@ const Playbar = () => {
   }, [songData, audioRef.current]);
 
   const playNextSong = () => {
-    const nextSongId = songList[(songList.indexOf(songId) + 1) % songList.length];
-    if (nextSongId == songId) {
+    if (!songList || songList.length === 0) return;
+
+    // Find the current song index by comparing songId property
+    const currentIndex = songList.findIndex(song => song.songId === songId);
+    if (currentIndex === -1) return;
+
+    // Get the next song object
+    const nextIndex = (currentIndex + 1) % songList.length;
+    const nextSong = songList[nextIndex];
+
+    if (nextSong.songId === songId) {
       audioRef.current.currentTime = 0;
       return;
     }
 
     const newPlaybarState = Object.assign({}, playbarState);
-    newPlaybarState.songId = nextSongId;
+    newPlaybarState.songId = nextSong.songId;
 
     setPlaybarState(newPlaybarState);
   };
 
   const playPrevSong = () => {
-    // fucked up modulo wizardy because whoever made javascript was an inept ape
-    const nextSongId = songList[(((songList.indexOf(songId) - 1) % songList.length) + songList.length) % songList.length];
-    if (nextSongId == songId) {
+    if (!songList || songList.length === 0) return;
+
+    // Find the current song index by comparing songId property
+    const currentIndex = songList.findIndex(song => song.songId === songId);
+    if (currentIndex === -1) return;
+
+    // Get the previous song object (with proper negative modulo handling)
+    const prevIndex = ((currentIndex - 1) % songList.length + songList.length) % songList.length;
+    const prevSong = songList[prevIndex];
+
+    if (prevSong.songId === songId) {
       audioRef.current.currentTime = 0;
       return;
     }
 
     const newPlaybarState = Object.assign({}, playbarState);
-    newPlaybarState.songId = nextSongId;
+    newPlaybarState.songId = prevSong.songId;
 
     setPlaybarState(newPlaybarState);
   };
