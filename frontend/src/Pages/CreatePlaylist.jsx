@@ -136,7 +136,15 @@ const CreatePlaylist = () => {
           <textarea className={styles["lyric-area"]} onChange={(event) => editPlaylistInfo("playlistDescription", event)} />
         </div>
 
-        <button onClick={uploadPlaylist}>Submit</button>
+        <div style={{ marginTop: "24px", display: "flex", gap: "12px", alignItems: "center" }}>
+          <button onClick={uploadPlaylist} disabled={creating} className={styles["submit-button"]} aria-disabled={creating}>
+            {creating ? "Creating playlist..." : "Submit"}
+          </button>
+
+          {creating && <div className="loader" aria-hidden="true" />}
+        </div>
+
+        {createError && <div className={styles.error} style={{ marginTop: "12px", color: "#ff6b6b" }}>{createError}</div>}
       </main>
     </>
   );

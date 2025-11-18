@@ -2,85 +2,16 @@ import { AlbumSongListing } from "../Components/AlbumSongListing.jsx";
 import styles from "./Album.module.css";
 import API from "../lib/api.js";
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
 import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
 import { usePlaybar } from "../contexts/PlaybarContext.jsx";
-
-const albumData = {
-  title: "Midnight Echoes",
-  artists: ["Luna Rivera", "The Midnight Collective"],
-  type: "LP",
-  description:
-    "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
-  coverImage:
-    "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
-  songs: [
-    {
-      id: 1,
-      name: "Nocturnal Whispers",
-      artists: ["Luna Rivera"],
-      streams: 2847392,
-    },
-    {
-      id: 2,
-      name: "Dancing in Shadows",
-      artists: ["Luna Rivera", "The Midnight Collective"],
-      streams: 4521876,
-    },
-    {
-      id: 3,
-      name: "Velvet Dreams",
-      artists: ["Luna Rivera", "Echo Smith"],
-      streams: 3294817,
-    },
-    {
-      id: 4,
-      name: "Starlit Memories",
-      artists: ["Luna Rivera"],
-      streams: 5839274,
-    },
-    {
-      id: 5,
-      name: "Silent Reflections",
-      artists: ["The Midnight Collective"],
-      streams: 1923847,
-    },
-    {
-      id: 6,
-      name: "Ethereal Nights",
-      artists: ["Luna Rivera", "The Midnight Collective"],
-      streams: 4192736,
-    },
-    {
-      id: 7,
-      name: "Moonlit Serenade",
-      artists: ["Luna Rivera", "Aria Rose"],
-      streams: 6482913,
-    },
-    {
-      id: 8,
-      name: "Echoes of Tomorrow",
-      artists: ["Luna Rivera"],
-      streams: 3764829,
-    },
-    {
-      id: 9,
-      name: "Midnight Waltz",
-      artists: ["Luna Rivera", "The Midnight Collective", "Echo Smith"],
-      streams: 5192847,
-    },
-    {
-      id: 10,
-      name: "Dawn's Embrace",
-      artists: ["Luna Rivera"],
-      streams: 7293847,
-    },
-  ],
-};
+import useAuthentication from "../hooks/useAuthentication";
 
 const Album = () => {
   const { setPlaybarState } = usePlaybar();
+  const navigate = useNavigate();
+  const user = useAuthentication();
 
   const formatArtists = (artists) => {
     return artists.map((artist) => artist.artistName).join(", ");
@@ -93,6 +24,7 @@ const Album = () => {
     description: null,
     coverImage: null,
     songs: [],
+    createdBy: null,
   });
 
   const [likes, setLikes] = useState({}); // { songId: true/false }
@@ -132,10 +64,10 @@ const Album = () => {
     })();
   }, [id]);
 
-  async function handleToggleLike(songId){
-    try{
+  async function handleToggleLike(songId) {
+    try {
       const { isLiked } = await toggleLike(songId);
-      setLikes((prev)=> ({
+      setLikes((prev) => ({
         ...prev,
         [songId]: isLiked,
       }));
@@ -163,6 +95,14 @@ const Album = () => {
             <div className={styles.albumArtists}>
               {formatArtists(albumData.artists)}
             </div>
+            {user && user.musicianId === albumData.createdBy && (
+              <button
+                className={styles.editButton}
+                onClick={() => navigate(`/editalbum/${id}`)}
+              >
+                Edit Album
+              </button>
+            )}
           </div>
         </div>
 

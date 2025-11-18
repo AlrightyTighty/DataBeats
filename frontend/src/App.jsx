@@ -5,7 +5,9 @@ import _appLogo from "./assets/graphics/DatabeatsLogo.png";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
 import { PlaybarProvider } from "./contexts/PlaybarContext";
+import { ModalProvider, useModal } from "./contexts/ModalContext";
 import Layout from "./Components/Layout";
+import Modal from "./Components/Modal";
 
 import Login from "./Pages/Login.jsx";
 import Signup from "./Pages/Signup.jsx";
@@ -18,6 +20,7 @@ import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
 import CreateEvent from "./Pages/CreateEvent.jsx";
 import CreateAlbum from "./Pages/CreateAlbum.jsx";
+import EditAlbum from "./Pages/EditAlbum.jsx";
 import SearchResult from "./Pages/SearchResult.jsx";
 import Playlists from "./Pages/Playlists.jsx";
 import CreatePlaylist from "./Pages/CreatePlaylist.jsx";
@@ -61,6 +64,7 @@ function App() {
         { path: "/event/:id", element: <EventDetails /> },
         { path: "/createevent", element: <CreateEvent /> },
         { path: "/createalbum", element: <CreateAlbum /> },
+        { path: "/editalbum/:id", element: <EditAlbum /> },
         { path: "/search", element: <SearchResult /> },
         { path: "/playlists", element: <Playlists /> },
         { path: "/createplaylist", element: <CreatePlaylist /> },
@@ -99,11 +103,32 @@ function App() {
   ]);
 
   return (
-    <PlaybarProvider>
-      <RouterProvider router={router} />
-    </PlaybarProvider>
+    <ModalProvider>
+      <PlaybarProvider>
+        <ModalContent router={router} />
+      </PlaybarProvider>
+    </ModalProvider>
   );
 }
+
+// Separate component to use the modal context
+const ModalContent = ({ router }) => {
+  const { modalState, closeModal } = useModal();
+
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Modal
+        isOpen={modalState.isOpen}
+        title={modalState.title}
+        message={modalState.message}
+        buttons={modalState.buttons}
+        onClose={closeModal}
+        closeOnOverlayClick={modalState.closeOnOverlayClick}
+      />
+    </>
+  );
+};
 
 export default App;
 export const appLogo = _appLogo;
