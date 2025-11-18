@@ -6,9 +6,11 @@ import {
   addSongToPlaylist,
   removeSongFromPlaylist,
 } from "../lib/playlistPageApi.js";
+import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
 import Topnav from "../Components/Topnav.jsx";
 import AddSongModal from "../Components/AddSongModal.jsx";
 import AddUserModal from "../Components/AddUserModal.jsx";
+import DeleteButton from "../Components/DeleteButton.jsx";
 import API from "../lib/api";
 import styles from "./PlaylistPage.module.css";
 import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
@@ -24,35 +26,56 @@ export default function PlaylistPage() {
   const [albumArtCache, setAlbumArtCache] = useState({});
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [likes, setLikes] = useState({});
 
   async function load() {
     try {
       setLoading(true);
       setError("");
-      const data = await getPlaylistPage(playlistId);
+      // Request playlist data with album art and like statuses embedded
+      const data = await getPlaylistPage(playlistId, true, true);
       setPlaylist(data);
 
-      // Load album art for all songs
-      const artIds = [
-        ...new Set(data.songs.map((s) => s.albumArtFileId).filter(Boolean)),
-      ];
+      // Build album art cache from embedded data
       const newCache = { ...albumArtCache };
-
-      for (const artId of artIds) {
-        if (!newCache[artId]) {
-          try {
-            const response = await fetch(`${API}/api/art/${artId}`);
-            if (response.ok) {
-              const artData = await response.json();
-              newCache[artId] = `data:image/${artData.fileExtension};base64,${artData.fileData}`;
-            }
-          } catch (err) {
-            console.error(`Failed to load album art ${artId}:`, err);
+      const artIdsToFetch = [];
+      
+      data.songs.forEach((song) => {
+        if (song.albumArtFileId) {
+          if (song.albumArtDataUrl) {
+            // Use embedded album art if available
+            newCache[song.albumArtFileId] = song.albumArtDataUrl;
+          } else if (!newCache[song.albumArtFileId]) {
+            // Fallback: need to fetch album art separately
+            artIdsToFetch.push(song.albumArtFileId);
           }
+        }
+      });
+
+      // Fetch any missing album art (fallback for when backend doesn't include it)
+      for (const artId of [...new Set(artIdsToFetch)]) {
+        try {
+          const response = await fetch(`${API}/api/art/${artId}`);
+          if (response.ok) {
+            const artData = await response.json();
+            newCache[artId] = `data:image/${artData.fileExtension};base64,${artData.fileData}`;
+          }
+        } catch (err) {
+          console.error(`Failed to load album art ${artId}:`, err);
         }
       }
 
       setAlbumArtCache(newCache);
+
+      // Build likes map from embedded data
+      const likesMap = {};
+      data.songs.forEach((song) => {
+        // If isLiked is provided, use it; otherwise default to false
+        likesMap[song.songId] = song.isLiked === true;
+      });
+      setLikes(likesMap);
+      
     } catch (e) {
       setError(String(e.message || e));
     } finally {
@@ -95,6 +118,22 @@ export default function PlaylistPage() {
     }
   }
 
+  async function handleToggleLike(songId) {
+    try {
+      const { isLiked } = await toggleLike(songId);
+      setLikes((prev) => ({
+        ...prev,
+        [songId]: isLiked,
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  }
+
+  function toggleDeleteModal() {
+    setShowDelete(!showDelete);
+  }
+
   if (loading || error || !playlist) {
     return (
       <>
@@ -128,6 +167,7 @@ export default function PlaylistPage() {
   const isLikedPlaylist = playlist.playlistName === "Your Liked Playlist";
 
   const canEdit =(playlist.isOwner || playlist.isCollaborator) && !isLikedPlaylist;
+  const canDelete = playlist.isOwner && !isLikedPlaylist;
 
   return (
     <>
@@ -154,10 +194,7 @@ export default function PlaylistPage() {
 
                 <div className={styles.metaRow}>
                   <span>
-                    Access: <strong>{playlist.access}</strong>
-                  </span>
-                  <span>
-                    • Owner:{" "}
+                    Owner:{" "}
                     <strong>
                       {playlist.ownerDisplayName ?? `User #${playlist.userId}`}
                     </strong>
@@ -189,14 +226,17 @@ export default function PlaylistPage() {
                   <AddSongModal
                     isOpen={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSelect={(song) => {
+                    existingSongIds={playlist.songs?.map(s => s.songId) || []}
+                    onSelect={async (song) => {
                       // reuse existing addSongToPlaylist flow
-                      addSongToPlaylist(playlistId, song.songId)
-                        .then((data) => {
-                          setPlaylist(data);
-                          setShowAddModal(false);
-                        })
-                        .catch((e) => setError(String(e.message || e)));
+                      try {
+                        const data = await addSongToPlaylist(playlistId, song.songId);
+                        setPlaylist(data);
+                        // Don't close modal - let user add more songs
+                      } catch (e) {
+                        // Re-throw to let modal handle the error
+                        throw e;
+                      }
                     }}
                   />
                 )}
@@ -204,6 +244,8 @@ export default function PlaylistPage() {
                   <AddUserModal
                     isOpen={showAddUser}
                     onClose={() => setShowAddUser(false)}
+                    collaborators={playlist.collaborators || []}
+                    ownerName={playlist.ownerDisplayName}
                     onAdd={async (username) => {
                       try {
                         const { addCollaboratorToPlaylist } = await import(
@@ -212,6 +254,21 @@ export default function PlaylistPage() {
                         const data = await addCollaboratorToPlaylist(
                           playlistId,
                           username
+                        );
+                        setPlaylist(data);
+                      } catch (err) {
+                        console.warn(err);
+                        return Promise.reject(err);
+                      }
+                    }}
+                    onRemove={async (collaboratorUserId) => {
+                      try {
+                        const { removeCollaboratorFromPlaylist } = await import(
+                          "../lib/playlistPageApi.js"
+                        );
+                        const data = await removeCollaboratorFromPlaylist(
+                          playlistId,
+                          collaboratorUserId
                         );
                         setPlaylist(data);
                       } catch (err) {
@@ -236,6 +293,7 @@ export default function PlaylistPage() {
               ) : (
                 <>
                   <div className={styles.songsHeaderRow}>
+                    <div className={styles.colLike}></div>
                     <div className={styles.colIndex}>#</div>
                     <div className={styles.colAlbumArt}></div>
                     <div className={styles.colTitle}>Title</div>
@@ -260,6 +318,21 @@ export default function PlaylistPage() {
                           }
                           className={`${styles.songRow} ${styles.songRowGrid}`}
                         >
+                          {/* like button */}
+                          <div className={styles.colLike}>
+                            <button
+                              className={styles.likeButton}
+                              onClick={() => handleToggleLike(s.songId)}
+                              aria-label={
+                                likes[s.songId]
+                                  ? "Unlike this song"
+                                  : "Like this song"
+                              }
+                            >
+                              {likes[s.songId] ? "♥" : "♡"}
+                            </button>
+                          </div>
+
                           {/* track number */}
                           <div className={styles.colIndex}>{i + 1}</div>
 
@@ -317,6 +390,14 @@ export default function PlaylistPage() {
             </section>
           </div>
         </div>
+        {canDelete && (
+          <DeleteButton
+            strwhattodelete="playlist"
+            api={`${API}/api/playlist/${playlistId}`}
+            state={showDelete}
+            clickFunction={toggleDeleteModal}
+          />
+        )}
       </div>
     </>
   );

@@ -12,6 +12,7 @@ export default function ArtistAlbum() {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+  const [artistName, setArtistName] = useState("Artist");
 
   useEffect(() => {
     if (!id) return;
@@ -47,23 +48,23 @@ export default function ArtistAlbum() {
     })();
   }, [id]);
 
-  //display
-  const artistDisplay = useMemo(() => {
-    for (const a of albums) {
-      const hit = Array.isArray(a.artists)
-        ? a.artists.find((x) => String(x.musicianId) === String(id))
-        : null;
-      if (hit?.artistName) return hit.artistName;
-    }
-    if (
-      albums.length &&
-      Array.isArray(albums[0].artists) &&
-      albums[0].artists.length === 1
-    ) {
-      return albums[0].artists[0].artistName || "Artist";
-    }
-    return "Artist";
-  }, [albums, id]);
+  useEffect(() => {
+    if (!id) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/musician/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setArtistName(data.musicianName || "Artist");
+        }
+      } catch (e) {
+        console.warn("Failed to load musician name", e);
+      }
+    })();
+  }, [id]);
+
+  const artistDisplay = artistName;
 
   return (
     <>

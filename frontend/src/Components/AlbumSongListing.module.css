@@ -1,6 +1,6 @@
 .songItem {
   display: grid;
-  grid-template-columns: 60px 60px 2fr 1.3fr 0.8fr 50px;
+  grid-template-columns: 60px 60px 2fr 1.3fr 1fr 0.8fr 0.8fr 50px;
   gap: 20px;
   padding: 16px 20px;
   border-radius: 8px;
@@ -31,6 +31,19 @@
   /* color: #b0b0b0; */
   font-size: 14px;
   text-align: left;
+}
+
+.songGenres {
+  /* color: #b0b0b0; */
+  font-size: 14px;
+  text-align: left;
+}
+
+.songDuration {
+  /* color: #a0a0a0; */
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
 }
 
 .songStreams {
@@ -81,18 +94,20 @@
 
 @media (max-width: 1024px) {
   .songItem {
-    grid-template-columns: 50px 1fr 120px;
+    grid-template-columns: 50px 50px 1fr 100px 80px;
     gap: 12px;
   }
 
-  .songArtists {
+  .songArtists,
+  .songGenres,
+  .reportButtonContainer {
     display: none;
   }
 }
 
 @media (max-width: 640px) {
   .songItem {
-    grid-template-columns: 40px 1fr 100px;
+    grid-template-columns: 40px 40px 1fr 80px;
     gap: 8px;
     padding: 12px;
   }
@@ -105,7 +120,14 @@
     font-size: 14px;
   }
 
+  .songDuration,
   .songStreams {
     font-size: 13px;
+  }
+
+  .songArtists,
+  .songGenres,
+  .reportButtonContainer {
+    display: none;
   }
 }

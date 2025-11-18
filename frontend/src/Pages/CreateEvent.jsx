@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import styles from "./CreateEvent.module.css";
 import Topnav from "../Components/Topnav";
 import API from "../lib/api";
@@ -11,8 +12,10 @@ async function jsonOrText(res) {
 }
 
 export default function CreateEvent() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+  const [location, setLocation] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [price, setPrice] = useState("");
 
@@ -93,12 +96,7 @@ export default function CreateEvent() {
     }
   }
 
-  const titleOk = title.trim().length > 0;
-  const descOk = desc.trim().length > 0;
-  const timeOk = eventTime.trim().length > 0;
-  const priceOk = !Number.isNaN(Number(price)) && String(price).trim() !== "";
-  const picOk = /^\d+$/.test(String(eventPictureFileId).trim());
-  const canSubmit = titleOk && descOk && timeOk && priceOk && picOk && !uploading;
+  // Remove the old canSubmit logic - button will always be clickable unless uploading/submitting
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -107,8 +105,48 @@ export default function CreateEvent() {
     setMsg(null);
 
     try {
-      if (!picOk) {
-        setErr("Please upload an image before creating the event.");
+      // Validate all required fields and show specific error messages
+      if (title.trim().length === 0) {
+        setErr("Title is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      if (location.trim().length === 0) {
+        setErr("Event Location is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      if (desc.trim().length === 0) {
+        setErr("Description is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      if (eventTime.trim().length === 0) {
+        setErr("Date is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      if (Number.isNaN(Number(price)) || String(price).trim() === "") {
+        setErr("Price is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      if (!/^\d+$/.test(String(eventPictureFileId).trim())) {
+        setErr("Image is Required");
+        setSubmitting(false);
+        return;
+      }
+
+      // Check if event date is in the past
+      const eventDate = new Date(eventTime);
+      const now = new Date();
+      if (eventDate <= now) {
+        setErr("Event date and time must be in the future.");
         setSubmitting(false);
         return;
       }
@@ -118,6 +156,7 @@ export default function CreateEvent() {
       const payload = {
         title: title.trim(),
         eventDescription: desc.trim(),
+        eventLocation: location.trim(),
         eventPictureFileId: Number(eventPictureFileId),
         eventTime: iso,
         ticketPrice: Number(price),
@@ -137,7 +176,20 @@ export default function CreateEvent() {
         throw new Error(message);
       }
 
+      // Extract the event ID from the response
+      let eventId = null;
+      if (body && typeof body === "object") {
+        eventId = body.eventId || body.EventId || null;
+      }
+
       setMsg("Event created ✅");
+
+      // Redirect to the event page if we got an ID
+      if (eventId) {
+        setTimeout(() => {
+          navigate(`/event/${eventId}`);
+        }, 500);
+      }
 
     } catch (e) {
       setErr(e.message || String(e));
@@ -196,6 +248,7 @@ export default function CreateEvent() {
               type="datetime-local"
               value={eventTime}
               onChange={(e) => setEventTime(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
               className={styles.eventTextInput}
             />
 
@@ -207,6 +260,16 @@ export default function CreateEvent() {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="0.00"
+              className={styles.eventTextInput}
+            />
+
+            {/* Event Location */}
+            <h3 style={{ marginTop: 24 }}>Event Location</h3>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter event location"
               className={styles.eventTextInput}
             />
 
@@ -235,7 +298,7 @@ export default function CreateEvent() {
             <div style={{ marginTop: 24 }}>
               <button
                 type="submit"
-                disabled={!canSubmit || submitting || uploading}
+                disabled={submitting || uploading}
                 className={styles.submitButton ?? ""}
               >
                 {submitting ? "Creating..." : "Create Event"}

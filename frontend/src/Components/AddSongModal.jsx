@@ -3,13 +3,15 @@ import API from "../lib/api";
 import styles from "./AddSongModal.module.css";
 import albumArtPlaceholder from "../assets/graphics/albumartplaceholder.png";
 
-export default function AddSongModal({ isOpen, onClose, onSelect }) {
+export default function AddSongModal({ isOpen, onClose, onSelect, existingSongIds = [] }) {
   const [query, setQuery] = useState("");
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const debounceRef = useRef(null);
-  const [artCache, setArtCache] = useState({}); 
+  const [artCache, setArtCache] = useState({});
+  const [addingStatus, setAddingStatus] = useState({}); // { songId: 'adding' | 'added' | 'error' }
+  const [statusMessages, setStatusMessages] = useState({}); // { songId: 'message' }
 
   const effectiveQuery = useMemo(() => query.trim(), [query]);
 
@@ -21,7 +23,7 @@ export default function AddSongModal({ isOpen, onClose, onSelect }) {
         setLoading(true);
         setError("");
         const url = new URL(`${API}/api/song/list`);
-        url.searchParams.set("limit", "50");
+        url.searchParams.set("limit", "5");
         const res = await fetch(url.toString(), { credentials: "include" });
         if (!res.ok) throw new Error(`Failed to load songs (${res.status})`);
         const data = await res.json();
@@ -45,7 +47,7 @@ export default function AddSongModal({ isOpen, onClose, onSelect }) {
         setError("");
         const url = new URL(`${API}/api/song/list`);
         if (effectiveQuery) url.searchParams.set("q", effectiveQuery);
-        url.searchParams.set("limit", "50");
+        url.searchParams.set("limit", "5");
         const res = await fetch(url.toString(), { credentials: "include" });
         if (!res.ok) throw new Error(`Failed to load songs (${res.status})`);
         const data = await res.json();
@@ -109,11 +111,76 @@ export default function AddSongModal({ isOpen, onClose, onSelect }) {
           )}
           {!loading && songs.map(s => {
             const imgSrc = s.albumArtId && artCache[s.albumArtId] ? artCache[s.albumArtId] : albumArtPlaceholder;
+            const isAlreadyInPlaylist = existingSongIds.includes(s.songId);
+            const status = addingStatus[s.songId];
+            const statusMsg = statusMessages[s.songId];
+            
+            const handleAdd = async () => {
+              if (isAlreadyInPlaylist) {
+                setStatusMessages(prev => ({ ...prev, [s.songId]: "Song already added" }));
+                setTimeout(() => {
+                  setStatusMessages(prev => {
+                    const next = { ...prev };
+                    delete next[s.songId];
+                    return next;
+                  });
+                }, 2000);
+                return;
+              }
+
+              if (status === 'adding') return; // Prevent double-click
+
+              setAddingStatus(prev => ({ ...prev, [s.songId]: 'adding' }));
+              setStatusMessages(prev => ({ ...prev, [s.songId]: "Adding..." }));
+
+              try {
+                await onSelect?.(s);
+                setAddingStatus(prev => ({ ...prev, [s.songId]: 'added' }));
+                setStatusMessages(prev => ({ ...prev, [s.songId]: "Song Added ✓" }));
+                
+                // Clear status after 2 seconds
+                setTimeout(() => {
+                  setAddingStatus(prev => {
+                    const next = { ...prev };
+                    delete next[s.songId];
+                    return next;
+                  });
+                  setStatusMessages(prev => {
+                    const next = { ...prev };
+                    delete next[s.songId];
+                    return next;
+                  });
+                }, 2000);
+              } catch (err) {
+                setAddingStatus(prev => ({ ...prev, [s.songId]: 'error' }));
+                const errorMsg = err?.message || String(err);
+                setStatusMessages(prev => ({ 
+                  ...prev, 
+                  [s.songId]: errorMsg.includes("already") ? "Song already added" : "Error adding song" 
+                }));
+                
+                // Clear error after 3 seconds
+                setTimeout(() => {
+                  setAddingStatus(prev => {
+                    const next = { ...prev };
+                    delete next[s.songId];
+                    return next;
+                  });
+                  setStatusMessages(prev => {
+                    const next = { ...prev };
+                    delete next[s.songId];
+                    return next;
+                  });
+                }, 3000);
+              }
+            };
+
             return (
               <button
                 key={s.songId}
-                className={styles.rowButton}
-                onClick={() => onSelect?.(s)}
+                className={`${styles.rowButton} ${status === 'added' ? styles.added : ''} ${isAlreadyInPlaylist ? styles.alreadyAdded : ''}`}
+                onClick={handleAdd}
+                disabled={status === 'adding'}
               >
                 <div className={styles.rowLeft}>
                   <img src={imgSrc} alt="cover" className={styles.thumb} />
@@ -126,7 +193,15 @@ export default function AddSongModal({ isOpen, onClose, onSelect }) {
                 </div>
                 <div className={styles.colRight}>
                   <span className={styles.duration}>{formatDuration(s.duration)}</span>
-                  <span className={styles.plus}>Add ➕</span>
+                  {statusMsg ? (
+                    <span className={`${styles.statusMsg} ${status === 'added' ? styles.success : ''} ${isAlreadyInPlaylist || status === 'error' ? styles.errorMsg : ''}`}>
+                      {statusMsg}
+                    </span>
+                  ) : (
+                    <span className={styles.plus}>
+                      {isAlreadyInPlaylist ? "Already Added" : "Add ➕"}
+                    </span>
+                  )}
                 </div>
               </button>
             );

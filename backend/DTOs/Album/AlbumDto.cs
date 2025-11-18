@@ -24,6 +24,8 @@ namespace backend.DTOs.Album
         public ulong AlbumOrSongArtFileId { get; set; }
 
         public byte[]? AlbumArtImage { get; set; }
+
+        public ulong CreatedBy { get; set; }
     }
 
     public class ArtistInfo

@@ -137,6 +137,24 @@
   border-color: rgba(255, 80, 80, 0.4);
 }
 
+/* === Current User Artist (Non-removable) === */
+.current-user-artist {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: rgba(200, 200, 200, 0.6) !important;
+  font-size: 14px;
+  cursor: default !important;
+}
+
+.current-user-artist:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  text-decoration: none !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(200, 200, 200, 0.6) !important;
+}
+
 /* === Songs List Container === */
 #songs-list {
   margin-top: 60px;
@@ -183,6 +201,45 @@
 
 .songs-list-entry:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.song-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.song-entry-header h2 {
+  font-size: 20pt;
+  font-weight: 600;
+  margin: 0;
+}
+
+.delete-song-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.delete-song-button:hover {
+  background: rgba(255, 80, 80, 0.2);
+  border-color: rgba(255, 80, 80, 0.4);
+  color: #ff6b6b;
+  transform: scale(1.05);
+}
+
+.delete-song-button:active {
+  transform: scale(0.95);
 }
 
 .songs-list-entry h2 {

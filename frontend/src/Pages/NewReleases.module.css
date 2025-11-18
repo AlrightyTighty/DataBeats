@@ -14,13 +14,13 @@
   min-height: 100vh;
   padding: 120px 0 90px;
   color: var(--text);
-  background: radial-gradient(
+  /*background: radial-gradient(
       1200px 600px at 20% -10%,
       #1a48c2 0%,
       transparent 60%
     ),
     radial-gradient(900px 500px at 120% 10%, #3b9ad6 0%, transparent 55%),
-    linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 48%, var(--bg3) 100%);
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 48%, var(--bg3) 100%);*/
 }
 
 .container {

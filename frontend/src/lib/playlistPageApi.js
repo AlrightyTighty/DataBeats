@@ -11,8 +11,13 @@ function normalizeErr(body) {
   return body?.error || body?.message || JSON.stringify(body);
 }
 
-export async function getPlaylistPage(playlistId) {
-  const res = await fetch(`${API}/api/playlistpage/${playlistId}`, {
+export async function getPlaylistPage(playlistId, includeAlbumArt = true, includeLikeStatuses = true) {
+  const params = new URLSearchParams();
+  if (includeAlbumArt) params.append('includeAlbumArt', 'true');
+  if (includeLikeStatuses) params.append('includeLikeStatuses', 'true');
+  
+  const url = `${API}/api/playlistpage/${playlistId}?${params.toString()}`;
+  const res = await fetch(url, {
     credentials: "include",
   });
   if (!res.ok) throw new Error(normalizeErr(await jsonOrText(res)));
@@ -45,6 +50,15 @@ export async function addCollaboratorToPlaylist(playlistId, username) {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ username }),
+  });
+  if (!res.ok) throw new Error(normalizeErr(await jsonOrText(res)));
+  return res.json();
+}
+
+export async function removeCollaboratorFromPlaylist(playlistId, collaboratorUserId) {
+  const res = await fetch(`${API}/api/playlistpage/${playlistId}/collaborators/${collaboratorUserId}`, {
+    method: "DELETE",
+    credentials: "include",
   });
   if (!res.ok) throw new Error(normalizeErr(await jsonOrText(res)));
   return res.json();

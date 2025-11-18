@@ -13,11 +13,17 @@
 }
 
 .h1 {
-  font-weight: normal;
+  font-weight: 600;
+  font-size: 48px;
+  letter-spacing: -1px;
 }
 
 .h2 {
-  font-weight: normal;
+  font-weight: 600;
+  font-size: 20px;
+  color: #d5cfcf;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 #playlist-art-select {
@@ -191,4 +197,32 @@
 
 .track-file-input::file-selector-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+.submit-button {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+  color: #fff;
+  font-size: 16pt;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled,
+.submit-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+  pointer-events: none;
 }

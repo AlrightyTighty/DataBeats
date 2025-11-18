@@ -6,6 +6,7 @@ using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -14,14 +15,100 @@ namespace backend.Controllers
     [ApiController]
     public class MusicianController : ControllerBase
     {
+        // GET /api/musician/all?includeImageData=true
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllMusiciansAsync([FromQuery] bool includeImageData = false)
+        {
+            var query = _context.Musicians.Where(m => m.TimestampDeleted == null);
+            var musicians = await query.ToListAsync();
+            var cutoff = DateTime.UtcNow.AddDays(-30);
+            
+            if (!includeImageData)
+            {
+                var result = new List<object>();
+                foreach (var m in musicians)
+                {
+                    var monthlyListeners = await _context.UserListensToSongs
+                        .AsNoTracking()
+                        .Where(r => r.TimeListened >= cutoff)
+                        .Where(r =>
+                            r.Song.CreatedBy == m.MusicianId
+                            || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == m.MusicianId)
+                        )
+                        .Select(r => r.UserId)
+                        .Distinct()
+                        .CountAsync();
+                    
+                    result.Add(new
+                    {
+                        m.MusicianId,
+                        m.MusicianName,
+                        m.ProfilePictureFileId,
+                        m.FollowerCount,
+                        MonthlyListenerCount = monthlyListeners,
+                        m.IsVerified,
+                    });
+                }
+                return Ok(result.ToArray());
+            }
+            var withImages = new List<object>(musicians.Count);
+            foreach (var m in musicians)
+            {
+                var monthlyListeners = await _context.UserListensToSongs
+                    .AsNoTracking()
+                    .Where(r => r.TimeListened >= cutoff)
+                    .Where(r =>
+                        r.Song.CreatedBy == m.MusicianId
+                        || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == m.MusicianId)
+                    )
+                    .Select(r => r.UserId)
+                    .Distinct()
+                    .CountAsync();
+                
+                var file = await _context.ProfilePictureFiles.FindAsync(m.ProfilePictureFileId);
+                withImages.Add(new
+                {
+                    m.MusicianId,
+                    m.MusicianName,
+                    m.ProfilePictureFileId,
+                    m.FollowerCount,
+                    MonthlyListenerCount = monthlyListeners,
+                    m.IsVerified,
+                    profilePictureImage = file != null ? Convert.ToBase64String(file.FileData) : null,
+                    fileExtension = file?.FileExtension
+                });
+            }
+            return Ok(withImages.ToArray());
+        }
+        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMusicianAsync([FromRoute] ulong id)
         {
-            Musician? musician = await _context.Musicians.FindAsync(id);
+            var musician = await _context.Musicians
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.MusicianId == id && m.TimestampDeleted == null);
+
             if (musician == null)
                 return NotFound();
 
-            return Ok(musician.ToDto());
+            var cutoff = DateTime.UtcNow.AddDays(-30);
+
+            var monthlyListeners = await _context.UserListensToSongs
+                .AsNoTracking()
+                .Where(r => r.TimeListened >= cutoff)
+                .Where(r =>
+                    r.Song.CreatedBy == id
+                    || r.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == id)
+                )
+                .Select(r => r.UserId)
+                .Distinct()
+                .CountAsync();
+
+            var dto = musician.ToDto();
+            dto.MonthlyListenerCount = monthlyListeners;
+
+            return Ok(dto);
         }
         
         private ApplicationDBContext _context;

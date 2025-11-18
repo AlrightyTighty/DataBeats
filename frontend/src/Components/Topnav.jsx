@@ -3,9 +3,9 @@ import styles from "./Topnav.module.css";
 import { appLogo } from "../App";
 import { Link } from "react-router";
 import Searchbar from "./Searchbar";
+import AppLogo from "../assets/graphics/DataBeats_Logo.png";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
-
 const Topnav = () => {
   const [accountPath, setAccountPath] = useState("/login");
 
@@ -16,7 +16,7 @@ const Topnav = () => {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
         if (!r.ok) return;
         const me = await r.json();
-        if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
+        if (!dead && me?.userId) setAccountPath(`/me/${userId}`);
       } catch {}
     })();
     return () => {
@@ -27,7 +27,7 @@ const Topnav = () => {
   return (
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
-        <img className={styles["app-logo"]} src={appLogo} />
+        <img className={styles["app-logo"]} src={AppLogo} />
         <Link className={styles["link"]} to="/authtest">
           Dashboard
         </Link>

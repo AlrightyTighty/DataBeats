@@ -2,83 +2,44 @@ import { AlbumSongListing } from "../Components/AlbumSongListing.jsx";
 import styles from "./Album.module.css";
 import API from "../lib/api.js";
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav.jsx";
 import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
+import { usePlaybar } from "../contexts/PlaybarContext.jsx";
+import useAuthentication from "../hooks/useAuthentication";
 
-const albumData = {
-  title: "Midnight Echoes",
-  artists: ["Luna Rivera", "The Midnight Collective"],
-  type: "LP",
-  description: "A mesmerizing journey through ambient soundscapes and ethereal melodies. This album explores themes of solitude, reflection, and the beauty found in darkness.",
-  coverImage: "https://images.unsplash.com/photo-1612057345557-26de85152c58?w=800&q=80",
-  songs: [
-    {
-      id: 1,
-      name: "Nocturnal Whispers",
-      artists: ["Luna Rivera"],
-      streams: 2847392,
-    },
-    {
-      id: 2,
-      name: "Dancing in Shadows",
-      artists: ["Luna Rivera", "The Midnight Collective"],
-      streams: 4521876,
-    },
-    {
-      id: 3,
-      name: "Velvet Dreams",
-      artists: ["Luna Rivera", "Echo Smith"],
-      streams: 3294817,
-    },
-    {
-      id: 4,
-      name: "Starlit Memories",
-      artists: ["Luna Rivera"],
-      streams: 5839274,
-    },
-    {
-      id: 5,
-      name: "Silent Reflections",
-      artists: ["The Midnight Collective"],
-      streams: 1923847,
-    },
-    {
-      id: 6,
-      name: "Ethereal Nights",
-      artists: ["Luna Rivera", "The Midnight Collective"],
-      streams: 4192736,
-    },
-    {
-      id: 7,
-      name: "Moonlit Serenade",
-      artists: ["Luna Rivera", "Aria Rose"],
-      streams: 6482913,
-    },
-    {
-      id: 8,
-      name: "Echoes of Tomorrow",
-      artists: ["Luna Rivera"],
-      streams: 3764829,
-    },
-    {
-      id: 9,
-      name: "Midnight Waltz",
-      artists: ["Luna Rivera", "The Midnight Collective", "Echo Smith"],
-      streams: 5192847,
-    },
-    {
-      id: 10,
-      name: "Dawn's Embrace",
-      artists: ["Luna Rivera"],
-      streams: 7293847,
-    },
-  ],
-};
+const Album = () => {
+  const { setPlaybarState } = usePlaybar();
+  const navigate = useNavigate();
+  const user = useAuthentication();
 
-const Album = ({ setPlaybarState }) => {
-  const formatArtists = (artists) => {
-    return artists.map((artist) => artist.artistName).join(", ");
+  const renderClickableArtists = (artists) => {
+    if (!artists || artists.length === 0) return "Unknown Artist";
+    
+    return artists.map((artist, index) => (
+      <span key={artist.musicianId || index}>
+        <button
+          type="button"
+          onClick={() => navigate(`/artist/${artist.musicianId}`)}
+          className={styles.artistLink}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'inherit',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            font: 'inherit',
+            transition: 'text-decoration 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+          onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+        >
+          {artist.artistName}
+        </button>
+        {index < artists.length - 1 && ", "}
+      </span>
+    ));
   };
 
   const [albumData, setAlbumData] = useState({
@@ -88,6 +49,7 @@ const Album = ({ setPlaybarState }) => {
     description: null,
     coverImage: null,
     songs: [],
+    createdBy: null,
   });
 
   const [likes, setLikes] = useState({}); // { songId: true/false }
@@ -101,7 +63,9 @@ const Album = ({ setPlaybarState }) => {
 
     isLoading.current = true;
     (async () => {
-      const albumInfoResponse = await fetch(`${API}/api/album/${id}?includeImageData=true`);
+      const albumInfoResponse = await fetch(
+        `${API}/api/album/${id}?includeImageData=true`
+      );
       const albumInfo = await albumInfoResponse.json();
 
       const songInfoResponse = await fetch(`${API}/api/album/songs/${id}`);
@@ -111,7 +75,6 @@ const Album = ({ setPlaybarState }) => {
       console.log(albumInfo);
       setAlbumData(albumInfo);
 
-      // Initialize like states for the songs on this album
       try {
         const songIds = (songInfo || []).map((s) => s.songId);
         const likedSet = await getLikeStatuses(songIds);
@@ -144,13 +107,27 @@ const Album = ({ setPlaybarState }) => {
       <div className={styles.container}>
         <div className={styles.albumHeader}>
           <div className={styles.albumCover}>
-            <img src={`data:image/png;base64,${albumData.albumArtImage}`} alt={albumData.albumTitle} className={styles.coverImage} />
+            <img
+              src={`data:image/png;base64,${albumData.albumArtImage}`}
+              alt={albumData.albumTitle}
+              className={styles.coverImage}
+            />
           </div>
 
           <div className={styles.albumInfo}>
             <div className={styles.albumType}>{albumData.albumType}</div>
             <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
-            <div className={styles.albumArtists}>{formatArtists(albumData.artists)}</div>
+            <div className={styles.albumArtists}>
+              {renderClickableArtists(albumData.artists)}
+            </div>
+            {user && user.musicianId === albumData.createdBy && (
+              <button
+                className={styles.editButton}
+                onClick={() => navigate(`/editalbum/${id}`)}
+              >
+                Edit Album
+              </button>
+            )}
           </div>
         </div>
 
@@ -160,6 +137,8 @@ const Album = ({ setPlaybarState }) => {
             <div className={styles.headerNumber}>#</div>
             <div className={styles.headerTitle}>Title</div>
             <div className={styles.headerArtists}>Artists</div>
+            <div className={styles.headerGenre}>Genre</div>
+            <div className={styles.headerDuration}>Duration</div>
             <div className={styles.headerStreams}>Streams</div>
             <div className={styles.headerReport}></div> {/* report column */}
           </div>
@@ -171,9 +150,11 @@ const Album = ({ setPlaybarState }) => {
               number={index + 1}
               name={song.songName}
               artists={song.artistNames}
+              genres={song.genres}
+              duration={song.duration}
               streams={song.streams}
               id={song.songId}
-              songs={albumData.songs.map((song) => song.songId)}
+              albumId={id}
               isLiked={!!likes[song.songId]}
               onToggleLike={handleToggleLike}
             />

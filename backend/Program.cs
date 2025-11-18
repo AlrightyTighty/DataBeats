@@ -128,6 +128,11 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/playlistpag
     appBuilder.UseMiddleware<AuthenticationHandler>();
 });
 
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/likes"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+});
+
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/event/file") && (context.Request.Method == "POST" || context.Request.Method == "PUT" || context.Request.Method == "DELETE"), appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();

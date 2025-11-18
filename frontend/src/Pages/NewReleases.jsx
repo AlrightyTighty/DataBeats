@@ -16,11 +16,47 @@ export default function NewReleases() {
       try {
         setErr(null);
         setLoading(true);
-        const res = await fetch(`${API}/api/album/new`);
-        if (!res.ok)
-          throw new Error(`GET /api/album/new failed (${res.status})`);
+
+        const res = await fetch(`${API}/api/album`);
+        if (!res.ok) {
+          throw new Error(`GET /api/album failed (${res.status})`);
+        }
+
         const data = await res.json();
-        setAlbums(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+
+        const now = new Date();
+        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // last 30 days
+
+        const recent = list
+          .filter((a) => {
+            const raw =
+              a.releaseDate ??
+              a.ReleaseDate ??
+              a.timestampReleased ??
+              a.TimestampReleased ??
+              null;
+            if (!raw) return false;
+            const d = new Date(raw);
+            return d >= cutoff && d <= now;
+          })
+          .sort((a, b) => {
+            const ra =
+              a.releaseDate ??
+              a.ReleaseDate ??
+              a.timestampReleased ??
+              a.TimestampReleased ??
+              null;
+            const rb =
+              b.releaseDate ??
+              b.ReleaseDate ??
+              b.timestampReleased ??
+              b.TimestampReleased ??
+              null;
+            return new Date(rb) - new Date(ra); // latest to oldest
+          });
+
+        setAlbums(recent);
       } catch (e) {
         setErr(e.message || String(e));
         setAlbums([]);
@@ -38,42 +74,58 @@ export default function NewReleases() {
           <h1>New Releases</h1>
 
           {err && <div style={{ opacity: 0.85 }}>{err}</div>}
+
           {loading ? (
             <p>Loading...</p>
           ) : albums.length === 0 ? (
-            <p>No new releases found.</p>
+            <p>No new releases found in the last 30 days.</p>
           ) : (
             <div className={styles.grid}>
               {albums.map((a) => {
-                const coverSrc = a.albumOrSongArtFileId
-                  ? `${API}/api/art/view/${a.albumOrSongArtFileId}`
+                const albumId = a.albumId ?? a.AlbumId;
+                const albumTitle = a.albumTitle ?? a.AlbumTitle;
+
+                const coverId =
+                  a.albumOrSongArtFileId ?? a.AlbumOrSongArtFileId ?? null;
+                const coverSrc = coverId
+                  ? `${API}/api/art/view/${coverId}`
                   : null;
 
-                const dateStr = a.releaseDate
-                  ? new Date(a.releaseDate).toLocaleDateString(undefined, {
+                const rawDate =
+                  a.releaseDate ??
+                  a.ReleaseDate ??
+                  a.timestampReleased ??
+                  a.TimestampReleased ??
+                  null;
+
+                const dateStr = rawDate
+                  ? new Date(rawDate).toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
                     })
                   : "—";
 
+                const rawArtists = a.artists ?? a.Artists ?? [];
                 const artistLine =
-                  Array.isArray(a.artists) && a.artists.length > 0
-                    ? a.artists.map((x) => x.artistName).join(", ")
+                  Array.isArray(rawArtists) && rawArtists.length > 0
+                    ? rawArtists
+                        .map((x) => x.artistName ?? x.ArtistName)
+                        .join(", ")
                     : "Unknown Artist";
 
                 return (
                   <button
-                    key={a.albumId}
+                    key={albumId}
                     type="button"
                     className={styles.card}
-                    title={a.albumTitle}
-                    onClick={() => navigate(`/album/${a.albumId}`)}
+                    title={albumTitle}
+                    onClick={() => navigate(`/album/${albumId}`)}
                   >
                     {coverSrc ? (
                       <img
                         src={coverSrc}
-                        alt={a.albumTitle}
+                        alt={albumTitle}
                         className={styles.cover}
                         loading="lazy"
                       />
@@ -82,7 +134,7 @@ export default function NewReleases() {
                     )}
 
                     <div className={styles.text}>
-                      <h3>{a.albumTitle}</h3>
+                      <h3>{albumTitle}</h3>
                       <p>
                         {artistLine} • {dateStr}
                       </p>

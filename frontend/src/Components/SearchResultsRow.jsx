@@ -7,7 +7,14 @@ export default function SearchResultsRow({ title, items, type }) {
       <h2 className={styles.title}>{title}</h2>
       <div className={styles.scrollContainer}>
         {items.map((item) => (
-          <SearchResultCard key={item.id} image={item.image} title={item.title} subtitle={item.subtitle} type={type} />
+          <SearchResultCard
+            key={item.id}
+            image={item.image}
+            title={item.title}
+            subtitle={item.subtitle}
+            type={type}
+            id={item.id}
+          />
         ))}
       </div>
     </div>

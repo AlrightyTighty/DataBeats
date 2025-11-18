@@ -31,6 +31,8 @@ namespace backend.DTOs.PlaylistPage
         public string? ArtistName { get; set; }
         public string? AlbumName { get; set; }
         public ulong? AlbumArtFileId { get; set; }
+        public string? AlbumArtDataUrl { get; set; }  // Base64 data URL for album art
+        public bool? IsLiked { get; set; }  // Whether current user has liked this song
         public string? Duration { get; set; }
         public DateTime TimeAddedUtc { get; set; }
         public ulong? PlaylistEntryId { get; set; }

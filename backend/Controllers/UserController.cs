@@ -20,7 +20,7 @@ namespace backend.Controllers
         private readonly ApplicationDBContext _context;
 
         private const string LikedPlaylistName = "Your Liked Playlist";
-        private const ulong DefaultPlaylistPictureFileId = 1; //should be changed later after we have a proper default image
+        private const ulong DefaultPlaylistPictureFileId = 31; //should be changed later after we have a proper default image
         public UserController(ApplicationDBContext context)
         {
             _context = context;

@@ -31,7 +31,7 @@ namespace backend.Mappers
                 SongId = songModel.SongId,
                 SongName = songModel.SongName,
                 Lyrics = songModel.Lyrics,
-                SongFileId = songModel.SongId,
+                SongFileId = songModel.SongFileId,
                 Streams = songModel.Streams,
                 Duration = songModel.Duration,
                 AlbumId = songModel.AlbumId,
@@ -39,7 +39,8 @@ namespace backend.Mappers
                 CreatorId = songModel.CreatedBy,
                 ArtistIds = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.MusicianId).ToArray(),
                 ArtistNames = songModel.MusicianWorksOnSongs.Select(worksOn => worksOn.Musician.MusicianName).ToArray(),
-                AlbumArtId = albumArtId
+                AlbumArtId = albumArtId,
+                Genres = songModel.SongGenres.Select(sg => sg.Genre).ToArray()
             };
         }
     }

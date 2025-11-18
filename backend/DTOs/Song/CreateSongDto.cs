@@ -12,5 +12,9 @@ namespace backend.DTOs.Song
         public string? Lyrics { get; set; }
 
         public ulong SongFileId { get; set; }
+
+        public string[] ArtistNames { get; set; } = [];
+
+        public string[] Genres { get; set; } = [];
     }
 }

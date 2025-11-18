@@ -17,7 +17,7 @@ namespace backend.Controllers
 
         private const string LikedPlaylistName = "Your Liked Playlist";
 
-        private const ulong DefaultPlaylistPictureFileId = 1; //should be changed later after we have a proper default image
+        private const ulong DefaultPlaylistPictureFileId = 31; //should be changed later after we have a proper default image
 
         public LikedSongsController(ApplicationDBContext context)
         {
@@ -26,8 +26,14 @@ namespace backend.Controllers
 
         private ulong GetUserIdFromHeader()
         {
-
-            return ulong.Parse(Request.Headers["X-UserId"]!);
+            var userIdHeader = Request.Headers["X-UserId"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(userIdHeader))
+            {
+                Console.WriteLine("[LikedSongsController] X-UserId header is missing or empty");
+                Console.WriteLine($"[LikedSongsController] Available headers: {string.Join(", ", Request.Headers.Keys)}");
+                throw new UnauthorizedAccessException("User ID header is missing. Please authenticate.");
+            }
+            return ulong.Parse(userIdHeader);
         }
 
         private async Task<Playlist> GetOrCreateLikedPlaylistAsync(ulong userId)

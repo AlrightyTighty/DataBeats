@@ -66,7 +66,7 @@ const CreatePlaylist = () => {
   };
 
   const uploadPlaylist = async () => {
-  setCreateError("");
+    setCreateError("");
     if (creating) return;
     const info = playlistInfo.current;
     if (!info.playlistTitle.trim()) {
@@ -82,7 +82,7 @@ const CreatePlaylist = () => {
           PlaylistName: info.playlistTitle,
           PlaylistPictureId: info.playlistArtFileId || 0,
           PlaylistDescription: info.playlistDescription,
-          Access: "private",
+          Access: "public",
         }),
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,6 @@ const CreatePlaylist = () => {
         const txt = await response.text();
         throw new Error(txt || `Create failed (${response.status})`);
       }
-  
     } catch (err) {
       setCreateError(err.message);
     } finally {
@@ -137,9 +136,15 @@ const CreatePlaylist = () => {
           <textarea className={styles["lyric-area"]} onChange={(event) => editPlaylistInfo("playlistDescription", event)} />
         </div>
 
-        <button onClick={uploadPlaylist}>
-          Submit
-        </button>
+        <div style={{ marginTop: "24px", display: "flex", gap: "12px", alignItems: "center" }}>
+          <button onClick={uploadPlaylist} disabled={creating} className={styles["submit-button"]} aria-disabled={creating}>
+            {creating ? "Creating playlist..." : "Submit"}
+          </button>
+
+          {creating && <div className="loader" aria-hidden="true" />}
+        </div>
+
+        {createError && <div className={styles.error} style={{ marginTop: "12px", color: "#ff6b6b" }}>{createError}</div>}
       </main>
     </>
   );

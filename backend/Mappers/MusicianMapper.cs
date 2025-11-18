@@ -32,6 +32,7 @@ namespace backend.Mappers
                 FollowerCount = musician.FollowerCount,
                 MonthlyListenerCount = musician.MonthlyListenerCount,
                 ProfilePictureFileId = musician.ProfilePictureFileId,
+                IsVerified = musician.IsVerified,
             };
         }
     }

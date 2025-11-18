@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./Report.module.css";
 import { useSearchParams } from "react-router";
+import Topnav from "../Components/Topnav";
 
 export default function Report() {
   const [comment, setComment] = useState("");
@@ -49,45 +50,48 @@ export default function Report() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.formCard}>
-        <h1 className={styles.title}>Report Content</h1>
+    <>
+      <Topnav />
+      <div className={styles.container}>
+        <div className={styles.formCard}>
+          <h1 className={styles.title}>Report Content</h1>
 
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Entity Type</label>
-            <input type="text" value={entityType} disabled className={`${styles.input} ${styles.inputDisabled}`} />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Entity Type</label>
+              <input type="text" value={entityType} disabled className={`${styles.input} ${styles.inputDisabled}`} />
+            </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Entity ID</label>
-            <input type="text" value={entityId} disabled className={`${styles.input} ${styles.inputDisabled}`} />
-          </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Entity ID</label>
+              <input type="text" value={entityId} disabled className={`${styles.input} ${styles.inputDisabled}`} />
+            </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Report Reason *</label>
-            <select value={reportReason} onChange={(e) => setReportReason(e.target.value)} required className={styles.select}>
-              <option value="">Select a reason...</option>
-              <option value="INAPPROPRIATE">Inappropriate</option>
-              <option value="HARASSMENT">Harassment</option>
-              <option value="DMCA">DMCA</option>
-              <option value="SPAM">Spam</option>
-              <option value="IMPERSONATION">Impersonation</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Report Reason *</label>
+              <select value={reportReason} onChange={(e) => setReportReason(e.target.value)} required className={styles.select}>
+                <option value="">Select a reason...</option>
+                <option value="INAPPROPRIATE">Inappropriate</option>
+                <option value="HARASSMENT">Harassment</option>
+                <option value="DMCA">DMCA</option>
+                <option value="SPAM">Spam</option>
+                <option value="IMPERSONATION">Impersonation</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Additional Comments</label>
-            <textarea value={comment} onChange={handleCommentChange} placeholder="Please provide additional details about your report..." className={styles.textarea} />
-            <div className={styles.charCount}>{comment.length} / 500</div>
-          </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Additional Comments</label>
+              <textarea value={comment} onChange={handleCommentChange} placeholder="Please provide additional details about your report..." className={styles.textarea} />
+              <div className={styles.charCount}>{comment.length} / 500</div>
+            </div>
 
-          <button type="submit" className={styles.submitButton}>
-            Submit Report
-          </button>
-        </form>
+            <button type="submit" className={styles.submitButton}>
+              Submit Report
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

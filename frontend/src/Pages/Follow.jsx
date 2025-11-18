@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import API from "../lib/api.js";
 import styles from "./Follow.module.css";
@@ -78,7 +78,7 @@ export default function Follows({ defaultTab = "followers" }) {
   }
 
   function openMusician(musicianId) {
-    navigate(`/artist-user/${musicianId}`);
+    navigate(`/artist/${musicianId}`);
   }
 
   return (

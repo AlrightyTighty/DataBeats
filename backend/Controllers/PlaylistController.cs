@@ -113,7 +113,8 @@ namespace backend.Controllers
                 .ThenInclude(pe => pe.Song)
                 .FirstOrDefaultAsync(p => p.PlaylistId == playlistId && (p.UserId == userId || p.UserIsCollaboratorOfPlaylists.Any(collaborator => collaborator.UserId == userId)));
 
-            var song = await _context.Songs.FindAsync(songId);
+            var song = await _context.Songs
+                .FirstOrDefaultAsync(s => s.SongId == songId && s.TimestampDeleted == null);
 
             if (playlist == null || song == null)
             {
@@ -138,8 +139,11 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> Delete([FromRoute] ulong id)
         {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+
             var playlist = await _context.Playlists.FindAsync(id);
             if (playlist == null)
             {
@@ -149,6 +153,11 @@ namespace backend.Controllers
             if (playlist.PlaylistName == LikedPlaylistName)
             {
                 return BadRequest("You cannot delete your liked playlist");
+            }
+
+            if (playlist.UserId != userId)
+            {
+                return Forbid("Only the playlist owner can delete this playlist");
             }
 
             playlist.TimestampDeleted = DateTime.UtcNow;
@@ -185,6 +194,25 @@ namespace backend.Controllers
 
             return Ok(new { OwnedPlaylists = userPlaylists, SavedPlaylists = savedPlaylists });
         }
+
+        [HttpGet("user/{userId}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetPlaylistsByUser([FromRoute] ulong userId)
+        {
+            var playlists = await _context.Playlists
+                .Where(p => p.UserId == userId && p.TimestampDeleted == null)
+                .Include(p => p.PlaylistPictureFile)
+                .Select(p => new UserPlaylistInformation(
+                    p.PlaylistId,
+                    p.PlaylistName,
+                    p.PlaylistPictureFile != null
+                        ? p.PlaylistPictureFile.FileData
+                        : Array.Empty<byte>()
+                ))
+                .ToArrayAsync();
+
+            return Ok(playlists);
+        }
     }
 
     public class UserPlaylistInformation
@@ -199,5 +227,7 @@ namespace backend.Controllers
             this.PlaylistTitle = title;
             this.PlaylistImage = image;
         }
+
+        
     }
 }

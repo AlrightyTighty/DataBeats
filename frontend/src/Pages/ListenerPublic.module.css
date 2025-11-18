@@ -58,15 +58,6 @@
   opacity: 0.9;
 }
 
-.statButton {
-  background: transparent;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 0;
-  font: inherit;
-}
-
 .buttons {
   display: flex;
   gap: 12px;
@@ -103,6 +94,171 @@
   color: #fff;
 }
 
+/* Layout for musician + top songs */
+.sectionsRow {
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+  align-items: stretch;
+}
+
+.musicianCard {
+  flex: 1 1 20%;
+  min-width: 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(4, 10, 40, 0.7);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+
+.topSongsCard {
+  flex: 1 1 80%;
+  min-width: 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(6, 16, 60, 0.78);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+}
+
+.topSongsFull {
+  flex: 1 1 100%;
+}
+
+.musicianHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.musicianPic {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  flex-shrink: 0;
+}
+
+.musicianName {
+  margin: 0;
+  font-size: 20px;
+}
+
+.musicianStats {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.musicianBio {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.musicianProfileButton {
+  margin-top: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(121, 212, 247, 0.7);
+  background: transparent;
+  color: #79d4f7;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.musicianProfileButton:hover {
+  background: rgba(121, 212, 247, 0.12);
+}
+
+.topSongsHeader h2 {
+  margin: 0 0 12px;
+}
+
+.songList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.songRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.songRow:hover {
+  background: rgba(11, 31, 92, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.songInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.songIndex {
+  opacity: 0.8;
+  width: 18px;
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.songTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.songMeta {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.playButton {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(121, 212, 247, 0.9);
+  color: #0a101d;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.playButton:hover {
+  background: #79d4f7;
+  transform: scale(1.1);
+}
+
+.bottomRow {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.viewPlaylists {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(121, 212, 247, 0.7);
+  background: transparent;
+  color: #79d4f7;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.viewPlaylists:hover {
+  background: rgba(121, 212, 247, 0.12);
+}
+
 @media (max-width: 550px) {
   .container {
     padding: 0 1rem;
@@ -116,5 +272,15 @@
   .pic {
     width: 140px;
     height: 140px;
+  }
+
+  .sectionsRow {
+    flex-direction: column;
+  }
+
+  .musicianCard,
+  .topSongsCard,
+  .topSongsFull {
+    flex: 1 1 100%;
   }
 }
