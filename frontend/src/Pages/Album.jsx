@@ -112,6 +112,8 @@ const Album = () => {
             <div className={styles.headerNumber}>#</div>
             <div className={styles.headerTitle}>Title</div>
             <div className={styles.headerArtists}>Artists</div>
+            <div className={styles.headerGenre}>Genre</div>
+            <div className={styles.headerDuration}>Duration</div>
             <div className={styles.headerStreams}>Streams</div>
             <div className={styles.headerReport}></div> {/* report column */}
           </div>
@@ -123,6 +125,8 @@ const Album = () => {
               number={index + 1}
               name={song.songName}
               artists={song.artistNames}
+              genres={song.genres}
+              duration={song.duration}
               streams={song.streams}
               id={song.songId}
               albumId={id}

@@ -33,5 +33,7 @@ namespace backend.DTOs.Song
 
         public ulong CreatorId { get; set; }
 
+        public string[] Genres { get; set; } = null!;
+
     }
 }

@@ -31,6 +31,7 @@ namespace backend.Controllers
                 .AsNoTracking() //hopefully makes this faster
                 .Include(s => s.Album)
                     .ThenInclude(a => a.AlbumOrSongArtFile)
+                .Include(s => s.SongGenres)
                 .Include(s => s.MusicianWorksOnSongs)
                     .ThenInclude(mws => mws.Musician)
                 .AsQueryable();
@@ -41,11 +42,15 @@ namespace backend.Controllers
                 songsQuery = songsQuery.Where(s => EF.Functions.Like(s.SongName.ToLower(), $"%{qLower}%"));
             }
 
-            var items = await songsQuery
+            // Load data with includes first, then project in-memory
+            var songsWithIncludes = await songsQuery
                 .OrderBy(s => s.SongName)
                 .Take(take)
+                .ToListAsync();
+
+            var items = songsWithIncludes
                 .Select(s => s.ToSongDTOForStreaming(s.Album.AlbumOrSongArtFileId, s.Album.AlbumTitle))
-                .ToArrayAsync();
+                .ToArray();
 
             return Ok(items);
         }
@@ -53,7 +58,13 @@ namespace backend.Controllers
         [HttpGet("{song_id}")]
         public async Task<IActionResult> GetSongById([FromRoute] ulong song_id)
         {
-            Song? foundSong = await _context.Songs.Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(worksOn => worksOn.Musician).FirstOrDefaultAsync(song => song.SongId == song_id);
+            Song? foundSong = await _context.Songs
+                .Include(song => song.Album)
+                .Include(song => song.SongGenres)
+                .Include(song => song.MusicianWorksOnSongs)
+                .ThenInclude(worksOn => worksOn.Musician)
+                .FirstOrDefaultAsync(song => song.SongId == song_id);
+
             if (foundSong != null)
                 return Ok(foundSong.ToSongDTOForStreaming(foundSong.Album.AlbumOrSongArtFileId, foundSong.Album.AlbumTitle));
             else
@@ -89,6 +100,7 @@ namespace backend.Controllers
         [HttpGet("artist/{musicianId}")]
         public async Task<IActionResult> GetSongsByArtist([FromRoute] ulong musicianId)
         {
+            // Load data with includes first, then project in-memory
             var songs = await _context.Songs
                 .Where(s => s.TimestampDeleted == null)
                 .Where(s =>
@@ -96,6 +108,9 @@ namespace backend.Controllers
                     s.MusicianWorksOnSongs.Any(mws => mws.MusicianId == musicianId)
                 )
                 .Include(s => s.Album)
+                .Include(s => s.SongGenres)
+                .Include(s => s.MusicianWorksOnSongs)
+                .ThenInclude(mws => mws.Musician)
                 .ToListAsync();
 
             if (!songs.Any())

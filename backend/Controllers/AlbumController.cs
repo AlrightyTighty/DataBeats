@@ -74,7 +74,19 @@ namespace backend.Controllers
         [HttpGet("songs/{id}")]
         public async Task<IActionResult> GetAllSongsAsync([FromRoute] ulong id)
         {
-            SongDto[] songs = await _context.Songs.Where(song => song.AlbumId == id).Where(song => song.TimestampDeleted == null).Include(song => song.Album).Include(song => song.MusicianWorksOnSongs).ThenInclude(songArtist => songArtist.Musician).Select(song => song.ToSongDTOForStreaming(song.Album.AlbumOrSongArtFileId, song.Album.AlbumTitle)).ToArrayAsync();
+            // Load data with includes first, then project in-memory
+            var songsWithIncludes = await _context.Songs
+                .Where(song => song.AlbumId == id)
+                .Where(song => song.TimestampDeleted == null)
+                .Include(song => song.Album)
+                .Include(song => song.SongGenres)
+                .Include(song => song.MusicianWorksOnSongs)
+                .ThenInclude(songArtist => songArtist.Musician)
+                .ToListAsync();
+
+            SongDto[] songs = songsWithIncludes
+                .Select(song => song.ToSongDTOForStreaming(song.Album.AlbumOrSongArtFileId, song.Album.AlbumTitle))
+                .ToArray();
 
             return Ok(songs);
         }
@@ -307,6 +319,7 @@ namespace backend.Controllers
                 songToEdit.SongName = songDto.songInfo.SongName;
                 songToEdit.Lyrics = songDto.songInfo.Lyrics;
                 songToEdit.SongFileId = songDto.songInfo.SongFileId;
+                songToEdit.Duration = (await _context.SongFiles.FindAsync(songDto.songInfo.SongFileId))!.Duration;
 
                 // Update song genres (existing differential logic)
                 List<SongGenre> currentSongGenres = await _context.SongGenres

@@ -103,7 +103,7 @@
 
 .songsHeader {
   display: grid;
-  grid-template-columns: 60px 60px 2fr 1.3fr 0.8fr 50px;
+  grid-template-columns: 60px 60px 2fr 1.3fr 1fr 0.8fr 0.8fr 50px;
   gap: 20px;
   padding: 12px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -129,6 +129,14 @@
 
 .headerArtists {
   text-align: left;
+}
+
+.headerGenre {
+  text-align: left;
+}
+
+.headerDuration {
+  text-align: center;
 }
 
 .headerStreams {
@@ -168,11 +176,13 @@
   }
 
   .songsHeader {
-    grid-template-columns: 50px 1fr 120px;
+    grid-template-columns: 50px 50px 1fr 100px 80px;
     gap: 12px;
   }
 
-  .headerArtists {
+  .headerArtists,
+  .headerGenre,
+  .headerReport {
     display: none;
   }
 }
@@ -196,10 +206,16 @@
   }
 
   .songsHeader {
-    grid-template-columns: 40px 1fr 100px;
+    grid-template-columns: 40px 40px 1fr 80px;
     gap: 8px;
     font-size: 12px;
     padding: 8px 12px;
+  }
+
+  .headerArtists,
+  .headerGenre,
+  .headerReport {
+    display: none;
   }
 
   .songsList {
