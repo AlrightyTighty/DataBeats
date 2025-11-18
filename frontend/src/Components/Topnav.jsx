@@ -34,6 +34,12 @@ const Topnav = () => {
         <Link className={styles["link"]} to={accountPath}>
           Account
         </Link>
+        <Link className={styles["link"]} to="/albums">
+          Albums
+        </Link>
+        <Link className={styles["link"]} to="/artists">
+          Artists
+        </Link>
         <Link className={styles["link"]} to="/events">
           Events
         </Link>
