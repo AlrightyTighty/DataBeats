@@ -49,5 +49,7 @@
 .right-section {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   flex: 1;
+  padding-right: 8px;
 }

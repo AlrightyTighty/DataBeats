@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import API from "../lib/api";
 
-export default function useMe({ redirectIfMissing = true } = {}) {
+const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
+
+export default function useMe() {
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -10,17 +11,30 @@ export default function useMe({ redirectIfMissing = true } = {}) {
     (async () => {
       try {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
-        if (!r.ok) throw new Error("not-auth");
-        const json = await r.json();
-        if (!dead) setMe(json);
+        if (!r.ok) {
+          if (!dead) {
+            setMe(null);
+            setLoading(false);
+          }
+          return;
+        }
+        const data = await r.json();
+        if (!dead) {
+          setMe(data);
+          setLoading(false);
+        }
       } catch {
-        if (redirectIfMissing) location.assign("/login");
-      } finally {
-        if (!dead) setLoading(false);
+        if (!dead) {
+          setMe(null);
+          setLoading(false);
+        }
       }
     })();
-    return () => { dead = true; };
-  }, [redirectIfMissing]);
+
+    return () => {
+      dead = true;
+    };
+  }, []);
 
   return { me, loading };
 }

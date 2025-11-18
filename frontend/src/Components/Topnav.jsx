@@ -4,6 +4,7 @@ import { appLogo } from "../App";
 import { Link } from "react-router";
 import Searchbar from "./Searchbar";
 import AppLogo from "../assets/graphics/DataBeats_Logo.png";
+import UserMenu from "./UserMenu";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 const Topnav = () => {
@@ -15,8 +16,8 @@ const Topnav = () => {
       try {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
         if (!r.ok) return;
-  const me = await r.json();
-  if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
+        const me = await r.json();
+        if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
       } catch {}
     })();
     return () => {
@@ -48,9 +49,7 @@ const Topnav = () => {
         <Searchbar />
       </div>
       <div className={styles["right-section"]}>
-        <Link className={styles["link"]} to="/logout">
-          Logout
-        </Link>
+        <UserMenu />
       </div>
     </nav>
   );
