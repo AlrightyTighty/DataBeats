@@ -57,8 +57,8 @@ namespace backend.Controllers
             [FromQuery] DateTime? from,
             [FromQuery] DateTime? to)
         {
-            var end = to ?? DateTime.UtcNow;
-            var start = from ?? end.AddDays(-30);
+            var end = (to?.Date.AddDays(1)) ?? DateTime.UtcNow;    
+            var start = (from?.Date) ?? end.AddDays(-30);          
 
             if (start >= end)
                 return BadRequest("`from` must be earlier than `to`.");

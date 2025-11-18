@@ -1,77 +1,112 @@
-#main {
+.page {
+  min-height: 100vh;
   width: 100vw;
-  margin-top: 141px;
-  height: (100vh-141px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-}
-
-body {
+  padding-top: 0;
   background: linear-gradient(to top, rgb(14, 14, 161), rgba(14, 14, 161, 0.2));
 }
 
-.register-form {
+.logoWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 40px 0 24px;
+}
+
+.logo {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand {
+  color: white;
+  font-size: 50px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1;
+  padding-top: 4px;
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.registerForm {
   width: 400px;
-  height: 560px;
-  background-color: rgba(0, 0, 0, 0.2);
+  min-height: 560px;
+  background-color: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(20px);
   border-radius: 20px;
+  padding: 22px 26px 26px;
 }
 
-#form-title {
+.formTitle {
   display: block;
-  margin: 0.5em 0.25em auto auto;
+  text-align: center;
   font-size: 32pt;
-  text-align: center;
-  font-weight: 500;
+  margin-bottom: 10px;
+  color: white;
 }
 
-.form-label {
-  font-size: 24pt;
+.formLabel {
   display: block;
-  margin: auto;
-  text-align: center;
-}
-
-.register-field {
-  display: block;
-  margin: auto;
   font-size: 20pt;
-  height: 50px;
+  text-align: center;
+  color: white;
+  margin-top: 10px;
+}
+
+.input {
+  display: block;
   width: 80%;
+  height: 50px;
+  margin: 8px auto;
+  font-size: 20pt;
   border-radius: 10px;
   border: 1px solid rgb(122, 122, 122);
+  text-align: center;
   transition: 0.25s;
-  text-align: center;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.register-field:hover {
-  border: 1px solid rgba(255, 255, 255);
+.input:hover {
+  border-color: white;
 }
 
-#register-button {
-  display: block;
-  margin: 1em auto;
+.registerButton {
   width: 80%;
-  border-radius: 10px;
   height: 50px;
-  font-size: 20pt;
-}
-
-#register-text {
-  display: block;
   margin: 1em auto;
-  color: rgb(180, 180, 180);
-  font-weight: lighter;
-  text-align: center;
-  font-style: italic;
+  display: block;
+  font-size: 20pt;
+  border-radius: 10px;
+  background: #4e8cff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-/* ---------------- Register.module.css additions ---------------- */
-/* Add this below your existing CSS */
+.registerButton:hover {
+  background: #3b6ee0;
+}
 
-.password-rules {
+.registerText {
+  text-align: center;
+  color: rgb(180, 180, 180);
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.passwordRules {
   width: 80%;
   margin: 0.5em auto;
   list-style: none;
@@ -81,7 +116,7 @@ body {
   color: rgb(200, 200, 200);
 }
 
-.password-rules li {
+.passwordRules li {
   margin: 4px 0;
   transition: 0.25s;
 }
@@ -94,7 +129,7 @@ body {
   color: rgb(255, 120, 120);
 }
 
-.password-error-box {
+.passwordErrorBox {
   width: 80%;
   margin: 0.5em auto;
   padding: 0.5em;
@@ -102,8 +137,4 @@ body {
   background-color: rgba(255, 0, 0, 0.15);
   color: rgb(255, 180, 180);
   font-size: 14pt;
-}
-
-#register-button:hover {
-  cursor: pointer;
 }
