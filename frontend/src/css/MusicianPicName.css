@@ -27,10 +27,10 @@
     width: 98%;
     height: 20%;
     margin: 0;
+    margin-left: 1vh;
     font-size: 8.5vh;
     color: white;
     position: absolute;
-    left: 10vh;
     bottom: 0;
     letter-spacing: 0.3vw;
     overflow-x: auto;
