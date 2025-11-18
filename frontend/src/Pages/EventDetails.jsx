@@ -269,7 +269,7 @@ export default function EventDetails() {
             <h1>{event.title}</h1>
         </div>
         <div className="info">
-            <h3 className="event-desc">Details: {event.eventDescription}</h3>
+            <h3 className="event-desc">{event.eventDescription}</h3>
             <div className="musician-loc-time-price">
                 <h2>
                     Host: {event.musicianName}
