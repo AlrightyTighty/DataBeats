@@ -36,6 +36,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHostedService<EmailService>();
 
+builder.Services.AddScoped<IAdminReportService, AdminReportService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
