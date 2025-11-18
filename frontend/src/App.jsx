@@ -33,6 +33,7 @@ import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
+import BecomeMusician from "./Pages/BecomeMusician.jsx";
 import ArtistEvents from "./Pages/ArtistEvents.jsx";
 import ArtistAlbum from "./Pages/ArtistAlbum.jsx";
 import Settings from "./Pages/Settings.jsx";
@@ -74,6 +75,7 @@ function App() {
         { path: "/admin", element: <Admin /> },
         { path: "/report", element: <Report /> },
         { path: "/dashboard", element: <Dashboard /> },
+        { path: "/become-musician", element: <BecomeMusician />},
         { path: "/user-playlists/:id", element: <UserPlaylists /> },
         {
           path: "/me/:id",
