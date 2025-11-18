@@ -24,6 +24,7 @@ namespace backend.Controllers
         public async Task<IActionResult> GetSearchResultAsync([FromQuery] string query)
         {
             SearchResult[] songs = await _context.Songs
+                                                    .Where(song => song.TimestampDeleted == null) // Exclude deleted songs
                                                     .Where(song => EF.Functions.Like(song.SongName.ToLower(), $"%{query.ToLower()}%"))
                                                     .Include(song => song.Album)
                                                     .ThenInclude(album => album.AlbumOrSongArtFile)
