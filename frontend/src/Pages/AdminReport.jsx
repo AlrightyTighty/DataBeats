@@ -97,7 +97,6 @@ function csvEscape(value) {
   return str;
 }
 
-// format dates
 function formatDateCell(raw) {
   if (!raw) return "";
   const str = String(raw);
@@ -115,15 +114,13 @@ export default function AdminReport() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // table (view) to show rows for
   const [entity, setEntity] = useState("users");
   const [rows, setRows] = useState([]);
   const [rowsLoading, setRowsLoading] = useState(false);
   const [rowsError, setRowsError] = useState("");
   const [rowSearch, setRowSearch] = useState("");
-  const [sortMode, setSortMode] = useState("none"); // none, date-asc, date-desc, name-asc, name-desc
+  const [sortMode, setSortMode] = useState("none");
 
-  // user activity
   const [userQuery, setUserQuery] = useState("");
   const [userReport, setUserReport] = useState(null);
   const [userLoading, setUserLoading] = useState(false);
@@ -313,7 +310,6 @@ export default function AdminReport() {
     );
   }
 
-  //rows table header ===
   function renderTableHeader() {
     switch (entity) {
       case "users":
@@ -393,7 +389,6 @@ export default function AdminReport() {
     }
   }
 
-  // search
   const lowerSearch = rowSearch.toLowerCase();
   const filteredRows = rows.filter((row) => {
     if (!lowerSearch) return true;
@@ -437,7 +432,6 @@ export default function AdminReport() {
     return haystack.toLowerCase().includes(lowerSearch);
   });
 
-  //sorting
   function getCreatedValue(row) {
     switch (entity) {
       case "users":
@@ -451,6 +445,52 @@ export default function AdminReport() {
       default:
         return null;
     }
+  }
+
+  function getDeletedValue(row) {
+    switch (entity) {
+      case "users":
+        return val(row, "timeDeleted", "time_deleted");
+      case "musicians":
+      case "playlists":
+      case "albums":
+      case "events":
+      case "songs":
+        return val(row, "timestampDeleted", "timestamp_deleted");
+      default:
+        return null;
+    }
+  }
+
+  const sortedRows = [...filteredRows];
+  if (sortMode !== "none") {
+    sortedRows.sort((a, b) => {
+      if (sortMode === "date-asc" || sortMode === "date-desc") {
+        const dA = getCreatedValue(a);
+        const dB = getCreatedValue(b);
+        const tA = dA ? new Date(dA).getTime() : 0;
+        const tB = dB ? new Date(dB).getTime() : 0;
+        return sortMode === "date-asc" ? tA - tB : tB - tA;
+      }
+
+      if (sortMode === "deleted-asc" || sortMode === "deleted-desc") {
+        const dA = getDeletedValue(a);
+        const dB = getDeletedValue(b);
+        const tA = dA ? new Date(dA).getTime() : 0;
+        const tB = dB ? new Date(dB).getTime() : 0;
+        return sortMode === "deleted-asc" ? tA - tB : tB - tA;
+      }
+
+      if (sortMode === "name-asc" || sortMode === "name-desc") {
+        const nA = getNameValue(a).toLowerCase();
+        const nB = getNameValue(b).toLowerCase();
+        if (nA < nB) return sortMode === "name-asc" ? -1 : 1;
+        if (nA > nB) return sortMode === "name-asc" ? 1 : -1;
+        return 0;
+      }
+
+      return 0;
+    });
   }
 
   function getNameValue(row) {
@@ -470,30 +510,6 @@ export default function AdminReport() {
       default:
         return "";
     }
-  }
-
-  //sorting
-  const sortedRows = [...filteredRows];
-  if (sortMode !== "none") {
-    sortedRows.sort((a, b) => {
-      if (sortMode === "date-asc" || sortMode === "date-desc") {
-        const dA = getCreatedValue(a);
-        const dB = getCreatedValue(b);
-        const tA = dA ? new Date(dA).getTime() : 0;
-        const tB = dB ? new Date(dB).getTime() : 0;
-        return sortMode === "date-asc" ? tA - tB : tB - tA;
-      }
-
-      if (sortMode === "name-asc" || sortMode === "name-desc") {
-        const nA = getNameValue(a).toLowerCase();
-        const nB = getNameValue(b).toLowerCase();
-        if (nA < nB) return sortMode === "name-asc" ? -1 : 1;
-        if (nA > nB) return sortMode === "name-asc" ? 1 : -1;
-        return 0;
-      }
-
-      return 0;
-    });
   }
 
   function renderTableBody() {
@@ -638,7 +654,6 @@ export default function AdminReport() {
     });
   }
 
-  //Export CSV
   function onExportCsv() {
     if (sortedRows.length === 0) {
       return;
@@ -809,7 +824,6 @@ export default function AdminReport() {
     <div className={styles.page}>
       <Topnav />
       <div className={styles.inner}>
-        {/*header- date filters */}
         <div className={styles.headerRow}>
           <div>
             <h1 className={styles.title}>DataBeats Activity Report</h1>
@@ -847,7 +861,6 @@ export default function AdminReport() {
 
         {report && !loading && !error && (
           <>
-            {/* Range*/}
             <div className={styles.rangeInfo}>
               <span>
                 Range:{" "}
@@ -858,7 +871,6 @@ export default function AdminReport() {
               </span>
             </div>
 
-            {/* grids header */}
             <div className={styles.grid}>
               <SummaryCard title="Users" data={report.users} />
               <SummaryCard title="Musicians" data={report.musicians} />
@@ -868,7 +880,6 @@ export default function AdminReport() {
               <SummaryCard title="Songs" data={report.songs} />
             </div>
 
-            {/* row + filter*/}
             <div style={{ marginTop: 24 }}>
               <div className={styles.rowsToolbar}>
                 <div className={styles.filterField}>
@@ -906,6 +917,8 @@ export default function AdminReport() {
                     <option value="none">None</option>
                     <option value="date-asc">Date: Old → New</option>
                     <option value="date-desc">Date: New → Old</option>
+                    <option value="deleted-asc">Deleted: Old → New</option>
+                    <option value="deleted-desc">Deleted: New → Old</option>
                     <option value="name-asc">Name: A → Z</option>
                     <option value="name-desc">Name: Z → A</option>
                   </select>
@@ -932,7 +945,6 @@ export default function AdminReport() {
               </div>
             </div>
 
-            {/*user activity */}
             <div style={{ marginTop: 24 }}>
               <h2 className={styles.title} style={{ fontSize: 20 }}>
                 User Activity

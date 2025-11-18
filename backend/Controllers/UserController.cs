@@ -10,7 +10,7 @@ using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft. EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -167,6 +167,8 @@ namespace backend.Controllers
             await _context.AdminManagesUsers.AddAsync(adminAction);
             userToDelete.AuthenticationInformation.Locked = true;
             userToDelete.AuthenticationInformation.LockExpiration = lockExpiration;
+            userToDelete.TimeDeleted = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
 
             return Created(uri: null as string, adminAction);
@@ -195,8 +197,10 @@ namespace backend.Controllers
                 return BadRequest("No authentication record for this user.");
 
             user.AuthenticationInformation.Locked = true;
-            // effectively permanent
             user.AuthenticationInformation.LockExpiration = DateTime.UtcNow.AddDays(100);
+
+            // mark user as deleted for reporting
+            user.TimeDeleted = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return NoContent();
