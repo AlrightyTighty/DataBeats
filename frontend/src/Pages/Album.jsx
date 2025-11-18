@@ -13,8 +13,30 @@ const Album = () => {
   const navigate = useNavigate();
   const user = useAuthentication();
 
-  const formatArtists = (artists) => {
-    return artists.map((artist) => artist.artistName).join(", ");
+  const renderClickableArtists = (artists) => {
+    if (!artists || artists.length === 0) return "Unknown Artist";
+    
+    return artists.map((artist, index) => (
+      <span key={artist.musicianId || index}>
+        <button
+          type="button"
+          onClick={() => navigate(`/artist/${artist.musicianId}`)}
+          className={styles.artistLink}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'inherit',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            padding: 0,
+            font: 'inherit'
+          }}
+        >
+          {artist.artistName}
+        </button>
+        {index < artists.length - 1 && ", "}
+      </span>
+    ));
   };
 
   const [albumData, setAlbumData] = useState({
@@ -93,7 +115,7 @@ const Album = () => {
             <div className={styles.albumType}>{albumData.albumType}</div>
             <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
             <div className={styles.albumArtists}>
-              {formatArtists(albumData.artists)}
+              {renderClickableArtists(albumData.artists)}
             </div>
             {user && user.musicianId === albumData.createdBy && (
               <button
