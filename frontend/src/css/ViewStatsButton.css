@@ -1,0 +1,17 @@
+.view-stats {
+    width: 8vw;
+    height: 5vh;
+    color: white;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 20px;
+}
+
+.view-stats:hover {
+    cursor: pointer;
+    color: red;
+    border-color: red;
+    background-color: rgba(237, 235, 235, 0.419);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}

@@ -304,6 +304,7 @@ export default function EventDetails() {
                         value={editDesc}
                         onChange={(e) => setEditDesc(e.target.value)}
                     />
+                    <div className="char-count">{editDesc.length} / 500</div>
 
                     <h2 className="event-loc">Location</h2>
                     <textarea className="edit-loc"
@@ -314,8 +315,8 @@ export default function EventDetails() {
                     />
 
                     <h2 className="event-time">Date/Time</h2>
-                    <textarea className="edit-datetime"
-                        placeholder="The date and time at which your event will occur..."
+                    <input className="edit-datetime"
+                        type="datetime-local"
                         value={editTime}
                         onChange={(e) => setEditTime(e.target.value)}
                     />

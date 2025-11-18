@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
+import useAuthentication from "../hooks/useAuthentication";
 import styles from "./NewReleases.module.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
@@ -11,6 +15,8 @@ export default function Albums() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [sortBy, setSortBy] = useState('release'); // 'release', 'songs', 'name'
+  const userInfo = useAuthentication();
+  const [contextMenuRef, contextMenu, setContextMenu] = useContextMenu();
 
   useEffect(() => {
     (async () => {
@@ -56,6 +62,7 @@ export default function Albums() {
 
   return (
     <>
+      <ContextMenu ref={contextMenuRef} items={contextMenu.items} functions={contextMenu.functions} x={contextMenu.x} y={contextMenu.y} visible={contextMenu.visible} />
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
@@ -131,6 +138,22 @@ export default function Albums() {
                 const songCount = a.NumSongs ?? a.numSongs ?? 0;
                 const songText = songCount === 1 ? "1 song" : `${songCount} songs`;
 
+                // Context menu for album
+                const albumContextItems = [];
+                const albumContextFunctions = [];
+                
+                // Check if user can report this album (not the owner)
+                const isOwner = userInfo && Array.isArray(rawArtists) && rawArtists.some(artist => 
+                  artist.musicianId === userInfo.musicianId || artist.MusicianId === userInfo.musicianId
+                );
+                
+                if (userInfo && !isOwner) {
+                  albumContextItems.push("Report Album");
+                  albumContextFunctions.push(() => {
+                    navigate(`/report?id=${albumId}&type=ALBUM`);
+                  });
+                }
+
                 return (
                   <button
                     key={albumId}
@@ -138,7 +161,17 @@ export default function Albums() {
                     className={styles.card}
                     title={albumTitle}
                     onClick={() => navigate(`/album/${albumId}`)}
+                    style={{ position: 'relative', cursor: 'pointer' }}
                   >
+                    {userInfo && albumContextItems.length > 0 && (
+                      <ContextMenuButton 
+                        right="10px" 
+                        top="10px" 
+                        functions={albumContextFunctions} 
+                        items={albumContextItems} 
+                        setContextMenu={setContextMenu} 
+                      />
+                    )}
                     {coverSrc ? (
                       <img
                         src={coverSrc}

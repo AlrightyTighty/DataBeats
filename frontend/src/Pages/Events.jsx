@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
+import useAuthentication from "../hooks/useAuthentication";
 import "./Events.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
@@ -15,6 +19,8 @@ export default function Events() {
   const [endDate, setEndDate] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const userInfo = useAuthentication();
+  const [contextMenuRef, contextMenu, setContextMenu] = useContextMenu();
 
   useEffect(() => {
     (async () => {
@@ -46,7 +52,12 @@ export default function Events() {
   const now = new Date();
   let filteredEvents = events;
   if (filter === "all") {
-    filteredEvents = events; // show all events
+    // Show all events sorted from newest to oldest
+    filteredEvents = [...events].sort((a, b) => {
+      const dateA = new Date(a.eventTime);
+      const dateB = new Date(b.eventTime);
+      return dateB - dateA; // Newest first (descending order)
+    });
   } else if (filter === "week") {
     const weekFromNow = new Date(now);
     weekFromNow.setDate(now.getDate() + 7);
@@ -76,6 +87,7 @@ export default function Events() {
 
   return (
     <>
+      <ContextMenu ref={contextMenuRef} items={contextMenu.items} functions={contextMenu.functions} x={contextMenu.x} y={contextMenu.y} visible={contextMenu.visible} />
       <Topnav />
 
     <div className="events-page">
@@ -153,6 +165,23 @@ export default function Events() {
             : null;
           const viewUrl = e.eventPictureFileId ? `${API}/api/event/file/view/${e.eventPictureFileId}` : null;
           const imgSrc = inlineImg || viewUrl || bed;
+          
+          // Check if event has passed
+          const eventDate = new Date(e.eventTime);
+          const now = new Date();
+          const isPastEvent = eventDate < now;
+          
+          // Context menu for event
+          const eventContextItems = [];
+          const eventContextFunctions = [];
+          
+          if (userInfo && userInfo.musicianId !== e.musicianId) {
+            eventContextItems.push("Report Event");
+            eventContextFunctions.push(() => {
+              navigate(`/report?id=${e.eventId}&type=EVENT`);
+            });
+          }
+          
   //added pathway to /events/id
   return (
 <div
@@ -165,7 +194,24 @@ export default function Events() {
       navigate(`/event/${e.eventId}`);
     }
   }}
+  style={{
+    position: 'relative',
+    ...(isPastEvent ? {
+      backgroundColor: '#fd8c8cff',
+      borderColor: '#f24848ff',
+      border: '1px solid #f24848ff'
+    } : {})
+  }}
 >
+  {userInfo && eventContextItems.length > 0 && (
+    <ContextMenuButton 
+      right="10px" 
+      top="10px" 
+      functions={eventContextFunctions} 
+      items={eventContextItems} 
+      setContextMenu={setContextMenu} 
+    />
+  )}
   <div className="media">
     <div className="media-inner">
       <img src={imgSrc} alt={e.title} loading="lazy" />
@@ -178,6 +224,11 @@ export default function Events() {
       <div className="event-artist">
         {e.musicianName ?? e.MusicianName}
       </div>
+      {e.eventLocation && (
+        <div className="event-location" style={{fontSize: '0.875rem', color: '#6b7280', marginTop: '4px'}}>
+          {e.eventLocation}
+        </div>
+      )}
     </div>
 
     <div className="event-card-divider" /> {}

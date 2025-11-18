@@ -90,6 +90,9 @@ namespace backend.Controllers
                 return Unauthorized("User does not have an associated musician account.");
             }
 
+            if (string.IsNullOrWhiteSpace(eventDto.EventLocation))
+                return BadRequest("Event Location is required.");
+
             if (eventDto.EventPictureFileId == 0)
                 return BadRequest("EventPictureFileId is required.");
 
@@ -97,6 +100,12 @@ namespace backend.Controllers
                 .AnyAsync(p => p.EventPictureFileId == eventDto.EventPictureFileId);
             if (!picExists)
                 return BadRequest("EventPictureFileId does not exist.");
+
+            // Validate that event time is in the future
+            if (eventDto.EventTime <= DateTime.UtcNow)
+            {
+                return BadRequest("Event date and time must be in the future.");
+            }
 
             var evt = eventDto.ToEvent();
             evt.MusicianId = musician.MusicianId;

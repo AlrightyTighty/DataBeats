@@ -75,6 +75,7 @@ export default function Bio({musician, api}) {
                     value={editBio}
                     onChange={(e) => {setEditBio(e.target.value)}}
                 />
+                <div className="char-count">{editBio.length} / 700</div>
                 <button type="button" className="save" onClick={save}>SAVE</button>
                 <button type="button" className="done" onClick={toggleModal}>DONE</button>
             </div>

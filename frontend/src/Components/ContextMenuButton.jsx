@@ -10,7 +10,16 @@ const ContextMenuButton = ({ right, left, top, bottom, width, height, functions,
       }}
       className={styles["context-menu-button"]}
       src={reportSymbol}
-      style={{ width: width ?? "30px", height: height ?? "30px", right: right, left: left, top: top, bottom: bottom, position: "absolute" }}
+      style={{ 
+        width: width ?? "20px", 
+        height: height ?? "20px", 
+        right: right, 
+        left: left, 
+        top: top, 
+        bottom: bottom, 
+        position: "absolute",
+        cursor: "pointer"
+      }}
     />
   );
 };

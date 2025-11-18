@@ -6,7 +6,6 @@ import Searchbar from "./Searchbar";
 import AppLogo from "../assets/graphics/DataBeats_Logo.png";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
-
 const Topnav = () => {
   const [accountPath, setAccountPath] = useState("/login");
 
@@ -16,8 +15,8 @@ const Topnav = () => {
       try {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
         if (!r.ok) return;
-        const me = await r.json();
-        if (!dead && me?.userId) setAccountPath(`/me/${userId}`);
+  const me = await r.json();
+  if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
       } catch {}
     })();
     return () => {
@@ -34,6 +33,12 @@ const Topnav = () => {
         </Link>
         <Link className={styles["link"]} to={accountPath}>
           Account
+        </Link>
+        <Link className={styles["link"]} to="/albums">
+          Albums
+        </Link>
+        <Link className={styles["link"]} to="/artists">
+          Artists
         </Link>
         <Link className={styles["link"]} to="/events">
           Events

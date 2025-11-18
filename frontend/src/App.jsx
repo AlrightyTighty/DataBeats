@@ -1,6 +1,6 @@
 import "./App.css";
 
-import _appLogo from "./assets/graphics/DatabeatsLogo.png";
+import _appLogo from "./assets/graphics/DataBeats_Logo.png";
 
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
@@ -15,6 +15,8 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import SongInfo from "./Pages/SongInfo.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
+import MusicianReport from "./Pages/MusicianReport.jsx"
+import Artist from "./Pages/ArtistProfileUser.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
@@ -60,6 +62,7 @@ function App() {
         { path: "/authtest", element: <Authtest /> },
         { path: "/songinfo/:id", element: <SongInfo /> },
         { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
+        { path: "/stats", element: <MusicianReport /> },
         { path: "/streamtest", element: <StreamPopupTest /> },
         { path: "/events", element: <Events /> },
         { path: "/event/:id", element: <EventDetails /> },
@@ -93,13 +96,16 @@ function App() {
         { path: "/admin/generate-report", element: <GenerateReport /> },
         { path: "/admin/report-result", element: <ReportResult /> },
         { path: "/page-not-found", element: <NotFound /> },
-        { path: "*", element: <NotFound /> },
         { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
         { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
+<<<<<<< HEAD
         { path: "/admin/report", element: <AdminReport /> },
+=======
+        { path: "*", element: <NotFound /> },
+>>>>>>> d6d3f450a836e13a5f159cf229a22b771d6d99fa
       ],
     },
   ]);
