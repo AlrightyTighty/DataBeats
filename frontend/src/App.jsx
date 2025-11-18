@@ -46,6 +46,7 @@ import History from "./Pages/History.jsx";
 import Logout from "./Pages/Logout.jsx";
 import Follow from "./Pages/Follow.jsx";
 import RecentPlays from "./Pages/RecentPlays.jsx";
+import AdminReport from "./Pages/AdminReport.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -98,6 +99,7 @@ function App() {
         { path: "/follows/:id", element: <Follow /> },
         { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
+        { path: "/admin/report", element: <AdminReport /> },
       ],
     },
   ]);

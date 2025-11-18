@@ -14,4 +14,14 @@ namespace backend.DTOs.Admin
         public int NewPlaylistsInRange { get; set; }
         public int DeletedPlaylistsInRange { get; set; }
     }
+
+    public class AdminPlaylistRowDto
+    {
+        public ulong PlaylistId { get; set; }
+        public string PlaylistName { get; set; } = "";
+        public ulong UserId { get; set; }
+        public DateTime? TimestampCreated { get; set; }
+        public DateTime? TimestampDeleted { get; set; }
+        public bool IsDeleted { get; set; }
+    }
 }

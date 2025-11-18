@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace backend.DTOs.Admin
 {
@@ -9,11 +7,9 @@ namespace backend.DTOs.Admin
     {
         public ulong UserId { get; set; }
         public string Username { get; set; } = "";
+        public DateTime? TimeCreated { get; set; }
+        public DateTime? TimeDeleted { get; set; }
         public bool IsUserDeleted { get; set; }
-        public ulong? MusicianId { get; set; }
-        public string? MusicianName { get; set; }
-        public bool? IsMusicianDeleted { get; set; }
-
         public DateTime From { get; set; }
         public DateTime To   { get; set; }
         public AdminPlaylistSummaryDto Playlists  { get; set; } = new();
@@ -30,6 +26,6 @@ namespace backend.DTOs.Admin
         public string EntityType { get; set; } = "";  // playlist/album/song/event
         public string ActionType { get; set; } = "";  // Created, Deleted
         public ulong EntityId { get; set; }
-        public string? EntityName { get; set; }       // playlist/album/song/event name
+        public string? EntityName { get; set; }
     }
 }

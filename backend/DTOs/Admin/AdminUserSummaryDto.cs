@@ -14,4 +14,13 @@ namespace backend.DTOs.Admin
         public int NewUsersInRange { get; set; }
         public int DeletedUsersInRange { get; set; }
     }
+
+    public class AdminUserRowDto
+    {
+        public ulong UserId { get; set; }
+        public string Username { get; set; } = "";
+        public DateTime? TimeCreated { get; set; }
+        public DateTime? TimeDeleted { get; set; }
+        public bool IsDeleted { get; set; }
+    }
 }
