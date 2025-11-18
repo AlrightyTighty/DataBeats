@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.DTOs.Admin;
 using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Cors;
@@ -89,22 +90,76 @@ namespace backend.Controllers
             return Ok(genres);
         }
 
+        [HttpPost("/admin/delete/song/{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] AdminDeleteRequest request)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User deletingUser = (await _context.Users.FindAsync(userId))!;
+            Song? songToDelete = await _context.Songs.FindAsync(id);
+
+            if (songToDelete == null || songToDelete.TimestampDeleted != null)
+                return NotFound();
+
+            // ADMIN CHECK
+            if (deletingUser.AdminId == null)
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            ulong? adminId = deletingUser.AdminId;
+
+            // RESOLVE ASSOCIATED REPORTS IF REQUESTED
+            if (request.ResolveReports)
+            {
+                var unresolvedComplaints = await _context.Complaints
+                    .Include(c => c.Reviews)
+                    .Where(c => c.ComplaintType == "SONG" && c.ComplaintTargetId == id && c.Reviews.Count == 0)
+                    .ToListAsync();
+
+                foreach (var complaint in unresolvedComplaints)
+                {
+                    Review autoReview = new Review
+                    {
+                        AdminId = adminId.Value,
+                        ComplaintId = complaint.ComplaintId,
+                        TimestampCreated = DateTime.Now,
+                        CreatedBy = userId,
+                        ReviewComment = "Automatically resolved after deletion of offending content"
+                    };
+                    await _context.Reviews.AddAsync(autoReview);
+                }
+            }
+
+            // CREATE TRACKING ENTITY
+            AdminDeletesSong adminAction = new AdminDeletesSong
+            {
+                AdminId = adminId.Value,
+                SongId = id,
+                DeletedAt = DateTime.Now,
+                Reason = request.Reason
+            };
+
+            // SAVE TRACKING AND SOFT DELETE
+            await _context.AdminDeletesSongs.AddAsync(adminAction);
+            songToDelete.TimestampDeleted = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return Created(uri: null as string, adminAction);
+        }
+
         [HttpDelete("{song_id}")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> DeleteSongById([FromRoute] ulong song_id)
         {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User user = (await _context.Users.FindAsync(userId))!;
+            bool isAdmin = user.AdminId != null;
+
             Song? foundSong = await _context.Songs.FirstOrDefaultAsync(song => song.SongId == song_id && song.TimestampDeleted == null);
-
-            /*
-            Console.WriteLine("WE FIND DA SONG!!!");
-            Console.WriteLine(foundSong);
-            */
-
-
 
             if (foundSong != null)
             {
-                if (foundSong.CreatedBy != ulong.Parse(Request.Headers["X-UserId"]!))
+                // Allow if admin OR creator
+                if (!isAdmin && foundSong.CreatedBy != userId)
                     return Forbid();
 
                 foundSong.TimestampDeleted = DateTime.Now;

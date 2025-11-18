@@ -40,17 +40,15 @@ namespace backend.Services
                         List<Email> emails = await dbContext.Emails.Where(e => e.Sent == 0).ToListAsync();
 
 
-                        SmtpClient client = new SmtpClient("smtp.office365.com", 587)
+                        SmtpClient client = new SmtpClient("smtp.gmail.com", 587)
                         {
-                            Credentials = new NetworkCredential("joshua@baddle.fun", Environment.GetEnvironmentVariable("SMTPAppPassword")),
+                            Credentials = new NetworkCredential("ileikpotatozzzz@gmail.com", "qkaegiqtyloopdma"),
                             EnableSsl = true
                         };
 
                         foreach (Email email in emails)
                         {
-
-
-                            client.Send("support@baddle.fun", email.EmailTo, email.EmailSubject, email.EmailBody);
+                            client.Send("ileikpotatozzzz@gmail.com", email.EmailTo, email.EmailSubject, email.EmailBody);
                             email.Sent = 1;
                         }
 

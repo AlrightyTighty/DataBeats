@@ -63,8 +63,6 @@ public partial class User
 
     public virtual ICollection<Review> ReviewDeletedByNavigations { get; set; } = new List<Review>();
 
-    public virtual ICollection<Review> ReviewUpdatedByNavigations { get; set; } = new List<Review>();
-
     public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
 
     public virtual ICollection<SongGenre> SongGenres { get; set; } = new List<SongGenre>();

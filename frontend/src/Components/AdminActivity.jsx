@@ -3,11 +3,14 @@ import styles from "./AdminActivity.module.css";
 import API from "../lib/api";
 
 const getActionColor = (action) => {
+  if (!action) return "#8b5cf6";
   switch (action.toLowerCase()) {
     case "delete":
       return "#f59e0b";
     case "manage":
       return "#3b82f6";
+    case "reviews":
+      return "#10b981";
     case "ban":
       return "#ef4444";
     case "unban":
@@ -18,7 +21,14 @@ const getActionColor = (action) => {
 };
 
 const formatTimestamp = (timestamp) => {
+  if (!timestamp) return "No date";
   const date = new Date(timestamp);
+
+  // Check for invalid dates or dates in year 0001 (default DateTime value)
+  if (isNaN(date.getTime()) || date.getFullYear() < 1900) {
+    return "No date";
+  }
+
   const now = new Date();
   const diffMs = now - date;
   const diffMins = Math.floor(diffMs / 60000);
@@ -64,31 +74,32 @@ export function AdminActivity() {
       </div>
 
       <div className={styles.activityList}>
-        {activity.map((act) => {
-          const isExpanded = expandedActivity === act.AdminId + act.TargetId + act.TimeStamp;
-          const actionColor = getActionColor(act.Action);
+        {activity.map((act, index) => {
+          const uniqueKey = `${act.adminId}-${act.targetId}-${act.timeStamp || index}`;
+          const isExpanded = expandedActivity === uniqueKey;
+          const actionColor = getActionColor(act.action);
 
           return (
             <div
-              key={act.AdminId + act.TargetId + act.TimeStamp}
+              key={uniqueKey}
               className={styles.activityItem}
-              onClick={() => handleActivityClick(act.AdminId + act.TargetId + act.TimeStamp)}
+              onClick={() => handleActivityClick(uniqueKey)}
             >
               <div className={styles.activityRow}>
                 <div className={styles.indicator} style={{ backgroundColor: actionColor }}></div>
                 <div className={styles.content}>
                   <div className={styles.mainInfo}>
-                    <span className={styles.admin}>{act.AdminName}</span>
-                    <span className={styles.action}>{act.Action}</span>
-                    <span className={styles.target}>{act.TargetEntity} #{act.TargetId}</span>
+                    <span className={styles.admin}>{act.adminName}</span>
+                    <span className={styles.action}>{act.action}</span>
+                    <span className={styles.target}>{act.targetEntity} #{act.targetId}</span>
                   </div>
-                  <span className={styles.timestamp}>{formatTimestamp(act.TimeStamp)}</span>
+                  <span className={styles.timestamp}>{formatTimestamp(act.timeStamp)}</span>
                 </div>
               </div>
-              {isExpanded && act.Comment && (
+              {isExpanded && act.comment && (
                 <div className={styles.commentSection}>
                   <div className={styles.commentLabel}>Comment:</div>
-                  <div className={styles.commentText}>{act.Comment}</div>
+                  <div className={styles.commentText}>{act.comment}</div>
                 </div>
               )}
             </div>

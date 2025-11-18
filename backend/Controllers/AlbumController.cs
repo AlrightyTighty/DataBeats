@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using backend.DTOs;
+using backend.DTOs.Admin;
 using backend.DTOs.Album;
 using backend.DTOs.Song;
 using backend.Mappers;
@@ -108,7 +109,7 @@ namespace backend.Controllers
 
         [HttpPost("/admin/delete/album/{id}")]
         [EnableCors("AllowSpecificOrigins")]
-        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] string reason)
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] AdminDeleteRequest request)
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
             User deletingUser = (await _context.Users.FindAsync(userId))!;
@@ -123,12 +124,34 @@ namespace backend.Controllers
             // ALL admin deletes must be logged.
             ulong? adminId = deletingUser.AdminId;
 
+            // RESOLVE ASSOCIATED REPORTS IF REQUESTED
+            if (request.ResolveReports)
+            {
+                var unresolvedComplaints = await _context.Complaints
+                    .Include(c => c.Reviews)
+                    .Where(c => c.ComplaintType == "ALBUM" && c.ComplaintTargetId == id && c.Reviews.Count == 0)
+                    .ToListAsync();
+
+                foreach (var complaint in unresolvedComplaints)
+                {
+                    Review autoReview = new Review
+                    {
+                        AdminId = adminId.Value,
+                        ComplaintId = complaint.ComplaintId,
+                        TimestampCreated = DateTime.Now,
+                        CreatedBy = userId,
+                        ReviewComment = "Automatically resolved after deletion of offending content"
+                    };
+                    await _context.Reviews.AddAsync(autoReview);
+                }
+            }
+
             AdminDeletesAlbum adminAction = new AdminDeletesAlbum
             {
                 AdminId = adminId.Value,
                 AlbumId = id,
                 DeletedAt = DateTime.Now,
-                Reason = reason
+                Reason = request.Reason
             };
 
             await _context.AdminDeletesAlbums.AddAsync(adminAction);
@@ -136,7 +159,7 @@ namespace backend.Controllers
             albumToDelete.DeletedBy = userId;
             await _context.SaveChangesAsync();
 
-            return Created(uri: null as string, adminAction);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -144,14 +167,15 @@ namespace backend.Controllers
         public async Task<IActionResult> DeleteByIdAsync([FromRoute] ulong id)
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
-
             User deletingUser = (await _context.Users.FindAsync(userId))!;
+            bool isAdmin = deletingUser.AdminId != null;
 
             Album? albumToDelete = await _context.Albums.FindAsync(id);
             if (albumToDelete == null)
                 return NotFound();
 
-            if (albumToDelete.CreatedBy != deletingUser.MusicianId)
+            // Allow if admin OR creator
+            if (!isAdmin && albumToDelete.CreatedBy != deletingUser.MusicianId)
                 return StatusCode(StatusCodes.Status403Forbidden);
 
             _context.Songs

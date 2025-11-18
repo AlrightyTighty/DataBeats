@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using backend.DTOs.Admin;
 using backend.DTOs.User;
 using backend.Mappers;
 using backend.Models;
@@ -107,16 +108,88 @@ namespace backend.Controllers
             return Ok(user.ToUserDtoFromUser());
         }
 
+        [HttpPost("/admin/delete/user/{id}")]
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] AdminDeleteRequest request)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User deletingUser = (await _context.Users.FindAsync(userId))!;
+            User? userToDelete = await _context.Users
+                .Include(u => u.AuthenticationInformation)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (userToDelete == null)
+                return NotFound();
+
+            // ADMIN CHECK
+            if (deletingUser.AdminId == null)
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            if (userToDelete.AuthenticationInformation == null)
+                return BadRequest("No authentication record for this user.");
+
+            ulong? adminId = deletingUser.AdminId;
+            DateTime lockExpiration = DateTime.UtcNow.AddDays(100);
+
+            // RESOLVE ASSOCIATED REPORTS IF REQUESTED
+            if (request.ResolveReports)
+            {
+                var unresolvedComplaints = await _context.Complaints
+                    .Include(c => c.Reviews)
+                    .Where(c => c.ComplaintType == "USER" && c.ComplaintTargetId == id && c.Reviews.Count == 0)
+                    .ToListAsync();
+
+                foreach (var complaint in unresolvedComplaints)
+                {
+                    Review autoReview = new Review
+                    {
+                        AdminId = adminId.Value,
+                        ComplaintId = complaint.ComplaintId,
+                        TimestampCreated = DateTime.Now,
+                        CreatedBy = userId,
+                        ReviewComment = "Automatically resolved after deletion of offending content"
+                    };
+                    await _context.Reviews.AddAsync(autoReview);
+                }
+            }
+
+            // CREATE TRACKING ENTITY
+            AdminManagesUser adminAction = new AdminManagesUser
+            {
+                AdminId = adminId.Value,
+                UserId = id,
+                Reason = request.Reason,
+                EndsAt = lockExpiration,
+                CreatedAt = DateTime.Now,
+                CreatedBy = adminId.Value
+            };
+
+            // SAVE TRACKING AND LOCK ACCOUNT
+            await _context.AdminManagesUsers.AddAsync(adminAction);
+            userToDelete.AuthenticationInformation.Locked = true;
+            userToDelete.AuthenticationInformation.LockExpiration = lockExpiration;
+            await _context.SaveChangesAsync();
+
+            return Created(uri: null as string, adminAction);
+        }
+
         // SOFT DELETE: lock account "forever" so user can't log in anymore
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteUser([FromRoute] ulong id)
         {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User requestingUser = (await _context.Users.FindAsync(userId))!;
+            bool isAdmin = requestingUser.AdminId != null;
+
             var user = await _context.Users
                 .Include(u => u.AuthenticationInformation)
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user == null)
                 return NotFound();
+
+            // Allow if admin OR deleting own account
+            if (!isAdmin && userId != id)
+                return StatusCode(StatusCodes.Status403Forbidden);
 
             if (user.AuthenticationInformation == null)
                 return BadRequest("No authentication record for this user.");
@@ -128,7 +201,7 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        
+
 
     }
 }

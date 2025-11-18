@@ -70,27 +70,26 @@ namespace backend.Controllers
             return Ok(complaints);
         }
 
-        [Route("reports")]
-        [HttpPost("{id}")]
+        [HttpPost("reports/{id}")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> ReviewReportAsync([FromRoute] ulong id, [FromBody] string comment)
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
             if ((await _context.Users.FirstOrDefaultAsync(user => user.UserId == userId))!.AdminId == null)
-                return NotFound();
+                return NotFound("This page... it's hidden!!!");
 
             Admin reviewingAdmin = (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId))!;
             Complaint? reviewedComplaint = await _context.Complaints.FirstOrDefaultAsync(complaint => complaint.ComplaintId == id);
             if (reviewedComplaint == null)
-                return NotFound();
+                return NotFound("Complaint not found");
 
             Review complaintReview = new Review
             {
                 Admin = reviewingAdmin,
                 Complaint = reviewedComplaint,
                 TimestampCreated = DateTime.Now,
-                CreatedByNavigation = reviewingAdmin.User,
-                ReviewComment = comment
+                CreatedBy = userId,
+                ReviewComment = comment,
             };
 
             await _context.Reviews.AddAsync(complaintReview);
@@ -119,6 +118,7 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "SONG",
                                                                     TargetId = action.SongId,
+                                                                    TimeStamp = action.DeletedAt!.Value,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -132,6 +132,7 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "USER",
                                                                     TargetId = action.UserId,
+                                                                    TimeStamp = action.CreatedAt,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -145,6 +146,7 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin.User.Username,
                                                                     TargetEntity = "ALBUM",
                                                                     TargetId = action.AlbumId,
+                                                                    TimeStamp = action.DeletedAt!.Value,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -156,8 +158,9 @@ namespace backend.Controllers
                                                                     Action = "Delete",
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
-                                                                    TargetEntity = "USER",
+                                                                    TargetEntity = "PLAYLIST",
                                                                     TargetId = action.PlaylistId,
+                                                                    TimeStamp = action.DeletedAt!.Value,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -169,8 +172,9 @@ namespace backend.Controllers
                                                                     Action = "Delete",
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
-                                                                    TargetEntity = "USER",
+                                                                    TargetEntity = "RATING",
                                                                     TargetId = action.ReviewId,
+                                                                    TimeStamp = action.DeletedAt!.Value,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -182,8 +186,9 @@ namespace backend.Controllers
                                                                     Action = "Delete",
                                                                     AdminId = action.AdminId,
                                                                     AdminName = action.Admin.User.Username,
-                                                                    TargetEntity = "USER",
+                                                                    TargetEntity = "MUSICIAN",
                                                                     TargetId = action.MusicianId,
+                                                                    TimeStamp = action.DeletedAt!.Value,
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
@@ -198,11 +203,12 @@ namespace backend.Controllers
                                                                     AdminName = action.Admin!.User.Username,
                                                                     TargetEntity = "REVIEW",
                                                                     TargetId = action.ReviewId,
+                                                                    TimeStamp = action.TimestampCreated,
                                                                     Comment = action.ReviewComment
                                                                 })
                                                                 .ToArrayAsync();
 
-            return Ok(songDeletes.Concat(userDeletes).Concat(playlistDeletes).Concat(albumDeletes).Concat(ratingDeletes).Concat(musicianDeletes));
+            return Ok(songDeletes.Concat(userDeletes).Concat(playlistDeletes).Concat(albumDeletes).Concat(ratingDeletes).Concat(musicianDeletes).Concat(adminReviews).OrderByDescending(action => action.TimeStamp));
         }
 
         [HttpGet]

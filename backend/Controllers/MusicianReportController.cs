@@ -30,9 +30,9 @@ namespace backend.Controllers
                 AlbumTitle = r.AlbumTitle,
                 SongName = r.SongName,
                 Genres = r.Genres,
-                AvgRating = r.AvgRating,
-                Likes = r.Likes,
-                Streams = r.Streams
+                AvgRating = (float?) r.AvgRating,
+                Likes = (int) r.Likes,
+                Streams = (int) r.Streams
             });
 
             return Ok(report);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.DTOs.Admin;
 using backend.DTOs.Playlist;
 using backend.DTOs.Song;
 using backend.Mappers;
@@ -138,11 +139,69 @@ namespace backend.Controllers
             return Ok(playlistDto);
         }
 
+        [HttpPost("/admin/delete/playlist/{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] AdminDeleteRequest request)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User deletingUser = (await _context.Users.FindAsync(userId))!;
+            Playlist? playlistToDelete = await _context.Playlists.FindAsync(id);
+
+            if (playlistToDelete == null || playlistToDelete.TimestampDeleted != null)
+                return NotFound();
+
+            // ADMIN CHECK
+            if (deletingUser.AdminId == null)
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            ulong? adminId = deletingUser.AdminId;
+
+            // RESOLVE ASSOCIATED REPORTS IF REQUESTED
+            if (request.ResolveReports)
+            {
+                var unresolvedComplaints = await _context.Complaints
+                    .Include(c => c.Reviews)
+                    .Where(c => c.ComplaintType == "PLAYLIST" && c.ComplaintTargetId == id && c.Reviews.Count == 0)
+                    .ToListAsync();
+
+                foreach (var complaint in unresolvedComplaints)
+                {
+                    Review autoReview = new Review
+                    {
+                        AdminId = adminId.Value,
+                        ComplaintId = complaint.ComplaintId,
+                        TimestampCreated = DateTime.Now,
+                        CreatedBy = userId,
+                        ReviewComment = "Automatically resolved after deletion of offending content"
+                    };
+                    await _context.Reviews.AddAsync(autoReview);
+                }
+            }
+
+            // CREATE TRACKING ENTITY
+            AdminDeletesPlaylist adminAction = new AdminDeletesPlaylist
+            {
+                AdminId = adminId.Value,
+                PlaylistId = id,
+                DeletedAt = DateTime.Now,
+                Reason = request.Reason
+            };
+
+            // SAVE TRACKING AND SOFT DELETE
+            await _context.AdminDeletesPlaylists.AddAsync(adminAction);
+            playlistToDelete.TimestampDeleted = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Created(uri: null as string, adminAction);
+        }
+
         [HttpDelete("{id}")]
         [EnableCors("AllowSpecificOrigins")]
         public async Task<IActionResult> Delete([FromRoute] ulong id)
         {
             ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User user = (await _context.Users.FindAsync(userId))!;
+            bool isAdmin = user.AdminId != null;
 
             var playlist = await _context.Playlists.FindAsync(id);
             if (playlist == null)
@@ -155,7 +214,8 @@ namespace backend.Controllers
                 return BadRequest("You cannot delete your liked playlist");
             }
 
-            if (playlist.UserId != userId)
+            // Allow if admin OR owner
+            if (!isAdmin && playlist.UserId != userId)
             {
                 return Forbid("Only the playlist owner can delete this playlist");
             }

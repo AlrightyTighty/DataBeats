@@ -111,7 +111,8 @@ public partial class ApplicationDBContext : DbContext
     public virtual DbSet<VwUserAccountActivity> VwUserAccountActivities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=uma-music-db.c72imm4c0ouz.us-east-2.rds.amazonaws.com;uid=admin;pwd=Ramamusic123!;database=music_db", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.42-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1144,8 +1145,6 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasIndex(e => e.ReviewId, "review_id").IsUnique();
 
-            entity.HasIndex(e => e.UpdatedBy, "updated_by");
-
             entity.Property(e => e.ReviewId).HasColumnName("review_id");
             entity.Property(e => e.AdminId).HasColumnName("admin_id");
             entity.Property(e => e.ComplaintId).HasColumnName("complaint_id");
@@ -1180,13 +1179,7 @@ public partial class ApplicationDBContext : DbContext
 
             entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.ReviewDeletedByNavigations)
                 .HasForeignKey(d => d.DeletedBy)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("review_ibfk_5");
-
-            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.ReviewUpdatedByNavigations)
-                .HasForeignKey(d => d.UpdatedBy)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("review_ibfk_4");
         });
 
         modelBuilder.Entity<Session>(entity =>

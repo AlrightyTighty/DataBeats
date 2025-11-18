@@ -7,6 +7,9 @@ import Topnav from "../Components/Topnav.jsx";
 import { toggleLike, getLikeStatuses } from "../lib/likesApi.js";
 import { usePlaybar } from "../contexts/PlaybarContext.jsx";
 import useAuthentication from "../hooks/useAuthentication";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
 
 const Album = () => {
   const { setPlaybarState } = usePlaybar();
@@ -121,11 +124,50 @@ const Album = () => {
     }
   }
 
+  // Context menu setup
+  const [contextMenuRef, contextMenu, setContextMenu] = useContextMenu();
+
+  const albumContextItems = [];
+  const albumContextFunctions = [];
+
+  // Add "Report" option if user is not the creator
+  if (user && user.musicianId !== albumData.createdBy) {
+    albumContextItems.push("Report");
+    albumContextFunctions.push(() => {
+      navigate(`/report?type=ALBUM&id=${id}`);
+    });
+  }
+
+  // Add "Delete" option if user is an admin
+  if (user && user.adminId) {
+    albumContextItems.push("Delete");
+    albumContextFunctions.push(() => {
+      navigate(`/admin/delete?type=ALBUM&id=${id}`);
+    });
+  }
+
   return (
     <>
+      <ContextMenu
+        ref={contextMenuRef}
+        items={contextMenu.items}
+        functions={contextMenu.functions}
+        x={contextMenu.x}
+        y={contextMenu.y}
+        visible={contextMenu.visible}
+      />
       <Topnav />
       <div className={styles.container}>
         <div className={styles.albumHeader}>
+          {(albumContextItems.length > 0) && (
+            <ContextMenuButton
+              right="30px"
+              top="30px"
+              functions={albumContextFunctions}
+              items={albumContextItems}
+              setContextMenu={setContextMenu}
+            />
+          )}
           <div className={styles.albumCover}>
             <img
               src={`data:image/png;base64,${albumData.albumArtImage}`}

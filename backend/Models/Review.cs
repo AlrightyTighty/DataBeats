@@ -17,11 +17,11 @@ public partial class Review
 
     public DateTime? TimestampUpdated { get; set; }
 
-    public ulong UpdatedBy { get; set; }
+    public ulong? UpdatedBy { get; set; }
 
-    public DateTime TimestampDelted { get; set; }
+    public DateTime? TimestampDelted { get; set; }
 
-    public ulong DeletedBy { get; set; }
+    public ulong? DeletedBy { get; set; }
 
     public string ReviewComment { get; set; } = null!;
 
@@ -33,7 +33,5 @@ public partial class Review
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
-    public virtual User DeletedByNavigation { get; set; } = null!;
-
-    public virtual User UpdatedByNavigation { get; set; } = null!;
+    public virtual User? DeletedByNavigation { get; set; }
 }

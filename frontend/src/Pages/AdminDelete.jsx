@@ -21,32 +21,47 @@ export default function AdminDelete() {
     e.preventDefault();
     setError("");
 
+    // Map entity type to endpoint path
+    const entityTypeMap = {
+      SONG: "song",
+      ALBUM: "album",
+      PLAYLIST: "playlist",
+      USER: "user",
+      RATING: "rating",
+      MUSICIAN: "musician",
+    };
+
+    const endpoint = entityTypeMap[entityType];
+    if (!endpoint) {
+      setError("Invalid entity type");
+      return;
+    }
+
     const deleteData = {
-      EntityType: entityType,
-      EntityId: entityId,
       Reason: reason,
       ResolveReports: resolveReports,
     };
 
     try {
-      const response = await fetch(`${API}/api/admin/delete`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(deleteData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${API}/admin/delete/${endpoint}/${entityId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(deleteData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
-        console.log("Content deleted:", deleteData);
+        console.log("Content deleted");
         showAlert("Deleted", "Content deleted successfully");
         navigate("/admin");
       } else {
-        const errorData = await response.json();
-        setError(
-          errorData.message || "Failed to delete content. Please try again."
-        );
+        const errorText = await response.text();
+        setError(errorText || "Failed to delete content. Please try again.");
       }
     } catch (err) {
       setError("An error occurred while deleting content. Please try again.");
