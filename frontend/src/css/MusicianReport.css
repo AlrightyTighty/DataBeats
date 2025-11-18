@@ -97,10 +97,12 @@
 }
 
 .results-table table {
+    width: 100%;
     border-collapse: collapse;
 }
 
 .results-table th, td {
+    
     border: 1.5px solid #382c60ff;
     border-radius: 5px;
 }
