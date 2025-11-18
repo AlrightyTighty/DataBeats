@@ -44,9 +44,12 @@ export default function ArtistProfileUser({ setPlaybarState }) {
   const loadFollowerCount = useCallback(async () => {
     if (!artist?.userId) return;
     try {
-      const followersRes = await fetch(`${API}/api/follow/followers/${artist.userId}`, {
-        credentials: "include",
-      });
+      const followersRes = await fetch(
+        `${API}/api/follow/followers/${artist.userId}`,
+        {
+          credentials: "include",
+        }
+      );
       if (followersRes.ok) {
         const followers = await followersRes.json();
         setFollowerCount(Array.isArray(followers) ? followers.length : 0);
@@ -174,7 +177,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
   }
 
   function onReport() {
-    location.href = `/report?type=artist&id=${musicianId}`;
+    location.href = `/report?type=MUSICIAN&id=${musicianId}`;
   }
 
   async function handleFollowClick() {

@@ -18,7 +18,7 @@ const Album = () => {
 
   const renderClickableArtists = (artists) => {
     if (!artists || artists.length === 0) return "Unknown Artist";
-    
+
     return artists.map((artist, index) => (
       <span key={artist.musicianId || index}>
         <button
@@ -26,17 +26,17 @@ const Album = () => {
           onClick={() => navigate(`/artist/${artist.musicianId}`)}
           className={styles.artistLink}
           style={{
-            background: 'none',
-            border: 'none',
-            color: 'inherit',
-            textDecoration: 'none',
-            cursor: 'pointer',
+            background: "none",
+            border: "none",
+            color: "inherit",
+            textDecoration: "none",
+            cursor: "pointer",
             padding: 0,
-            font: 'inherit',
-            transition: 'text-decoration 0.2s ease'
+            font: "inherit",
+            transition: "text-decoration 0.2s ease",
           }}
-          onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-          onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+          onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
         >
           {artist.artistName}
         </button>
@@ -159,7 +159,7 @@ const Album = () => {
       <Topnav />
       <div className={styles.container}>
         <div className={styles.albumHeader}>
-          {(albumContextItems.length > 0) && (
+          {albumContextItems.length > 0 && (
             <ContextMenuButton
               right="30px"
               top="30px"
@@ -189,7 +189,10 @@ const Album = () => {
               {albumData.numSongs !== undefined && (
                 <>
                   <span className={styles.metadataDot}>•</span>
-                  <span>{albumData.numSongs} {albumData.numSongs === 1 ? 'song' : 'songs'}</span>
+                  <span>
+                    {albumData.numSongs}{" "}
+                    {albumData.numSongs === 1 ? "song" : "songs"}
+                  </span>
                 </>
               )}
               {albumData.duration && (

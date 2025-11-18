@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router";
 import styles from "./GenerateReport.module.css";
 import API from "../lib/api";
 import Topnav from "../Components/Topnav";
+import { useModal } from "../contexts/ModalContext";
 
 export default function GenerateReport() {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ export default function GenerateReport() {
   const [minAlbumStreams, setMinAlbumStreams] = useState("");
   const [minGenreStreams, setMinGenreStreams] = useState("");
   const [minArtistStreams, setMinArtistStreams] = useState("");
+
+  const { showAlert } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,13 +27,16 @@ export default function GenerateReport() {
 
     try {
       console.log(API);
-      const response = await fetch(`${API}/api/admin/generateReport?${params}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${API}/api/admin/generateReport?${params}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
-        alert("Failed to generate report");
+        showAlert("Failed to generate report");
         return;
       }
 
@@ -40,7 +46,7 @@ export default function GenerateReport() {
       navigate("/admin/report-result");
     } catch (err) {
       console.error(err);
-      alert("Error generating report");
+      showAlert("Error", "Error generating report");
     }
   };
 
@@ -57,36 +63,57 @@ export default function GenerateReport() {
 
         <main className={styles.main}>
           <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.fieldGroup}>
-            <label>From Date:</label>
-            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label>From Date:</label>
+              <input
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label>Until Date:</label>
-            <input type="date" value={until} onChange={(e) => setUntil(e.target.value)} />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label>Until Date:</label>
+              <input
+                type="date"
+                value={until}
+                onChange={(e) => setUntil(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label>Min Album Streams:</label>
-            <input type="number" value={minAlbumStreams} onChange={(e) => setMinAlbumStreams(e.target.value)} />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label>Min Album Streams:</label>
+              <input
+                type="number"
+                value={minAlbumStreams}
+                onChange={(e) => setMinAlbumStreams(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label>Min Genre Streams:</label>
-            <input type="number" value={minGenreStreams} onChange={(e) => setMinGenreStreams(e.target.value)} />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label>Min Genre Streams:</label>
+              <input
+                type="number"
+                value={minGenreStreams}
+                onChange={(e) => setMinGenreStreams(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label>Min Artist Streams:</label>
-            <input type="number" value={minArtistStreams} onChange={(e) => setMinArtistStreams(e.target.value)} required />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label>Min Artist Streams:</label>
+              <input
+                type="number"
+                value={minArtistStreams}
+                onChange={(e) => setMinArtistStreams(e.target.value)}
+                required
+              />
+            </div>
 
-          <button type="submit" className={styles.submitButton}>
-            Generate Report
-          </button>
-        </form>
-      </main>
+            <button type="submit" className={styles.submitButton}>
+              Generate Report
+            </button>
+          </form>
+        </main>
       </div>
     </>
   );

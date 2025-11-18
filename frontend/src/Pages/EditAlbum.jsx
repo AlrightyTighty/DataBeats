@@ -477,7 +477,7 @@ const EditAlbum = () => {
           navigate("/dashboard");
         } catch (err) {
           console.error(err);
-          alert(err.message || "Failed to delete album");
+          showAlert("Error", err.message || "Failed to delete album");
         } finally {
           setIsDeleting(false);
         }

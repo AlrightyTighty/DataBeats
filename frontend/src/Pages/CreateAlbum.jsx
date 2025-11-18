@@ -50,6 +50,8 @@ const CreateAlbum = () => {
     songs: [],
   });
 
+  const { showAlert } = useModal();
+
   // musicians per song (for UI state)
   const [musiciansPerSong, setMusiciansPerSong] = useState([]);
 
@@ -136,17 +138,20 @@ const CreateAlbum = () => {
 
   // Song fields updates
   const updateSongName = (index, name) => {
-    if (songInfo.current[index] == null) songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
+    if (songInfo.current[index] == null)
+      songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
     songInfo.current[index].songName = name;
   };
 
   const updateSongLyrics = (index, lyrics) => {
-    if (songInfo.current[index] == null) songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
+    if (songInfo.current[index] == null)
+      songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
     songInfo.current[index].lyrics = lyrics;
   };
 
   const updateSongFileId = (index, songFileId) => {
-    if (songInfo.current[index] == null) songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
+    if (songInfo.current[index] == null)
+      songInfo.current[index] = { songName: "", lyrics: "", songFileId: null };
     songInfo.current[index].songFileId = songFileId;
   };
 
@@ -178,7 +183,10 @@ const CreateAlbum = () => {
     }
     if (musiciansPerSong[index] == null) musiciansPerSong[index] = [];
     // Prevent duplicates (check against existing names and current user's name)
-    if (musiciansPerSong[index].includes(nameToAdd) || nameToAdd === currentMusicianName) {
+    if (
+      musiciansPerSong[index].includes(nameToAdd) ||
+      nameToAdd === currentMusicianName
+    ) {
       event.target.value = "";
       return;
     }
@@ -225,7 +233,8 @@ const CreateAlbum = () => {
   };
 
   // album-level name input handler wrapper
-  const onAlbumNameFieldChange = (e) => onNameFieldChange(e, albumArtistNames, setAlbumArtistNames);
+  const onAlbumNameFieldChange = (e) =>
+    onNameFieldChange(e, albumArtistNames, setAlbumArtistNames);
 
   // remove album-level musician name
   const removeAlbumMusicianName = (index) => {
@@ -297,7 +306,7 @@ const CreateAlbum = () => {
       const responseJson = await response.json();
       // If request failed (non-2xx) or body doesn't include albumId -> failure
       if (!response.ok || !responseJson || !responseJson.albumId) {
-        alert("album creation failed");
+        showAlert("Error", "Album creation failed");
         setIsSubmitting(false);
         return;
       }
@@ -307,7 +316,7 @@ const CreateAlbum = () => {
       navigate(`/album/${albumId}`);
     } catch (err) {
       console.error(err);
-      alert("album creation failed");
+      showAlert("Error", "album creation failed");
       setIsSubmitting(false);
     }
   };
@@ -330,7 +339,11 @@ const CreateAlbum = () => {
 
           <h3>Album Art</h3>
           <div id={styles["album-art-select"]}>
-            <img id={styles["album-art-image"]} src={albumArtURL ?? albumArtPlaceholder} alt="album art" />
+            <img
+              id={styles["album-art-image"]}
+              src={albumArtURL ?? albumArtPlaceholder}
+              alt="album art"
+            />
             <input
               type="file"
               id={styles["album-art-file-input"]}
@@ -343,10 +356,20 @@ const CreateAlbum = () => {
           </div>
 
           <h3>Album Title</h3>
-          <input onChange={(event) => editAlbumInfo("albumTitle", event)} type="text" placeholder="Album Name" className={styles["album-text-input"]} />
+          <input
+            onChange={(event) => editAlbumInfo("albumTitle", event)}
+            type="text"
+            placeholder="Album Name"
+            className={styles["album-text-input"]}
+          />
 
           <h3>Contributing Musicians (separate by commas)</h3>
-          <input onChange={onAlbumNameFieldChange} type="text" placeholder="Enter musician names, comma to add" className={styles["album-text-input"]} />
+          <input
+            onChange={onAlbumNameFieldChange}
+            type="text"
+            placeholder="Enter musician names, comma to add"
+            className={styles["album-text-input"]}
+          />
           <div className={styles["artist-ids"]}>
             {currentMusicianName && (
               <div className={styles["current-user-artist"]} key="current-user">
@@ -391,25 +414,54 @@ const CreateAlbum = () => {
                   <div key={key} className={styles["songs-list-entry"]}>
                     <div className={styles["song-entry-header"]}>
                       <h2>Song {index + 1}</h2>
-                      <button className={styles["delete-song-button"]} onClick={() => removeSong(index)} aria-label="Delete song">
+                      <button
+                        className={styles["delete-song-button"]}
+                        onClick={() => removeSong(index)}
+                        aria-label="Delete song"
+                      >
                         <FaTrash />
                       </button>
                     </div>
 
                     <h2>Song Name</h2>
-                    <input type="text" className={styles["song-text-input"]} onChange={(event) => updateSongName(index, event.target.value)} />
+                    <input
+                      type="text"
+                      className={styles["song-text-input"]}
+                      onChange={(event) =>
+                        updateSongName(index, event.target.value)
+                      }
+                    />
 
                     <h2>Lyrics</h2>
-                    <textarea className={styles["lyric-area"]} style={{ width: "", height: "" }} onChange={(event) => updateSongLyrics(index, event.target.value)} />
+                    <textarea
+                      className={styles["lyric-area"]}
+                      style={{ width: "", height: "" }}
+                      onChange={(event) =>
+                        updateSongLyrics(index, event.target.value)
+                      }
+                    />
 
                     <h2>Song File</h2>
-                    <input accept=".mp3" type="file" className={styles["song-file-input"]} onChange={(event) => uploadSongFile(index, event)} />
+                    <input
+                      accept=".mp3"
+                      type="file"
+                      className={styles["song-file-input"]}
+                      onChange={(event) => uploadSongFile(index, event)}
+                    />
 
                     <h2>Contributing Musicians (separate by commas)</h2>
-                    <input onChange={(event) => addSongMusicianName(index, event)} type="text" className={styles["song-text-input"]} placeholder="Type a name, end with comma" />
+                    <input
+                      onChange={(event) => addSongMusicianName(index, event)}
+                      type="text"
+                      className={styles["song-text-input"]}
+                      placeholder="Type a name, end with comma"
+                    />
                     <div className={styles["artist-ids"]}>
                       {currentMusicianName && (
-                        <div className={styles["current-user-artist"]} key={`song-${index}-current-user`}>
+                        <div
+                          className={styles["current-user-artist"]}
+                          key={`song-${index}-current-user`}
+                        >
                           {currentMusicianName}
                         </div>
                       )}
@@ -428,7 +480,12 @@ const CreateAlbum = () => {
                     </div>
 
                     <h2>Genres (max 3, separate by commas)</h2>
-                    <input onChange={(event) => addSongGenre(index, event)} type="text" className={styles["song-text-input"]} placeholder="Type a genre, end with comma" />
+                    <input
+                      onChange={(event) => addSongGenre(index, event)}
+                      type="text"
+                      className={styles["song-text-input"]}
+                      placeholder="Type a genre, end with comma"
+                    />
                     <div className={styles["artist-ids"]}>
                       {genresForThisSong.map((g, gi) => {
                         return (
@@ -450,8 +507,20 @@ const CreateAlbum = () => {
           )}
         </div>
 
-        <div style={{ marginTop: "24px", display: "flex", gap: "12px", alignItems: "center" }}>
-          <button onClick={uploadAlbum} disabled={isSubmitting} className={styles["submit-button"]} aria-disabled={isSubmitting}>
+        <div
+          style={{
+            marginTop: "24px",
+            display: "flex",
+            gap: "12px",
+            alignItems: "center",
+          }}
+        >
+          <button
+            onClick={uploadAlbum}
+            disabled={isSubmitting}
+            className={styles["submit-button"]}
+            aria-disabled={isSubmitting}
+          >
             {isSubmitting ? "Creating album..." : "Submit"}
           </button>
 
@@ -459,7 +528,14 @@ const CreateAlbum = () => {
           {isSubmitting && <div className="loader" aria-hidden="true" />}
         </div>
 
-        {validationError && <div className={styles["validation-error"]} style={{ marginTop: "12px", color: "#ff6b6b", fontSize: "14pt" }}>{validationError}</div>}
+        {validationError && (
+          <div
+            className={styles["validation-error"]}
+            style={{ marginTop: "12px", color: "#ff6b6b", fontSize: "14pt" }}
+          >
+            {validationError}
+          </div>
+        )}
       </main>
     </>
   );

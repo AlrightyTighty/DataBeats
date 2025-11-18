@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./UserReports.module.css";
 import API from "../lib/api";
+import { useModal } from "../contexts/ModalContext";
+import { Link } from "react-router";
 
 const reportsData = [
   {
@@ -97,6 +99,8 @@ export function UserReports() {
   const [resolutionNote, setResolutionNote] = useState("");
   const [resolvingReportId, setResolvingReportId] = useState(null);
   const [showResolveModal, setShowResolveModal] = useState(false);
+  const { showAlert } = useModal();
+
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -147,6 +151,14 @@ export function UserReports() {
     setResolutionNote("");
   };
 
+  const typeToLink = {
+    USER: "user",
+    ALBUM: "album",
+    SONG: "songinfo",
+    PLAYLIST: "playlist",
+    RATING: "rating",
+  };
+
   const resolveReport = async (reportId, note) => {
     try {
       const response = await fetch(`${API}/api/admin/reports/${reportId}`, {
@@ -160,14 +172,20 @@ export function UserReports() {
 
       if (response.ok) {
         // Remove the resolved report from the list
-        setReports(reports.filter(report => report.id !== reportId));
+        setReports(reports.filter((report) => report.id !== reportId));
       } else {
         console.error("Failed to resolve report:", response.status);
-        alert("Failed to resolve report. Please try again.");
+        showAlert(
+          "Resolution failed",
+          "Failed to resolve report. Please try again."
+        );
       }
     } catch (error) {
       console.error("Error resolving report:", error);
-      alert("An error occurred while resolving the report.");
+      showAlert(
+        "Resolution failed",
+        "An error occurred while resolving the report."
+      );
     }
   };
 
@@ -180,67 +198,95 @@ export function UserReports() {
         </div>
 
         <div className={styles.reportsList}>
-        {reports.map((report) => {
-          const statusStyle = getStatusStyle(report.status);
-          const reasonStyle = getReasonStyle(report.reason);
+          {reports.map((report) => {
+            const statusStyle = getStatusStyle(report.status);
+            const reasonStyle = getReasonStyle(report.reason);
 
-          return (
-            <div key={report.id} className={styles.reportItem} onClick={() => setSelectedReport(report.id === selectedReport ? null : report.id)}>
-              <div className={styles.reportHeader}>
-                <div className={styles.reportMeta}>
-                  <span className={styles.reportId}>#{report.id}</span>
-                  <span
-                    className={styles.priority}
-                    style={{
-                      backgroundColor: reasonStyle.bg,
-                      color: reasonStyle.color,
-                    }}
-                  >
-                    {report.reason}
-                  </span>
-                  <button
-                    className={styles.resolveButton}
-                    onClick={(e) => handleResolveClick(e, report.id)}
-                  >
-                    Resolve
-                  </button>
-                  <span
-                    className={styles.status}
-                    style={{
-                      backgroundColor: reasonStyle.bg,
-                      color: reasonStyle.color,
-                    }}
-                  >
-                    {report.type}
-                  </span>
+            return (
+              <div
+                key={report.id}
+                className={styles.reportItem}
+                onClick={() =>
+                  setSelectedReport(
+                    report.id === selectedReport ? null : report.id
+                  )
+                }
+              >
+                <div className={styles.reportHeader}>
+                  <div className={styles.reportMeta}>
+                    <span className={styles.reportId}>#{report.id}</span>
+                    <span
+                      className={styles.priority}
+                      style={{
+                        backgroundColor: reasonStyle.bg,
+                        color: reasonStyle.color,
+                      }}
+                    >
+                      {report.reason}
+                    </span>
+                    <button
+                      className={styles.resolveButton}
+                      onClick={(e) => handleResolveClick(e, report.id)}
+                    >
+                      Resolve
+                    </button>
+                    <span
+                      className={styles.status}
+                      style={{
+                        backgroundColor: reasonStyle.bg,
+                        color: reasonStyle.color,
+                      }}
+                    >
+                      {report.type}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.reportContent}>
+                  <div className={styles.reportReason}>{report.reason}</div>
+                  <div className={styles.reportTargets}>
+                    <Link to={`/user/${report.reporter}`}>
+                      <span className={styles.label}>Reporter: User</span>
+                      <span className={styles.username}>{report.reporter}</span>
+                    </Link>
+
+                    <span className={styles.separator}>→</span>
+                    <Link
+                      to={`/${typeToLink[report.entityType]}/${
+                        report.reported
+                      }`}
+                    >
+                      <span className={styles.label}>Reported:</span>
+                      <span className={styles.username}>
+                        {report.entityType + " " + report.reported}
+                      </span>
+                    </Link>
+                  </div>
+                  {selectedReport === report.id && (
+                    <div className={styles.reportDescription}>
+                      {report.description}
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.reportFooter}>
+                  <span className={styles.timestamp}>{report.timestamp}</span>
+                  {selectedReport !== report.id && (
+                    <button className={styles.viewButton}>View Details</button>
+                  )}
                 </div>
               </div>
-
-              <div className={styles.reportContent}>
-                <div className={styles.reportReason}>{report.reason}</div>
-                <div className={styles.reportTargets}>
-                  <span className={styles.label}>Reporter: User</span>
-                  <span className={styles.username}>{report.reporter}</span>
-                  <span className={styles.separator}>→</span>
-                  <span className={styles.label}>Reported:</span>
-                  <span className={styles.username}>{report.entityType + " " + report.reported}</span>
-                </div>
-                {selectedReport === report.id && <div className={styles.reportDescription}>{report.description}</div>}
-              </div>
-
-              <div className={styles.reportFooter}>
-                <span className={styles.timestamp}>{report.timestamp}</span>
-                {selectedReport !== report.id && <button className={styles.viewButton}>View Details</button>}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
 
       {showResolveModal && (
         <div className={styles.modalOverlay} onClick={handleCancelResolve}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className={styles.modalTitle}>Resolve Report</h2>
             <div className={styles.modalBody}>
               <label className={styles.modalLabel}>
@@ -256,14 +302,22 @@ export function UserReports() {
                   className={styles.modalTextarea}
                   rows={6}
                 />
-                <div className={styles.charCount}>{resolutionNote.length} / 500</div>
+                <div className={styles.charCount}>
+                  {resolutionNote.length} / 500
+                </div>
               </label>
             </div>
             <div className={styles.modalActions}>
-              <button className={styles.modalCancelButton} onClick={handleCancelResolve}>
+              <button
+                className={styles.modalCancelButton}
+                onClick={handleCancelResolve}
+              >
                 Cancel
               </button>
-              <button className={styles.modalConfirmButton} onClick={handleConfirmResolve}>
+              <button
+                className={styles.modalConfirmButton}
+                onClick={handleConfirmResolve}
+              >
                 Confirm Resolution
               </button>
             </div>

@@ -13,6 +13,7 @@ import ContextMenu from "../Components/ContextMenu";
 import useContextMenu from "../hooks/useContextMenu";
 import ContextMenuButton from "../Components/ContextMenuButton";
 import { usePlaybar } from "../contexts/PlaybarContext";
+import { useModal } from "../contexts/ModalContext";
 
 const SongInfo = () => {
   const { playbarState, setPlaybarState } = usePlaybar();
@@ -38,6 +39,8 @@ const SongInfo = () => {
 
   const navigate = useNavigate();
 
+  const { showAlert } = useModal();
+
   console.log("Song info: ");
   console.log(songInfo);
 
@@ -61,11 +64,15 @@ const SongInfo = () => {
 
       setSongInfo(songInfo);
 
-      const albumArtResponse = await fetch(`${API}/api/art/${songInfo.albumArtId}`);
+      const albumArtResponse = await fetch(
+        `${API}/api/art/${songInfo.albumArtId}`
+      );
 
       setAlbumCover((await albumArtResponse.json()).fileData);
 
-      const reviews = await (await fetch(`${API}/api/rating/song/${id}?page=${reviewPage}&count=50`)).json();
+      const reviews = await (
+        await fetch(`${API}/api/rating/song/${id}?page=${reviewPage}&count=50`)
+      ).json();
 
       setReviews(reviews);
     })();
@@ -81,7 +88,8 @@ const SongInfo = () => {
     });
   };
 
-  const isCurrentlyPlaying = playbarState?.visible && playbarState?.songId == id;
+  const isCurrentlyPlaying =
+    playbarState?.visible && playbarState?.songId == id;
 
   const starHover = (index) => {
     setCreateReviewTempStars(index + 1);
@@ -133,7 +141,7 @@ const SongInfo = () => {
         credentials: "include",
       });
 
-      alert("The song has been deleted.");
+      showAlert("The song has been deleted.");
 
       navigate(`/album/${songInfo.albumId}`);
     });
@@ -157,21 +165,40 @@ const SongInfo = () => {
 
   return (
     <>
-      <ContextMenu ref={contextMenuRef} items={contextMenu.items} functions={contextMenu.functions} x={contextMenu.x} y={contextMenu.y} visible={contextMenu.visible} />
+      <ContextMenu
+        ref={contextMenuRef}
+        items={contextMenu.items}
+        functions={contextMenu.functions}
+        x={contextMenu.x}
+        y={contextMenu.y}
+        visible={contextMenu.visible}
+      />
       <Topnav />
       <main id={styles["main"]}>
         <div id={styles["left-half"]}>
           {(songInfo && userInfo && (
             <>
               <div id={styles["song-info"]}>
-                <ContextMenuButton right="30px" top="30px" functions={songContextFunctions} items={songContextItems} setContextMenu={setContextMenu} />
-                <img id={styles["album-art"]} src={`data:image/png;base64,${albumCover}`} />
+                <ContextMenuButton
+                  right="30px"
+                  top="30px"
+                  functions={songContextFunctions}
+                  items={songContextItems}
+                  setContextMenu={setContextMenu}
+                />
+                <img
+                  id={styles["album-art"]}
+                  src={`data:image/png;base64,${albumCover}`}
+                />
                 <div id={styles["song-right"]}>
                   <div id={styles["song-right-text"]}>
                     <h1 id={styles["song-title"]}>{songInfo.songName}</h1>
                     <p className={styles["song-text-info-item"]}>
                       From the album:{" "}
-                      <Link className={styles.link} to={`/album/${songInfo.albumId}`}>
+                      <Link
+                        className={styles.link}
+                        to={`/album/${songInfo.albumId}`}
+                      >
                         {songInfo.albumName}
                       </Link>
                     </p>
@@ -179,21 +206,29 @@ const SongInfo = () => {
                       Artists:{" "}
                       {songInfo.artistNames.map((artistName, index) => (
                         <span key={songInfo.artistIds[index]}>
-                          <Link className={styles.link} to={`/artist/${songInfo.artistIds[index]}`}>
+                          <Link
+                            className={styles.link}
+                            to={`/artist/${songInfo.artistIds[index]}`}
+                          >
                             {artistName}
                           </Link>
                           {index < songInfo.artistNames.length - 1 && ", "}
                         </span>
                       ))}
                     </p>
-                    <p className={styles["song-text-info-item"]}>Duration: {songInfo.duration}</p>
+                    <p className={styles["song-text-info-item"]}>
+                      Duration: {songInfo.duration}
+                    </p>
                   </div>
                   <div id={styles["player-controls"]}>
                     <button
                       onClick={onPlayButtonPressed}
                       id={styles["play-button"]}
                       disabled={isCurrentlyPlaying}
-                      style={{ opacity: isCurrentlyPlaying ? 0.5 : 1, cursor: isCurrentlyPlaying ? "not-allowed" : "pointer" }}
+                      style={{
+                        opacity: isCurrentlyPlaying ? 0.5 : 1,
+                        cursor: isCurrentlyPlaying ? "not-allowed" : "pointer",
+                      }}
                     >
                       <FaPlay />
                     </button>
@@ -216,34 +251,52 @@ const SongInfo = () => {
                     <div className={styles["review-header"]}>
                       <h2>Create Review</h2>
                       <div className={styles["review-stars"]}>
-                        {Array.from({ length: createStarCount }).map((_, index) => {
-                          return (
-                            <img
-                              onClick={() => starSelect(index)}
-                              onMouseLeave={() => starUnhover(index)}
-                              onMouseEnter={() => starHover(index)}
-                              key={index}
-                              className={styles["review-star"]}
-                              src={filledStar}
-                            />
-                          );
-                        })}
-                        {Array.from({ length: 5 - createStarCount }).map((_, index) => {
-                          return (
-                            <img
-                              onClick={() => starSelect(index + createStarCount)}
-                              onMouseLeave={() => starUnhover(index + createStarCount)}
-                              onMouseEnter={() => starHover(index + createStarCount)}
-                              key={index + createStarCount}
-                              className={styles["review-star"]}
-                              src={unfilledStar}
-                            />
-                          );
-                        })}
+                        {Array.from({ length: createStarCount }).map(
+                          (_, index) => {
+                            return (
+                              <img
+                                onClick={() => starSelect(index)}
+                                onMouseLeave={() => starUnhover(index)}
+                                onMouseEnter={() => starHover(index)}
+                                key={index}
+                                className={styles["review-star"]}
+                                src={filledStar}
+                              />
+                            );
+                          }
+                        )}
+                        {Array.from({ length: 5 - createStarCount }).map(
+                          (_, index) => {
+                            return (
+                              <img
+                                onClick={() =>
+                                  starSelect(index + createStarCount)
+                                }
+                                onMouseLeave={() =>
+                                  starUnhover(index + createStarCount)
+                                }
+                                onMouseEnter={() =>
+                                  starHover(index + createStarCount)
+                                }
+                                key={index + createStarCount}
+                                className={styles["review-star"]}
+                                src={unfilledStar}
+                              />
+                            );
+                          }
+                        )}
                       </div>
                     </div>
-                    <textarea maxLength={100} ref={createReviewCommentRef} id={styles["create-review-comment"]} placeholder="Enter Review Text" />
-                    <button onClick={publishReview} className={styles["review-button"]}>
+                    <textarea
+                      maxLength={100}
+                      ref={createReviewCommentRef}
+                      id={styles["create-review-comment"]}
+                      placeholder="Enter Review Text"
+                    />
+                    <button
+                      onClick={publishReview}
+                      className={styles["review-button"]}
+                    >
                       Publish
                     </button>
                   </div>
@@ -257,10 +310,13 @@ const SongInfo = () => {
                       if (userInfo.userId == review.userId) {
                         reviewItems.push("Delete");
                         reviewFunctions.push(async () => {
-                          await fetch(`${API}/api/rating/${review.userRatesSongId}`, {
-                            method: "delete",
-                            credentials: "include",
-                          });
+                          await fetch(
+                            `${API}/api/rating/${review.userRatesSongId}`,
+                            {
+                              method: "delete",
+                              credentials: "include",
+                            }
+                          );
 
                           reviews.splice(index, 1);
                           setReviews(reviews.slice());
@@ -272,7 +328,9 @@ const SongInfo = () => {
                       if (userInfo.userId !== review.userId) {
                         reviewItems.push("Report Rating");
                         reviewFunctions.push(() => {
-                          navigate(`/report?type=RATING&id=${review.userRatesSongId}`);
+                          navigate(
+                            `/report?type=RATING&id=${review.userRatesSongId}`
+                          );
                         });
                       }
 
@@ -280,29 +338,58 @@ const SongInfo = () => {
                       if (userInfo.adminId != null) {
                         reviewItems.push("Delete (as admin)");
                         reviewFunctions.push(() => {
-                          navigate(`/admin/delete?type=RATING&id=${review.userRatesSongId}`);
+                          navigate(
+                            `/admin/delete?type=RATING&id=${review.userRatesSongId}`
+                          );
                         });
                       }
 
                       return (
                         <div className={styles["review"]}>
-                          <ContextMenuButton right="30px" top="30px" setContextMenu={setContextMenu} functions={reviewFunctions} items={reviewItems} />
+                          <ContextMenuButton
+                            right="30px"
+                            top="30px"
+                            setContextMenu={setContextMenu}
+                            functions={reviewFunctions}
+                            items={reviewItems}
+                          />
                           <div className={styles["review-header"]}>
                             <h2>
-                              <Link className={styles.link} to={`/user/${review.userId}`}>
+                              <Link
+                                className={styles.link}
+                                to={`/user/${review.userId}`}
+                              >
                                 {review.username}
                               </Link>
                             </h2>
                             <div className={styles["review-stars"]}>
-                              {Array.from({ length: review.starCount }).map((_, index) => {
-                                return <img key={index} className={styles["review-star"]} src={filledStar} />;
-                              })}
-                              {Array.from({ length: 5 - review.starCount }).map((_, index) => {
-                                return <img key={index + review.starCount} className={styles["review-star"]} src={unfilledStar} />;
-                              })}
+                              {Array.from({ length: review.starCount }).map(
+                                (_, index) => {
+                                  return (
+                                    <img
+                                      key={index}
+                                      className={styles["review-star"]}
+                                      src={filledStar}
+                                    />
+                                  );
+                                }
+                              )}
+                              {Array.from({ length: 5 - review.starCount }).map(
+                                (_, index) => {
+                                  return (
+                                    <img
+                                      key={index + review.starCount}
+                                      className={styles["review-star"]}
+                                      src={unfilledStar}
+                                    />
+                                  );
+                                }
+                              )}
                             </div>
                           </div>
-                          <div className={styles["review-content"]}>{review.comment}</div>
+                          <div className={styles["review-content"]}>
+                            {review.comment}
+                          </div>
                         </div>
                       );
                     })}

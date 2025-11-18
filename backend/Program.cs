@@ -13,7 +13,15 @@ builder.Services.AddScoped<MusicianReportService>();
 
 builder.Services.AddDbContext<ApplicationDBContext>((options) =>
 {
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.Parse("8.0.28-mysql"));
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    ServerVersion.Parse("8.0.28-mysql"),
+    sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null); // You can specify specific error numbers to retry on
+            });
 });
 
 builder.Services.AddCors(options =>
