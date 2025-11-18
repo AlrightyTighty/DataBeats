@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistProfileUser.module.css";
 import API from "../lib/api.js";
@@ -10,9 +10,17 @@ import verifiedBadge from "../assets/graphics/musician_verification.png";
 
 export default function ArtistProfileUser({ setPlaybarState }) {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const musicianId = useMemo(() => Number(id), [id]);
-  const { me } = useMe({ redirectIfMissing: true });
+  const { me, loading: authLoading } = useMe();
   const viewerId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+
+  useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
 
   const [artist, setArtist] = useState(null);
   const [albums, setAlbums] = useState([]);

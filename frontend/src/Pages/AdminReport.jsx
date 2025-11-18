@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import useMe from "../Components/UseMe";
 import styles from "./AdminReport.module.css";
@@ -104,6 +105,7 @@ function formatDateCell(raw) {
 }
 
 export default function AdminReport() {
+  const navigate = useNavigate();
   const { me, loading: authLoading } = useMe();
   const userId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
 
@@ -126,6 +128,12 @@ export default function AdminReport() {
   const [userReport, setUserReport] = useState(null);
   const [userLoading, setUserLoading] = useState(false);
   const [userError, setUserError] = useState("");
+
+  useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
 
   const loadReport = useCallback(
     async (overrideFrom, overrideTo) => {

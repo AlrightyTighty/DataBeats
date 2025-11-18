@@ -43,7 +43,6 @@ import PlaylistPage from "./Pages/PlaylistPage.jsx";
 import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
-import History from "./Pages/History.jsx";
 import Logout from "./Pages/Logout.jsx";
 import Follow from "./Pages/Follow.jsx";
 import RecentPlays from "./Pages/RecentPlays.jsx";
@@ -95,14 +94,12 @@ function App() {
         { path: "/admin/generate-report", element: <GenerateReport /> },
         { path: "/admin/report-result", element: <ReportResult /> },
         { path: "/page-not-found", element: <NotFound /> },
-        { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
         { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
         { path: "/admin/report", element: <AdminReport /> },
         { path: "*", element: <NotFound /> },
-   
       ],
     },
   ]);

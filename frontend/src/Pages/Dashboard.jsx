@@ -35,6 +35,12 @@ export default function Dashboard() {
   const contextMenuRef = useRef(null);
 
   useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
+
+  useEffect(() => {
     function handleClickOutside(event) {
       if (
         contextMenuRef.current &&
