@@ -178,6 +178,7 @@ export default function PlaylistPage() {
   const isLikedPlaylist = playlist.playlistName === "Your Liked Playlist";
 
   const canEdit =(playlist.isOwner || playlist.isCollaborator) && !isLikedPlaylist;
+  const canManageAccess = playlist.isOwner && !isLikedPlaylist;
   const canDelete = playlist.isOwner && !isLikedPlaylist;
 
   return (
@@ -227,12 +228,14 @@ export default function PlaylistPage() {
                 >
                   ➕ Add Songs
                 </button>
-                <button
-                  onClick={() => setShowAddUser(true)}
-                  className={styles.addUserButton}
-                >
-                  ➕ Add Users
-                </button>
+                {canManageAccess && (
+                  <button
+                    onClick={() => setShowAddUser(true)}
+                    className={styles.addUserButton}
+                  >
+                    ➕ Add Users
+                  </button>
+                )}
                 {showAddModal && (
                   <AddSongModal
                     isOpen={showAddModal}

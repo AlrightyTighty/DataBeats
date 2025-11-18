@@ -4,7 +4,7 @@ import API from "../lib/api";
 import { useNavigate } from "react-router";
 import { usePlaybar } from "../contexts/PlaybarContext";
 
-import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaRedoAlt, FaInfoCircle, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
+import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaRedoAlt, FaInfoCircle, FaVolumeUp, FaVolumeMute, FaTimes } from "react-icons/fa";
 
 const Playbar = () => {
   const { playbarState, setPlaybarState } = usePlaybar();
@@ -197,10 +197,27 @@ const Playbar = () => {
     playNextSong();
   };
 
+  const closePlaybar = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setPlaybarState({
+      songId: null,
+      albumId: null,
+      playlistId: null,
+      songList: [],
+      visible: false,
+    });
+  };
+
   return (
     <div className={styles.playbar}>
       {(songInfo && songData && albumCover && (
         <>
+          <button className={styles.closeButton} onClick={closePlaybar} aria-label="Close playbar">
+            <FaTimes />
+          </button>
           <div className={styles.songInfo}>
             <img src={`data:image/png;base64,${albumCover}`} alt="Album Art" className={styles.albumArt} />
             <div className={styles.textInfo}>
