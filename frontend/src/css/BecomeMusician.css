@@ -1,0 +1,135 @@
+.become-musician {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.become-musician form {
+    position: absolute;
+    left: 5vw;
+    top: 15vh;
+    box-sizing: border-box;
+    width: 90vw;
+    height: 80vh;
+    padding: 3vh 2vw 3vh 2vw;
+    overflow: auto;
+    box-sizing: border-box;
+    border: 2px solid white;
+    border-radius: 20px;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.become-musician h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.become-musician-name {
+    width: 96%;
+    position: absolute;
+    top: 10vh;
+    font-size: large;
+    /* border: 3px dashed red; */
+}
+
+.become-musician-name input[type="text"] {
+    position: absolute;
+    top: 3vh;
+    left: 0;
+    width: 100%;
+    overflow: auto;
+    font-size: 2vh;
+    color: black;
+    background-color: #d5cfcf;
+    border: 1px solid #382c60ff;
+    border-radius: 10px;
+}
+
+.become-musician-bio {
+    width: 96%;
+    position: absolute;
+    top: 18vh;
+    font-size: large;
+    /* border: 3px dashed orange; */
+}
+
+.become-musician-bio textarea {
+    position: absolute;
+    width: 100%;
+    height: 15vh;
+    top: 3vh;
+    left: 0;
+    overflow: auto;
+    font-size: 2vh;
+    color: black;
+    background-color: #d5cfcf;
+    border: 1px solid #382c60ff;
+    border-radius: 10px;
+}
+
+.become-musician .char-count {
+    position: absolute;
+    top: 18vh;
+    width: 100%;
+    font-size: medium;
+    /* border: 3px dashed brown; */
+}
+
+.become-musician-pfp {
+    position: absolute;
+    width: 96%;
+    top: 42vh;
+    /* border: 3px dashed purple; */
+}
+
+.become-musician-pfp input[type="file"] {
+    position: absolute;
+    left: 6vw;
+    color: black;
+    background-color: #d5cfcf;
+    border: 1px solid #382c60ff;
+    border-radius: 10px;
+}
+
+.become-musician-company {
+    position: absolute;
+    width: 96%;
+    top: 48vh;
+    font-size: large;
+    /* border: 3px dashed yellow; */
+}
+
+.become-musician-company input[type="text"] {
+    position: absolute;
+    top: 3vh;
+    left: 0;
+    width: 100%;
+    overflow: auto;
+    font-size: 2vh;
+    color: black;
+    background-color: #d5cfcf;
+    border: 1px solid #382c60ff;
+    border-radius: 10px;
+}
+
+.submit-button {
+    position: absolute;
+    bottom: 1vh;
+    right: 1vw;
+    width: 8vw;
+    height: 5vh;
+    color: white;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 20px;
+}
+
+.submit-button:hover {
+    cursor: pointer;
+    color: #382c60ff;
+    border-color: #382c60ff;
+    background-color: rgba(237, 235, 235, 0.419);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistProfileUser.module.css";
 import API from "../lib/api.js";
@@ -10,15 +10,24 @@ import verifiedBadge from "../assets/graphics/musician_verification.png";
 
 export default function ArtistProfileUser({ setPlaybarState }) {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const musicianId = useMemo(() => Number(id), [id]);
-  const { me } = useMe({ redirectIfMissing: true });
+  const { me, loading: authLoading } = useMe();
   const viewerId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+
+  useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
 
   const [artist, setArtist] = useState(null);
   const [albums, setAlbums] = useState([]);
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [avatarSrc, setAvatarSrc] = useState(null);
+  const [followerCount, setFollowerCount] = useState(0);
 
   const {
     isFollowing,
@@ -31,6 +40,23 @@ export default function ArtistProfileUser({ setPlaybarState }) {
     targetId: artist?.userId ?? null,
     apiBase: API,
   });
+
+  const loadFollowerCount = useCallback(async () => {
+    if (!artist?.userId) return;
+    try {
+      const followersRes = await fetch(`${API}/api/follow/followers/${artist.userId}`, {
+        credentials: "include",
+      });
+      if (followersRes.ok) {
+        const followers = await followersRes.json();
+        setFollowerCount(Array.isArray(followers) ? followers.length : 0);
+      } else {
+        setFollowerCount(0);
+      }
+    } catch {
+      setFollowerCount(0);
+    }
+  }, [artist?.userId]);
 
   const reloadArtist = useCallback(async () => {
     if (!musicianId) return;
@@ -73,6 +99,10 @@ export default function ArtistProfileUser({ setPlaybarState }) {
   useEffect(() => {
     reloadArtist();
   }, [reloadArtist]);
+
+  useEffect(() => {
+    loadFollowerCount();
+  }, [loadFollowerCount]);
 
   useEffect(() => {
     if (!artist?.profilePictureFileId) {
@@ -149,17 +179,9 @@ export default function ArtistProfileUser({ setPlaybarState }) {
 
   async function handleFollowClick() {
     if (!canFollow || !artist) return;
-    const wasFollowing = isFollowing;
     await followAct();
-    setArtist((prev) => {
-      if (!prev) return prev;
-      const current = prev.followerCount ?? 0;
-      const delta = wasFollowing ? 0 : -1;
-      return {
-        ...prev,
-        followerCount: Math.max(0, current + delta),
-      };
-    });
+    // Reload the actual follower count from the backend
+    await loadFollowerCount();
   }
 
   function handlePlaySong(song) {
@@ -209,7 +231,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
               <p>{artist.bio || "No bio available."}</p>
 
               <div className={styles.stats}>
-                <span>{artist.followerCount ?? 0} Followers</span>
+                <span>{followerCount} Followers</span>
                 <span>
                   {artist.monthlyListenerCount ?? 0} Monthly Listeners
                 </span>

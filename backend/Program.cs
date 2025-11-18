@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<MusicianReportService>();
 
 builder.Services.AddDbContext<ApplicationDBContext>((options) =>
 {
@@ -35,6 +36,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHostedService<EmailService>();
+
+builder.Services.AddScoped<IAdminReportService, AdminReportService>();
 
 var app = builder.Build();
 
@@ -105,6 +108,12 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/playlist") 
 );
 
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin"), appBuilder =>
+{
+    appBuilder.UseMiddleware<AuthenticationHandler>();
+}
+);
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/admin/report"), appBuilder =>
 {
     appBuilder.UseMiddleware<AuthenticationHandler>();
 }

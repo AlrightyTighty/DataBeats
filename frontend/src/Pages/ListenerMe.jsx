@@ -14,8 +14,14 @@ export default function ListenerMe({ setPlaybarState }) {
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
 
-  const { me } = useMe({ redirectIfMissing: true });
+  const { me, loading: authLoading } = useMe();
   const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+
+  useEffect(() => {
+    if (!authLoading && !me) {
+      navigate("/login");
+    }
+  }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
   // musician id + flag
@@ -53,7 +59,10 @@ export default function ListenerMe({ setPlaybarState }) {
   const loadCounts = useCallback(async () => {
     if (!profileUserId) return;
     try {
-      const [followersRes, followingRes] = await Promise.all([fetch(`${API}/api/follow/followers/${profileUserId}`), fetch(`${API}/api/follow/following/${profileUserId}`)]);
+      const [followersRes, followingRes] = await Promise.all([
+        fetch(`${API}/api/follow/followers/${profileUserId}`),
+        fetch(`${API}/api/follow/following/${profileUserId}`),
+      ]);
 
       if (followersRes.ok) {
         const f = await followersRes.json();
@@ -112,7 +121,9 @@ export default function ListenerMe({ setPlaybarState }) {
 
     (async () => {
       try {
-        const res = await fetch(`${API}/api/images/profile-picture/${user.profilePictureFileId}`);
+        const res = await fetch(
+          `${API}/api/images/profile-picture/${user.profilePictureFileId}`
+        );
         if (!res.ok) {
           setUserAvatarSrc(null);
           return;
@@ -168,7 +179,9 @@ export default function ListenerMe({ setPlaybarState }) {
 
     (async () => {
       try {
-        const res = await fetch(`${API}/api/images/profile-picture/${musician.profilePictureFileId}`);
+        const res = await fetch(
+          `${API}/api/images/profile-picture/${musician.profilePictureFileId}`
+        );
         if (!res.ok) {
           setMusicianAvatarSrc(null);
           return;
@@ -251,16 +264,25 @@ export default function ListenerMe({ setPlaybarState }) {
     navigate(`/user-playlists/${profileUserId}`);
   }
 
-  const showFollowButton = me && currentUserId && profileUserId && currentUserId !== profileUserId;
+  const showFollowButton =
+    me && currentUserId && profileUserId && currentUserId !== profileUserId;
 
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          {loadingUser && <p style={{ textAlign: "center", color: "#fff" }}>Loading profile...</p>}
+          {loadingUser && (
+            <p style={{ textAlign: "center", color: "#fff" }}>
+              Loading profile...
+            </p>
+          )}
           {error && <p className={styles.error}>{error}</p>}
-          {!loadingUser && !user && <p style={{ textAlign: "center", color: "#fff" }}>User not found.</p>}
+          {!loadingUser && !user && (
+            <p style={{ textAlign: "center", color: "#fff" }}>
+              User not found.
+            </p>
+          )}
 
           {user && (
             <>
@@ -270,12 +292,22 @@ export default function ListenerMe({ setPlaybarState }) {
                   <KebabMenu onShare={onShare} onReport={onReport} />
                 </div>
 
-                {userAvatarSrc ? <img src={userAvatarSrc} alt="User" className={styles.pic} /> : <div className={styles.pic} />}
+                {userAvatarSrc ? (
+                  <img src={userAvatarSrc} alt="User" className={styles.pic} />
+                ) : (
+                  <div className={styles.pic} />
+                )}
 
                 <div className={styles.info}>
                   <h1 className={styles.nameRow}>
                     @{user.username}
-                    {isVerifiedMusician && <img src={verifiedBadge} alt="Verified musician" className={styles.verifiedBadge} />}
+                    {isVerifiedMusician && (
+                      <img
+                        src={verifiedBadge}
+                        alt="Verified musician"
+                        className={styles.verifiedBadge}
+                      />
+                    )}
                   </h1>
                   <p>
                     {user.fname} {user.lname}
@@ -287,12 +319,24 @@ export default function ListenerMe({ setPlaybarState }) {
                   </div>
 
                   <div className={styles.buttonsRow}>
-                    <button type="button" className={styles.connectionsButton} onClick={goToConnections}>
+                    <button
+                      type="button"
+                      className={styles.connectionsButton}
+                      onClick={goToConnections}
+                    >
                       Connections
                     </button>
 
                     {showFollowButton && (
-                      <button onClick={handleFollowClick} className={followLabel === "Unfollow" ? styles.unfollow : styles.follow} disabled={followLoading}>
+                      <button
+                        onClick={handleFollowClick}
+                        className={
+                          followLabel === "Unfollow"
+                            ? styles.unfollow
+                            : styles.follow
+                        }
+                        disabled={followLoading}
+                      >
                         {followLoading ? "..." : followLabel || "Follow"}
                       </button>
                     )}
@@ -305,40 +349,70 @@ export default function ListenerMe({ setPlaybarState }) {
                 {hasMusician && musician && (
                   <div className={styles.musicianCard}>
                     <div className={styles.musicianHeader}>
-                      {musicianAvatarSrc ? <img src={musicianAvatarSrc} alt={musician.musicianName} className={styles.musicianPic} /> : <div className={styles.musicianPic} />}
+                      {musicianAvatarSrc ? (
+                        <img
+                          src={musicianAvatarSrc}
+                          alt={musician.musicianName}
+                          className={styles.musicianPic}
+                        />
+                      ) : (
+                        <div className={styles.musicianPic} />
+                      )}
                       <div>
-                        <h2 className={styles.musicianName}>{musician.musicianName}</h2>
-                        <p className={styles.musicianStats}>{musician.monthlyListenerCount ?? 0} Monthly Listeners</p>
+                        <h2 className={styles.musicianName}>
+                          {musician.musicianName}
+                        </h2>
+                        <p className={styles.musicianStats}>
+                          {musician.monthlyListenerCount ?? 0} Monthly Listeners
+                        </p>
                       </div>
                     </div>
 
-                    <p className={styles.musicianBio}>{musician.bio || "No bio available."}</p>
+                    <p className={styles.musicianBio}>
+                      {musician.bio || "No bio available."}
+                    </p>
 
-                    <button type="button" className={styles.musicianProfileButton} onClick={() => navigate(`/artist/${musician.musicianId}`)}>
+                    <button
+                      type="button"
+                      className={styles.musicianProfileButton}
+                      onClick={() => navigate(`/artist/${musician.musicianId}`)}
+                    >
                       View Musician Profile
                     </button>
                   </div>
                 )}
 
-                <div className={`${styles.topSongsCard} ${!hasMusician ? styles.topSongsFull : ""}`}>
+                <div
+                  className={`${styles.topSongsCard} ${
+                    !hasMusician ? styles.topSongsFull : ""
+                  }`}
+                >
                   <div className={styles.topSongsHeader}>
                     <h2>Top Songs</h2>
                   </div>
 
                   {topSongs.length === 0 ? (
-                    <p className={styles.centerText}>No listening history yet.</p>
+                    <p className={styles.centerText}>
+                      No listening history yet.
+                    </p>
                   ) : (
                     <div className={styles.songList}>
                       {topSongs.map((s, idx) => {
                         const songId = s.songId ?? s.SongId;
                         const title = s.songName ?? s.SongName;
-                        const artist = s.artistName ?? s.ArtistName ?? s.musicianName ?? "Unknown";
+                        const artist =
+                          s.artistName ??
+                          s.ArtistName ??
+                          s.musicianName ??
+                          "Unknown";
                         const album = s.albumTitle ?? s.AlbumTitle ?? "";
 
                         return (
                           <div key={songId ?? idx} className={styles.songRow}>
                             <div className={styles.songInfo}>
-                              <span className={styles.songIndex}>{idx + 1}.</span>
+                              <span className={styles.songIndex}>
+                                {idx + 1}.
+                              </span>
                               <div>
                                 <div className={styles.songTitle}>{title}</div>
                                 <div className={styles.songMeta}>
@@ -348,7 +422,11 @@ export default function ListenerMe({ setPlaybarState }) {
                               </div>
                             </div>
 
-                            <button type="button" className={styles.playButton} onClick={() => handlePlaySong(s)}>
+                            <button
+                              type="button"
+                              className={styles.playButton}
+                              onClick={() => handlePlaySong(s)}
+                            >
                               ▶
                             </button>
                           </div>
@@ -361,7 +439,11 @@ export default function ListenerMe({ setPlaybarState }) {
 
               {/*Playlists */}
               <div className={styles.bottomRow}>
-                <button type="button" className={styles.viewPlaylists} onClick={goToPlaylists}>
+                <button
+                  type="button"
+                  className={styles.viewPlaylists}
+                  onClick={goToPlaylists}
+                >
                   View All Playlists
                 </button>
               </div>

@@ -4,9 +4,9 @@ import { appLogo } from "../App";
 import { Link } from "react-router";
 import Searchbar from "./Searchbar";
 import AppLogo from "../assets/graphics/DataBeats_Logo.png";
+import UserMenu from "./UserMenu";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
-
 const Topnav = () => {
   const [accountPath, setAccountPath] = useState("/login");
 
@@ -17,7 +17,7 @@ const Topnav = () => {
         const r = await fetch(`${API}/api/me`, { credentials: "include" });
         if (!r.ok) return;
         const me = await r.json();
-        if (!dead && me?.userId) setAccountPath(`/me/${userId}`);
+        if (!dead && me?.userId) setAccountPath(`/me/${me.userId}`);
       } catch {}
     })();
     return () => {
@@ -29,11 +29,17 @@ const Topnav = () => {
     <nav className={styles["topnav"]}>
       <div className={styles["links-and-logo"]}>
         <img className={styles["app-logo"]} src={AppLogo} />
-        <Link className={styles["link"]} to="/authtest">
+        <Link className={styles["link"]} to="/dashboard">
           Dashboard
         </Link>
         <Link className={styles["link"]} to={accountPath}>
-          Account
+          Profile
+        </Link>
+        <Link className={styles["link"]} to="/albums">
+          Albums
+        </Link>
+        <Link className={styles["link"]} to="/artists">
+          Artists
         </Link>
         <Link className={styles["link"]} to="/events">
           Events
@@ -43,9 +49,7 @@ const Topnav = () => {
         <Searchbar />
       </div>
       <div className={styles["right-section"]}>
-        <Link className={styles["link"]} to="/logout">
-          Logout
-        </Link>
+        <UserMenu />
       </div>
     </nav>
   );

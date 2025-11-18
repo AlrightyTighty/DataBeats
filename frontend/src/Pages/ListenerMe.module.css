@@ -5,7 +5,7 @@
   padding-right: 24px;
   padding-bottom: 80px;
   color: #fff;
-  background: linear-gradient(160.49deg, #0c2e9a 0%, #0b1f5c 24%, #0a101d 45%);
+  /*background: linear-gradient(160.49deg, #0c2e9a 0%, #0b1f5c 24%, #0a101d 45%);*/
 }
 
 .container {
@@ -20,7 +20,7 @@
 .header {
   display: flex;
   gap: 30px;
-  background: rgba(121, 212, 247, 0.33);
+  background: rgba(54, 112, 134, 0.33);
   border-radius: 20px;
   padding: 30px;
   align-items: center;

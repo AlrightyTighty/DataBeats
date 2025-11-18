@@ -1,6 +1,6 @@
 import "./App.css";
 
-import _appLogo from "./assets/graphics/DatabeatsLogo.png";
+import _appLogo from "./assets/graphics/DataBeats_Logo.png";
 
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
@@ -15,6 +15,7 @@ import Authtest from "./Pages/Authtest.jsx";
 import Register from "./Pages/Register.jsx";
 import SongInfo from "./Pages/SongInfo.jsx";
 import MusicianDashboard from "./Pages/MusicianDashboard.jsx";
+import MusicianReport from "./Pages/MusicianReport.jsx";
 import StreamPopupTest from "./Pages/StreamPopupTest.jsx";
 import Events from "./Pages/Events.jsx";
 import EventDetails from "./Pages/EventDetails.jsx";
@@ -32,6 +33,7 @@ import ListenerMe from "./Pages/ListenerMe.jsx";
 import ListenerPublic from "./Pages/ListenerPublic.jsx";
 import ArtistProfileUser from "./Pages/ArtistProfileUser.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
+import BecomeMusician from "./Pages/BecomeMusician.jsx";
 import ArtistEvents from "./Pages/ArtistEvents.jsx";
 import ArtistAlbum from "./Pages/ArtistAlbum.jsx";
 import Settings from "./Pages/Settings.jsx";
@@ -43,10 +45,10 @@ import PlaylistPage from "./Pages/PlaylistPage.jsx";
 import GenerateReport from "./Pages/GenerateReport.jsx";
 import ReportResult from "./Pages/ReportResult.jsx";
 import NotFound from "./Pages/NotFound.jsx";
-import History from "./Pages/History.jsx";
 import Logout from "./Pages/Logout.jsx";
 import Follow from "./Pages/Follow.jsx";
 import RecentPlays from "./Pages/RecentPlays.jsx";
+import AdminReport from "./Pages/AdminReport.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -60,6 +62,7 @@ function App() {
         { path: "/authtest", element: <Authtest /> },
         { path: "/songinfo/:id", element: <SongInfo /> },
         { path: "/musician-dashboard/:id", element: <MusicianDashboard /> },
+        { path: "/stats", element: <MusicianReport /> },
         { path: "/streamtest", element: <StreamPopupTest /> },
         { path: "/events", element: <Events /> },
         { path: "/event/:id", element: <EventDetails /> },
@@ -73,6 +76,7 @@ function App() {
         { path: "/admin/delete", element: <AdminDelete /> },
         { path: "/report", element: <Report /> },
         { path: "/dashboard", element: <Dashboard /> },
+        { path: "/become-musician", element: <BecomeMusician />},
         { path: "/user-playlists/:id", element: <UserPlaylists /> },
         {
           path: "/me/:id",
@@ -94,12 +98,12 @@ function App() {
         { path: "/admin/generate-report", element: <GenerateReport /> },
         { path: "/admin/report-result", element: <ReportResult /> },
         { path: "/page-not-found", element: <NotFound /> },
-        { path: "*", element: <NotFound /> },
-        { path: "/history/:id", element: <History /> },
         { path: "/logout", element: <Logout /> },
         { path: "/follows/:id", element: <Follow /> },
         { path: "/artists", element: <Artists /> },
         { path: "recent-plays/:id", element: <RecentPlays /> },
+        { path: "/admin/report", element: <AdminReport /> },
+        { path: "*", element: <NotFound /> },
       ],
     },
   ]);

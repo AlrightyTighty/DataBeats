@@ -28,19 +28,19 @@ export default function Admin() {
         </header>
 
         <main className={styles.main}>
-        <div className={styles.topSection}>
-          <div className={styles.activitySection}>
-            <AdminActivity />
+          <div className={styles.topSection}>
+            <div className={styles.activitySection}>
+              <AdminActivity />
+            </div>
+            <div className={styles.reportsSection}>
+              <UserReports />
+            </div>
           </div>
-          <div className={styles.reportsSection}>
-            <UserReports />
-          </div>
-        </div>
 
-        <div className={styles.chartSection}>
-          <ContentReportsChart />
-        </div>
-      </main>
+          <div className={styles.chartSection}>
+            <ContentReportsChart />
+          </div>
+        </main>
       </div>
     </>
   );

@@ -13,8 +13,33 @@ const Album = () => {
   const navigate = useNavigate();
   const user = useAuthentication();
 
-  const formatArtists = (artists) => {
-    return artists.map((artist) => artist.artistName).join(", ");
+  const renderClickableArtists = (artists) => {
+    if (!artists || artists.length === 0) return "Unknown Artist";
+    
+    return artists.map((artist, index) => (
+      <span key={artist.musicianId || index}>
+        <button
+          type="button"
+          onClick={() => navigate(`/artist/${artist.musicianId}`)}
+          className={styles.artistLink}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'inherit',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            font: 'inherit',
+            transition: 'text-decoration 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+          onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+        >
+          {artist.artistName}
+        </button>
+        {index < artists.length - 1 && ", "}
+      </span>
+    ));
   };
 
   const formatDuration = (timeString) => {
@@ -113,7 +138,7 @@ const Album = () => {
             <div className={styles.albumType}>{albumData.albumType}</div>
             <h1 className={styles.albumTitle}>{albumData.albumTitle}</h1>
             <div className={styles.albumArtists}>
-              {formatArtists(albumData.artists)}
+              {renderClickableArtists(albumData.artists)}
             </div>
             <div className={styles.albumMetadata}>
               {albumData.releaseDate && (

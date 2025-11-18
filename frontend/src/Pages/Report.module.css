@@ -1,4 +1,6 @@
 .container {
+  position: relative;
+  top: 5vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -95,7 +97,7 @@
 .charCount {
   text-align: right;
   margin-top: 4px;
-  color: #999;
+  color: #d5cfcf;
 }
 
 .submitButton {

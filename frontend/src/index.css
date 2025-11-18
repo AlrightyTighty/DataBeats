@@ -24,8 +24,8 @@ body,
   background-size: 300% 300%; /* allow bg movement */
   background-image: linear-gradient(
     -45deg,
-    rgb(95, 166, 196),
-    rgb(121, 88, 146)
+    rgb(16, 140, 193),
+    rgb(103, 58, 137)
   ); /* diagonal gradient (tilted -45 degrees) yellow -> pink */
   -webkit-animation: AnimateBG 20s ease infinite; /* older version */
   animation: AnimateBG 20s ease infinite; /* apply animation named AnimateBG that continuously moves gradient back and forth over 20 seconds, looping infinitely */

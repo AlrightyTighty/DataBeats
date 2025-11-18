@@ -1,6 +1,5 @@
 .topnav {
-  width: 100vh;
-  width: calc(100vw + 4px);
+  width: 100vw;
   height: 95px;
   box-sizing: border-box;
   display: flex;
@@ -10,22 +9,23 @@
   border-bottom-style: solid;
   position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
-  padding: 20px;
+  padding: 25px 20px 20px 20px;
   align-items: center;
   gap: 7.5%;
   backdrop-filter: blur(10px);
 }
 
 .app-logo {
-  height: 110%;
+  height: 110px;
   aspect-ratio: 346 / 424;
   width: auto;
 }
 
 .links-and-logo {
   flex: 1;
-  height: 160%;
+  height: 100%;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -49,5 +49,7 @@
 .right-section {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   flex: 1;
+  padding-right: 8px;
 }

@@ -2,7 +2,7 @@
     all: unset;                       /* reset all of element's properties to inherited values if the property inherits by default (color, font details), or to initial (default) CSS values for non-inherited properties (width, height, margin, padding, border) - removes default button styling */
     display: block;                   /* display element as a block element like <p> ... starts on new line, takes up whole width - eliminates horizontal scroll */
     box-sizing: border-box;           /* includes padding and border in calculation of element's total width and height */
-    width: 75%;
+    width: 80%;
     height: 75%;
     border: 3px solid white;        /* width | style | color */
     border-radius: 20px;
@@ -16,15 +16,18 @@
 }
 
 .album:hover {
-    border-color: cadetblue;
     cursor: pointer;
+    background-color: rgba(237, 235, 235, 0.419);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .album-cover {
     width: 100%;
-    height: 70%;
+    height: 65%;
     aspect-ratio: 1/1;                /* width-height ratio - keep square */
     overflow: hidden;
+    /* border: 3px dashed red; */
 }
 
 .album-cover img {
@@ -34,9 +37,26 @@
 }
 
 .album-info {
+    width: 100%;
+    height: 35%;
     text-align: center;
+    /* border: 3px dashed orange; */
 }
 
 .album-info h3 {
+    width: 100%;
+    position: relative;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1.0;
+    /* border: 3px dashed yellow; */
+}
+
+.album-info p {
+    width: 100%;
+    position: relative;
+    top: -3%;
+    /* border: 3px dashed green; */
 }
