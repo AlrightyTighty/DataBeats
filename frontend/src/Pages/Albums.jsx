@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
+import ContextMenu from "../Components/ContextMenu";
+import useContextMenu from "../hooks/useContextMenu";
+import ContextMenuButton from "../Components/ContextMenuButton";
+import useAuthentication from "../hooks/useAuthentication";
 import styles from "./NewReleases.module.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
