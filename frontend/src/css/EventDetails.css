@@ -50,6 +50,7 @@
     display: flex;
     justify-content: left;
     color: white;
+    -webkit-text-stroke: 2px rgb(66, 120, 122);
     /* border: 3px dashed green; */
 }
 

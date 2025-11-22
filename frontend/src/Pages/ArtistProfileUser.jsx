@@ -246,7 +246,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
                     to={`/user/${artist.userId}`}
                     className={styles.secondaryButton}
                   >
-                    My Profile
+                    View User Profile
                   </Link>
                 )}
 
@@ -372,7 +372,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
 
           <div className={styles.bottom}>
             <Link to={`/artist-events/${id}`} className={styles.viewEvents}>
-              View All Events
+              View Artist's Events
             </Link>
           </div>
         </div>

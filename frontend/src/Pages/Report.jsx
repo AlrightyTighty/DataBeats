@@ -61,7 +61,7 @@ export default function Report() {
 
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
-              <label className={styles.label}>Entity Type</label>
+              <label className={styles.label}>Item</label>
               <input
                 type="text"
                 value={entityType}
