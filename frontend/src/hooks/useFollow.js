@@ -117,10 +117,10 @@ export default function useFollow({ viewerId, targetId, apiBase = API } = {}) {
 
   return {
     isFollowing,
-    label, // "Follow" / "Unfollow" / ""
-    act, // toggle follow/unfollow
-    loading, // during POST/DELETE
-    checking, // during initial GET
+    label,
+    act,
+    loading,
+    checking,
     error,
     canFollow,
     refresh,

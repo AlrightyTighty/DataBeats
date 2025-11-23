@@ -205,6 +205,7 @@ export default function AdminReport() {
         const params = new URLSearchParams();
         if (overrideFrom) params.append("from", overrideFrom);
         if (overrideTo) params.append("to", overrideTo);
+        if (rowSearch) params.append("search", rowSearch);
 
         const url =
           params.toString().length > 0
@@ -230,7 +231,7 @@ export default function AdminReport() {
         setRowsLoading(false);
       }
     },
-    [userId]
+    [userId, rowSearch]
   );
 
   useEffect(() => {
@@ -246,7 +247,7 @@ export default function AdminReport() {
 
     const trimmed = userQuery.trim();
     if (!trimmed) {
-      setUserError("Please enter a user id.");
+      setUserError("Please enter a username.");
       return;
     }
 
@@ -258,13 +259,11 @@ export default function AdminReport() {
     setUserLoading(true);
     try {
       const params = new URLSearchParams();
+      params.append("username", trimmed);
       if (from) params.append("from", from);
       if (to) params.append("to", to);
 
-      const url =
-        params.toString().length > 0
-          ? `${API}/api/admin/report/user/${trimmed}?${params.toString()}`
-          : `${API}/api/admin/report/user/${trimmed}`;
+      const url = `${API}/api/admin/report/users/activity?${params.toString()}`;
 
       const res = await fetch(url, {
         headers: {
@@ -315,7 +314,6 @@ export default function AdminReport() {
       case "users":
         return (
           <tr>
-            <th>User ID</th>
             <th>Username</th>
             <th>Created</th>
             <th>Deleted</th>
@@ -325,22 +323,19 @@ export default function AdminReport() {
       case "musicians":
         return (
           <tr>
-            <th>Musician ID</th>
-            <th>User ID</th>
-            <th>Name</th>
+            <th>Username</th>
+            <th>Musician</th>
             <th>Created</th>
             <th>Deleted</th>
             <th>Followers</th>
-            <th>Monthly Listeners</th>
             <th>Is Deleted</th>
           </tr>
         );
       case "playlists":
         return (
           <tr>
-            <th>Playlist ID</th>
-            <th>Name</th>
-            <th>User ID</th>
+            <th>Title</th>
+            <th>Username</th>
             <th>Created</th>
             <th>Deleted</th>
             <th>Is Deleted</th>
@@ -349,9 +344,8 @@ export default function AdminReport() {
       case "albums":
         return (
           <tr>
-            <th>Album ID</th>
             <th>Title</th>
-            <th>Created By</th>
+            <th>Musician</th>
             <th>Created</th>
             <th>Deleted</th>
             <th>Release Date</th>
@@ -362,9 +356,8 @@ export default function AdminReport() {
       case "events":
         return (
           <tr>
-            <th>Event ID</th>
             <th>Title</th>
-            <th>Musician ID</th>
+            <th>Musician</th>
             <th>Created</th>
             <th>Deleted</th>
             <th>Event Time</th>
@@ -374,10 +367,9 @@ export default function AdminReport() {
       case "songs":
         return (
           <tr>
-            <th>Song ID</th>
-            <th>Name</th>
-            <th>Album ID</th>
-            <th>Created By</th>
+            <th>Title</th>
+            <th>Album</th>
+            <th>Musician</th>
             <th>Created</th>
             <th>Deleted</th>
             <th>Streams</th>
@@ -396,34 +388,32 @@ export default function AdminReport() {
     let haystack = "";
     switch (entity) {
       case "users":
-        haystack = `${val(row, "username") ?? ""} ${
-          val(row, "userId", "user_Id") ?? ""
-        }`;
+        haystack = `${val(row, "username") ?? ""}`;
         break;
       case "musicians":
-        haystack = `${val(row, "musicianName", "musician_name") ?? ""} ${
-          val(row, "musicianId", "musician_Id") ?? ""
-        } ${val(row, "userId", "user_Id") ?? ""}`;
+        haystack = `${val(row, "musicianName") ?? ""} ${
+          val(row, "username") ?? ""
+        }`;
         break;
       case "playlists":
-        haystack = `${val(row, "playlistName", "playlist_name") ?? ""} ${
-          val(row, "playlistId", "playlist_id") ?? ""
+        haystack = `${val(row, "playlistName") ?? ""} ${
+          val(row, "username") ?? ""
         }`;
         break;
       case "albums":
-        haystack = `${val(row, "albumTitle", "album_title") ?? ""} ${
-          val(row, "albumId", "album_id") ?? ""
+        haystack = `${val(row, "albumTitle") ?? ""} ${
+          val(row, "musicianName") ?? ""
         }`;
         break;
       case "events":
         haystack = `${val(row, "title") ?? ""} ${
-          val(row, "eventId", "event_id") ?? ""
+          val(row, "musicianName") ?? ""
         }`;
         break;
       case "songs":
-        haystack = `${val(row, "songName", "song_name") ?? ""} ${
-          val(row, "songId", "song_id") ?? ""
-        }`;
+        haystack = `${val(row, "songName") ?? ""} ${
+          val(row, "albumTitle") ?? ""
+        } ${val(row, "musicianName") ?? ""}`;
         break;
       default:
         haystack = "";
@@ -435,13 +425,13 @@ export default function AdminReport() {
   function getCreatedValue(row) {
     switch (entity) {
       case "users":
-        return val(row, "timeCreated", "time_created");
+        return val(row, "timeCreated");
       case "musicians":
       case "playlists":
       case "albums":
       case "events":
       case "songs":
-        return val(row, "timestampCreated", "timestamp_created");
+        return val(row, "timestampCreated");
       default:
         return null;
     }
@@ -450,13 +440,13 @@ export default function AdminReport() {
   function getDeletedValue(row) {
     switch (entity) {
       case "users":
-        return val(row, "timeDeleted", "time_deleted");
+        return val(row, "timeDeleted");
       case "musicians":
       case "playlists":
       case "albums":
       case "events":
       case "songs":
-        return val(row, "timestampDeleted", "timestamp_deleted");
+        return val(row, "timestampDeleted");
       default:
         return null;
     }
@@ -498,15 +488,15 @@ export default function AdminReport() {
       case "users":
         return val(row, "username") ?? "";
       case "musicians":
-        return val(row, "musicianName", "musician_name") ?? "";
+        return val(row, "musicianName") ?? "";
       case "playlists":
-        return val(row, "playlistName", "playlist_name") ?? "";
+        return val(row, "playlistName") ?? "";
       case "albums":
-        return val(row, "albumTitle", "album_title") ?? "";
+        return val(row, "albumTitle") ?? "";
       case "events":
         return val(row, "title") ?? "";
       case "songs":
-        return val(row, "songName", "song_name") ?? "";
+        return val(row, "songName") ?? "";
       default:
         return "";
     }
@@ -528,124 +518,67 @@ export default function AdminReport() {
         case "users":
           return (
             <tr key={index}>
-              <td>{val(row, "userId", "user_Id")}</td>
               <td>{val(row, "username")}</td>
-              <td>
-                {formatDateCell(val(row, "timeCreated", "time_created")) || "—"}
-              </td>
-              <td>
-                {formatDateCell(val(row, "timeDeleted", "time_deleted")) || "—"}
-              </td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{formatDateCell(val(row, "timeCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timeDeleted")) || "—"}</td>
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         case "musicians":
           return (
             <tr key={index}>
-              <td>{val(row, "musicianId", "musician_Id")}</td>
-              <td>{val(row, "userId", "user_Id")}</td>
-              <td>{val(row, "musicianName", "musician_name")}</td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampCreated", "timestamp_created")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampDeleted", "timestamp_deleted")
-                ) || "—"}
-              </td>
-              <td>{val(row, "followerCount", "follower_count") ?? 0}</td>
-              <td>
-                {val(row, "monthlyListenerCount", "monthly_listener_count") ??
-                  0}
-              </td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{val(row, "username")}</td>
+              <td>{val(row, "musicianName")}</td>
+              <td>{formatDateCell(val(row, "timestampCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timestampDeleted")) || "—"}</td>
+              <td>{val(row, "followerCount") ?? 0}</td>
+
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         case "playlists":
           return (
             <tr key={index}>
-              <td>{val(row, "playlistId", "playlist_id")}</td>
-              <td>{val(row, "playlistName", "playlist_name")}</td>
-              <td>{val(row, "userId", "user_id", "user_Id")}</td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampCreated", "timestamp_created")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampDeleted", "timestamp_deleted")
-                ) || "—"}
-              </td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{val(row, "playlistName")}</td>
+              <td>{val(row, "username")}</td>
+              <td>{formatDateCell(val(row, "timestampCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timestampDeleted")) || "—"}</td>
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         case "albums":
           return (
             <tr key={index}>
-              <td>{val(row, "albumId", "album_id")}</td>
-              <td>{val(row, "albumTitle", "album_title")}</td>
-              <td>{val(row, "createdBy", "created_by")}</td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampCreated", "timestamp_created")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampDeleted", "timestamp_deleted")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(val(row, "releaseDate", "release_date")) || "—"}
-              </td>
-              <td>{val(row, "numSongs", "num_songs") ?? 0}</td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{val(row, "albumTitle")}</td>
+              <td>{val(row, "musicianName")}</td>
+              <td>{formatDateCell(val(row, "timestampCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timestampDeleted")) || "—"}</td>
+              <td>{formatDateCell(val(row, "releaseDate")) || "—"}</td>
+              <td>{val(row, "numSongs") ?? 0}</td>
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         case "events":
           return (
             <tr key={index}>
-              <td>{val(row, "eventId", "event_id")}</td>
               <td>{val(row, "title")}</td>
-              <td>{val(row, "musicianId", "musician_id")}</td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampCreated", "timestamp_created")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampDeleted", "timestamp_deleted")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(val(row, "eventTime", "event_time")) || "—"}
-              </td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{val(row, "musicianName")}</td>
+              <td>{formatDateCell(val(row, "timestampCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timestampDeleted")) || "—"}</td>
+              <td>{formatDateCell(val(row, "eventTime")) || "—"}</td>
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         case "songs":
           return (
             <tr key={index}>
-              <td>{val(row, "songId", "song_id")}</td>
-              <td>{val(row, "songName", "song_name")}</td>
-              <td>{val(row, "albumId", "album_id")}</td>
-              <td>{val(row, "createdBy", "created_by")}</td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampCreated", "timestamp_created")
-                ) || "—"}
-              </td>
-              <td>
-                {formatDateCell(
-                  val(row, "timestampDeleted", "timestamp_deleted")
-                ) || "—"}
-              </td>
+              <td>{val(row, "songName")}</td>
+              <td>{val(row, "albumTitle")}</td>
+              <td>{val(row, "musicianName")}</td>
+              <td>{formatDateCell(val(row, "timestampCreated")) || "—"}</td>
+              <td>{formatDateCell(val(row, "timestampDeleted")) || "—"}</td>
               <td>{val(row, "streams") ?? 0}</td>
-              <td>{val(row, "isDeleted", "IsDeleted") ? "Yes" : "No"}</td>
+              <td>{val(row, "isDeleted") ? "Yes" : "No"}</td>
             </tr>
           );
         default:
@@ -664,69 +597,55 @@ export default function AdminReport() {
 
     switch (entity) {
       case "users":
-        headers = [
-          "UserId",
-          "Username",
-          "TimeCreated",
-          "TimeDeleted",
-          "IsDeleted",
-        ];
+        headers = ["Username", "TimeCreated", "TimeDeleted", "IsDeleted"];
         rowsData = sortedRows.map((r) => [
-          val(r, "userId", "user_Id"),
-          val(r, "username"),
-          formatDateCell(val(r, "timeCreated", "time_created")),
-          formatDateCell(val(r, "timeDeleted", "time_deleted")),
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "username", "Username"),
+          formatDateCell(val(r, "timeCreated")),
+          formatDateCell(val(r, "timeDeleted")),
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
       case "musicians":
         headers = [
-          "MusicianId",
-          "UserId",
+          "Username",
           "MusicianName",
           "TimestampCreated",
           "TimestampDeleted",
           "FollowerCount",
-          "MonthlyListenerCount",
           "IsDeleted",
         ];
         rowsData = sortedRows.map((r) => [
-          val(r, "musicianId", "musician_Id"),
-          val(r, "userId", "user_Id"),
-          val(r, "musicianName", "musician_name"),
-          formatDateCell(val(r, "timestampCreated", "timestamp_created")),
-          formatDateCell(val(r, "timestampDeleted", "timestamp_deleted")),
-          val(r, "followerCount", "follower_count") ?? 0,
-          val(r, "monthlyListenerCount", "monthly_listener_count") ?? 0,
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "username"),
+          val(r, "musicianName"),
+          formatDateCell(val(r, "timestampCreated")),
+          formatDateCell(val(r, "timestampDeleted")),
+          val(r, "followerCount") ?? 0,
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
       case "playlists":
         headers = [
-          "PlaylistId",
           "PlaylistName",
-          "UserId",
+          "Username",
           "TimestampCreated",
           "TimestampDeleted",
           "IsDeleted",
         ];
         rowsData = sortedRows.map((r) => [
-          val(r, "playlistId", "playlist_id"),
-          val(r, "playlistName", "playlist_name"),
-          val(r, "userId", "user_id", "user_Id"),
-          formatDateCell(val(r, "timestampCreated", "timestamp_created")),
-          formatDateCell(val(r, "timestampDeleted", "timestamp_deleted")),
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "playlistName"),
+          val(r, "username"),
+          formatDateCell(val(r, "timestampCreated")),
+          formatDateCell(val(r, "timestampDeleted")),
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
       case "albums":
         headers = [
-          "AlbumId",
           "AlbumTitle",
-          "CreatedBy",
+          "MusicianName",
           "TimestampCreated",
           "TimestampDeleted",
           "ReleaseDate",
@@ -734,58 +653,53 @@ export default function AdminReport() {
           "IsDeleted",
         ];
         rowsData = sortedRows.map((r) => [
-          val(r, "albumId", "album_id"),
-          val(r, "albumTitle", "album_title"),
-          val(r, "createdBy", "created_by"),
-          formatDateCell(val(r, "timestampCreated", "timestamp_created")),
-          formatDateCell(val(r, "timestampDeleted", "timestamp_deleted")),
-          formatDateCell(val(r, "releaseDate", "release_date")),
-          val(r, "numSongs", "num_songs") ?? 0,
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "albumTitle"),
+          val(r, "musicianName"),
+          formatDateCell(val(r, "timestampCreated")),
+          formatDateCell(val(r, "timestampDeleted")),
+          formatDateCell(val(r, "releaseDate")),
+          val(r, "numSongs") ?? 0,
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
       case "events":
         headers = [
-          "EventId",
           "Title",
-          "MusicianId",
+          "MusicianName",
           "TimestampCreated",
           "TimestampDeleted",
           "EventTime",
           "IsDeleted",
         ];
         rowsData = sortedRows.map((r) => [
-          val(r, "eventId", "event_id"),
           val(r, "title"),
-          val(r, "musicianId", "musician_id"),
-          formatDateCell(val(r, "timestampCreated", "timestamp_created")),
-          formatDateCell(val(r, "timestampDeleted", "timestamp_deleted")),
-          formatDateCell(val(r, "eventTime", "event_time")),
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "musicianName"),
+          formatDateCell(val(r, "timestampCreated")),
+          formatDateCell(val(r, "timestampDeleted")),
+          formatDateCell(val(r, "eventTime")),
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
       case "songs":
         headers = [
-          "SongId",
           "SongName",
-          "AlbumId",
-          "CreatedBy",
+          "AlbumTitle",
+          "MusicianName",
           "TimestampCreated",
           "TimestampDeleted",
           "Streams",
           "IsDeleted",
         ];
         rowsData = sortedRows.map((r) => [
-          val(r, "songId", "song_id"),
-          val(r, "songName", "song_name"),
-          val(r, "albumId", "album_id"),
-          val(r, "createdBy", "created_by"),
-          formatDateCell(val(r, "timestampCreated", "timestamp_created")),
-          formatDateCell(val(r, "timestampDeleted", "timestamp_deleted")),
+          val(r, "songName"),
+          val(r, "albumTitle"),
+          val(r, "musicianName"),
+          formatDateCell(val(r, "timestampCreated")),
+          formatDateCell(val(r, "timestampDeleted")),
           val(r, "streams") ?? 0,
-          val(r, "isDeleted", "IsDeleted") ? "Yes" : "No",
+          val(r, "isDeleted") ? "Yes" : "No",
         ]);
         break;
 
@@ -902,7 +816,7 @@ export default function AdminReport() {
                   <input
                     id="rowSearch"
                     type="text"
-                    placeholder="Search by name / id…"
+                    placeholder="Search by name/title…"
                     value={rowSearch}
                     onChange={(e) => setRowSearch(e.target.value)}
                   />
@@ -950,7 +864,7 @@ export default function AdminReport() {
                 User Activity
               </h2>
               <p className={styles.subTitle}>
-                Look up account info for a specific user id within this date
+                Look up account info for a specific username within this date
                 range.
               </p>
 
@@ -960,14 +874,13 @@ export default function AdminReport() {
                 style={{ marginTop: 10, marginBottom: 10 }}
               >
                 <div className={styles.filterField}>
-                  <label htmlFor="userIdInput">User ID</label>
+                  <label htmlFor="userIdInput">Username</label>
                   <input
                     id="userIdInput"
-                    type="number"
-                    min="1"
+                    type="text"
                     value={userQuery}
                     onChange={(e) => setUserQuery(e.target.value)}
-                    placeholder="Enter user id…"
+                    placeholder="Enter username…"
                   />
                 </div>
                 <button type="submit" className={styles.applyButton}>
@@ -983,10 +896,6 @@ export default function AdminReport() {
               {userReport && !userLoading && !userError && (
                 <div className={styles.card} style={{ marginTop: 8 }}>
                   <h3 className={styles.cardTitle}>User Activity</h3>
-                  <div className={styles.cardRow}>
-                    <span>User ID</span>
-                    <span>{userReport.userId ?? "—"}</span>
-                  </div>
                   <div className={styles.cardRow}>
                     <span>Username</span>
                     <span>{userReport.username ?? "—"}</span>
