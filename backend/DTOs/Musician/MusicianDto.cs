@@ -25,5 +25,7 @@ namespace backend.DTOs.Musician
 
         public bool IsVerified { get; set; }
 
+        public DateTime TimestampCreated { get; set; }
+
     }
 }

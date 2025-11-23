@@ -83,6 +83,7 @@ namespace backend.Controllers
         {
             var genres = await _context.SongGenres
                 .Where(sg => sg.Song.MusicianWorksOnSongs.Any(mws => mws.MusicianId == musicianId))
+                .Where(sg => sg.Song.TimestampDeleted == null)
                 .Select(sg => sg.Genre)
                 .Distinct()
                 .ToListAsync();

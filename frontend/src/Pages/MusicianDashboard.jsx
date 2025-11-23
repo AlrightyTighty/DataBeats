@@ -39,7 +39,7 @@ export default function MusicianDashboard() {
 
     // useState hook allows you to track state in a component; it accepts an initial state and returns two values, current state and function to update state
     // destructuring returned values from useState so that [current state, function to update state] = useState(set initial value of state)
-    const [musician, setMusician] = useState({} );
+    const [musician, setMusician] = useState({});
     const [followerCount, setFollowerCount] = useState(0);
 
     const loadFollowerCount = useCallback(async () => {

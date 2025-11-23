@@ -33,6 +33,7 @@ namespace backend.Mappers
                 MonthlyListenerCount = musician.MonthlyListenerCount,
                 ProfilePictureFileId = musician.ProfilePictureFileId,
                 IsVerified = musician.IsVerified,
+                TimestampCreated = musician.TimestampCreated
             };
         }
     }
