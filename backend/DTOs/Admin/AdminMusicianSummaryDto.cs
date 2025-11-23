@@ -17,9 +17,8 @@ namespace backend.DTOs.Admin
 
     public class AdminMusicianRowDto
     {
-        public ulong MusicianId { get; set; }
-        public ulong UserId { get; set; }
         public string MusicianName { get; set; } = "";
+        public string Username { get; set; } = "";
         public DateTime? TimestampCreated { get; set; }
         public DateTime? TimestampDeleted { get; set; }
         public int FollowerCount { get; set; }

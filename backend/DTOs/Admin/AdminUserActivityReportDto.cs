@@ -25,7 +25,6 @@ namespace backend.DTOs.Admin
         public DateTime OccurredAtUtc { get; set; }
         public string EntityType { get; set; } = "";  // playlist/album/song/event
         public string ActionType { get; set; } = "";  // Created, Deleted
-        public ulong EntityId { get; set; }
         public string? EntityName { get; set; }
     }
 }

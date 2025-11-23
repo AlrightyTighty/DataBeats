@@ -16,9 +16,8 @@ namespace backend.DTOs.Admin
 
     public class AdminAlbumRowDto
     {
-        public ulong AlbumId { get; set; }
         public string AlbumTitle { get; set; } = "";
-        public ulong CreatedBy { get; set; }
+        public string MusicianName { get; set; } = "";
         public DateTime? TimestampCreated { get; set; }
         public DateTime? TimestampDeleted { get; set; }
         public DateTime? ReleaseDate { get; set; }

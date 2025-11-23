@@ -53,18 +53,22 @@ namespace backend.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<ActionResult<IEnumerable<AdminUserRowDto>>> GetUsers(
+        public async Task<ActionResult<AdminUserActivityReportDto>> GetUser(
+            [FromQuery] string username,
             [FromQuery] DateTime? from,
             [FromQuery] DateTime? to)
         {
-            var end = (to?.Date.AddDays(1)) ?? DateTime.UtcNow;    
-            var start = (from?.Date) ?? end.AddDays(-30);          
+            if (string.IsNullOrWhiteSpace(username))
+                return BadRequest("`username` is required.");
+
+            var end = to ?? DateTime.UtcNow;
+            var start = from ?? end.AddDays(-30);
 
             if (start >= end)
                 return BadRequest("`from` must be earlier than `to`.");
 
-            var rows = await _service.GetUsersAsync(start, end);
-            return Ok(rows);
+            var report = await _service.GetUserReportByUsernameAsync(username, start, end);
+            return Ok(report);
         }
 
         [HttpGet("musicians")]

@@ -196,23 +196,22 @@ namespace backend.Services
             return conn.QuerySingleAsync<AdminSongSummaryDto>(sql, parameters);
         }
 
-        public async Task<AdminUserActivityReportDto> GetUserReportAsync(
-            ulong userId, DateTime from, DateTime to)
+        public async Task<AdminUserActivityReportDto> GetUserReportByUsernameAsync(
+            string username, DateTime from, DateTime to)
         {
             await using var conn = new MySqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var parameters = new { UserId = userId };
+            var parameters = new { Username = username };
 
             const string sql = @"
                 SELECT
-                    user_Id      AS UserId,
                     username     AS Username,
                     time_created AS TimeCreated,
                     time_deleted AS TimeDeleted,
                     CASE WHEN time_deleted IS NULL THEN 0 ELSE 1 END AS IsUserDeleted
                 FROM vw_UserAccountActivity
-                WHERE user_Id = @UserId;
+                WHERE username = @Username;
             ";
 
             var row = await conn.QuerySingleOrDefaultAsync<AdminUserActivityReportDto>(sql, parameters);
@@ -221,13 +220,12 @@ namespace backend.Services
             {
                 row = new AdminUserActivityReportDto
                 {
-                    UserId = userId
+                    Username = username
                 };
             }
 
             row.From = from;
             row.To   = to;
-
             return row;
         }
 
@@ -240,7 +238,6 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    user_Id      AS UserId,
                     username     AS Username,
                     time_created AS TimeCreated,
                     time_deleted AS TimeDeleted,
@@ -264,9 +261,8 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    musician_Id            AS MusicianId,
-                    user_Id                AS UserId,
                     musician_name          AS MusicianName,
+                    username               AS Username,
                     timestamp_created      AS TimestampCreated,
                     timestamp_deleted      AS TimestampDeleted,
                     follower_count         AS FollowerCount,
@@ -291,9 +287,8 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    playlist_id       AS PlaylistId,
                     playlist_name     AS PlaylistName,
-                    user_id           AS UserId,
+                    username          AS Username,
                     timestamp_created AS TimestampCreated,
                     timestamp_deleted AS TimestampDeleted,
                     CASE WHEN timestamp_deleted IS NULL THEN 0 ELSE 1 END AS IsDeleted
@@ -316,9 +311,8 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    album_id          AS AlbumId,
                     album_title       AS AlbumTitle,
-                    created_by        AS CreatedBy,
+                    musician_name     AS MusicianName,
                     timestamp_created AS TimestampCreated,
                     timestamp_deleted AS TimestampDeleted,
                     release_date      AS ReleaseDate,
@@ -343,9 +337,8 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    event_id          AS EventId,
                     title             AS Title,
-                    musician_id       AS MusicianId,
+                    musician_name     AS MusicianName,
                     timestamp_created AS TimestampCreated,
                     timestamp_deleted AS TimestampDeleted,
                     event_time        AS EventTime,
@@ -369,10 +362,9 @@ namespace backend.Services
 
             const string sql = @"
                 SELECT
-                    song_id           AS SongId,
                     song_name         AS SongName,
-                    album_id          AS AlbumId,
-                    created_by        AS CreatedBy,
+                    album_title       AS AlbumTitle,
+                    musician_name     AS MusicianName,
                     timestamp_created AS TimestampCreated,
                     timestamp_deleted AS TimestampDeleted,
                     streams           AS Streams,
