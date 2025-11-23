@@ -44,6 +44,35 @@ export default function MusicianReport() {
             }
         })();
     }, [userInfo]);
+
+    // FROM date constraint - musician creation date
+    const [creationDate, setCreationDate] = useState("2025-08-18");
+    useEffect(() => {
+        if (userInfo === null) return;
+        (async () => {
+            const response = await fetch(`${API}/api/musician/${userInfo.musicianId}`);
+            if (!response.ok) {
+                console.log("Failed to load musician data...")
+            }
+            else {
+                const result = await response.json()
+                setCreationDate(result.timestampCreated.slice(0, 10));      // apply slice to keep only the date portion (yyyy-mm-dd) from index 0 up to index 9 (index of first char to exclude from substring is 10)
+            }
+        })();
+    }, [userInfo]);
+
+    // TO date constraint - today's date
+    let today = new Date();
+    let yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1;                                  // january = month 0
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    let dd = today.getDate();
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    today = yyyy + '-' + mm + '-' + dd;
     
     // states for filtering by time/album/genre
     const [fromDate, setFromDate] = useState('');
@@ -141,6 +170,8 @@ export default function MusicianReport() {
                 <div className="from">
                     Released From <input
                         type="date"
+                        min={creationDate}
+                        max={today}
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                     />
@@ -148,6 +179,8 @@ export default function MusicianReport() {
                 <div className="to">
                     To <input
                         type="date"
+                        min={creationDate}
+                        max={today}
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                     />

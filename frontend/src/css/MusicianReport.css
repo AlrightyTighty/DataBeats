@@ -41,6 +41,14 @@
     border-radius: 5px;
 }
 
+.from input[type="date"]::-webkit-datetime-edit-year-field, .to input[type="date"]::-webkit-datetime-edit-year-field{
+    color: white !important;
+}
+
+.from input[type="date"]::-moz-datetime-edit-year-field, .to input[type="date"]::-moz-datetime-edit-year-field{
+    color: white !important;
+}
+
 .by-album {
     position: relative;
     top: 4vh;
