@@ -310,7 +310,7 @@
   background: rgba(14, 31, 39, 0.12);
 }
 
-@media (max-width: 550px) {
+@media (max-width: 950px) {
   .container {
     padding: 0 1rem;
   }

@@ -8,7 +8,6 @@ const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 export default function ArtistAlbum() {
   const navigate = useNavigate();
   const { id } = useParams();
-
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);

@@ -112,7 +112,7 @@ export default function Follows({ defaultTab = "followers" }) {
             </button>
           </div>
 
-          {/* Followers section */}
+          {/* Followers */}
           {tab === "followers" && (
             <>
               <h1 className={styles.title}>Followers</h1>
@@ -137,7 +137,6 @@ export default function Follows({ defaultTab = "followers" }) {
                     className={styles.card}
                     onClick={() => openUser(f.userId)}
                   >
-                    <div className={styles.avatar} />
                     <div className={styles.text}>
                       <span className={styles.username}>@{f.username}</span>
                       {(f.fname || f.lname) && (
@@ -152,7 +151,7 @@ export default function Follows({ defaultTab = "followers" }) {
             </>
           )}
 
-          {/* Following section */}
+          {/* Following  */}
           {tab === "following" && (
             <>
               <h1 className={styles.title}>Following</h1>
@@ -178,7 +177,6 @@ export default function Follows({ defaultTab = "followers" }) {
                       className={styles.card}
                       onClick={() => openUser(u.userId)}
                     >
-                      <div className={styles.avatar} />
                       <div className={styles.text}>
                         <span className={styles.username}>@{u.username}</span>
                         {(u.fname || u.lname) && (

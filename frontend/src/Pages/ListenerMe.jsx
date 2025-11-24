@@ -1,4 +1,3 @@
-// src/Pages/ListenerMe.jsx
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
@@ -15,7 +14,7 @@ export default function ListenerMe({ setPlaybarState }) {
   const profileUserId = useMemo(() => Number(id), [id]);
 
   const { me, loading: authLoading } = useMe();
-  const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+  const currentUserId = useMemo(() => me?.userId ?? null, [me]);
 
   useEffect(() => {
     if (!authLoading && !me) {
@@ -24,25 +23,18 @@ export default function ListenerMe({ setPlaybarState }) {
   }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
-  // musician id + flag
-  const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
+  const musicianId = user?.musicianId ?? null;
   const hasMusician = !!musicianId;
-
   const [isVerifiedMusician, setIsVerifiedMusician] = useState(false);
-
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
 
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-
   const [userAvatarSrc, setUserAvatarSrc] = useState(null);
-
-  // musician
   const [musician, setMusician] = useState(null);
   const [musicianAvatarSrc, setMusicianAvatarSrc] = useState(null);
 
-  // top songs
   const [topSongs, setTopSongs] = useState([]);
 
   const {
@@ -83,7 +75,6 @@ export default function ListenerMe({ setPlaybarState }) {
     }
   }, [profileUserId]);
 
-  // load user
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -107,12 +98,10 @@ export default function ListenerMe({ setPlaybarState }) {
     })();
   }, [profileUserId]);
 
-  // load follower/following counts
   useEffect(() => {
     loadCounts();
   }, [loadCounts]);
 
-  // load user avatar
   useEffect(() => {
     if (!user?.profilePictureFileId) {
       setUserAvatarSrc(null);
@@ -129,8 +118,8 @@ export default function ListenerMe({ setPlaybarState }) {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setUserAvatarSrc(null);
           return;
@@ -187,8 +176,8 @@ export default function ListenerMe({ setPlaybarState }) {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setMusicianAvatarSrc(null);
           return;
@@ -249,8 +238,8 @@ export default function ListenerMe({ setPlaybarState }) {
 
   function handlePlaySong(song) {
     if (!setPlaybarState) return;
-    const songId = song.songId ?? song.SongId;
-    const albumId = song.albumId ?? song.AlbumId ?? null;
+    const songId = song.songId;
+    const albumId = song.albumId ?? null;
 
     setPlaybarState({
       songId,
@@ -398,14 +387,10 @@ export default function ListenerMe({ setPlaybarState }) {
                   ) : (
                     <div className={styles.songList}>
                       {topSongs.map((s, idx) => {
-                        const songId = s.songId ?? s.SongId;
-                        const title = s.songName ?? s.SongName;
-                        const artist =
-                          s.artistName ??
-                          s.ArtistName ??
-                          s.musicianName ??
-                          "Unknown";
-                        const album = s.albumTitle ?? s.AlbumTitle ?? "";
+                        const songId = s.songId;
+                        const title = s.songName;
+                        const artist = s.artistName ?? "Unknown";
+                        const album = s.albumTitle ?? "";
 
                         return (
                           <div key={songId ?? idx} className={styles.songRow}>

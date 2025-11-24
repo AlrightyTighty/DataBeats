@@ -13,7 +13,7 @@ export default function ListenerPublic({ setPlaybarState }) {
   const profileUserId = useMemo(() => Number(id), [id]);
 
   const { me, loading: authLoading } = useMe();
-  const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+  const currentUserId = useMemo(() => me?.userId ?? null, [me]);
 
   useEffect(() => {
     if (!authLoading && !me) {
@@ -22,7 +22,7 @@ export default function ListenerPublic({ setPlaybarState }) {
   }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
-  const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
+  const musicianId = user?.musicianId ?? null;
   const hasMusician = !!musicianId;
 
   const [loadingUser, setLoadingUser] = useState(true);
@@ -123,8 +123,8 @@ export default function ListenerPublic({ setPlaybarState }) {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setUserAvatarSrc(null);
           return;
@@ -174,8 +174,8 @@ export default function ListenerPublic({ setPlaybarState }) {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setMusicianAvatarSrc(null);
           return;
@@ -231,8 +231,8 @@ export default function ListenerPublic({ setPlaybarState }) {
 
   function handlePlaySong(song) {
     if (!setPlaybarState) return;
-    const songId = song.songId ?? song.SongId;
-    const albumId = song.albumId ?? song.AlbumId ?? null;
+    const songId = song.songId;
+    const albumId = song.albumId ?? null;
 
     setPlaybarState({
       songId,
@@ -359,14 +359,10 @@ export default function ListenerPublic({ setPlaybarState }) {
                   ) : (
                     <div className={styles.songList}>
                       {topSongs.map((s, idx) => {
-                        const songId = s.songId ?? s.SongId;
-                        const title = s.songName ?? s.SongName;
-                        const artist =
-                          s.artistName ??
-                          s.ArtistName ??
-                          s.musicianName ??
-                          "Unknown";
-                        const album = s.albumTitle ?? s.AlbumTitle ?? "";
+                        const songId = s.songId;
+                        const title = s.songName;
+                        const artist = s.artistName ?? "Unknown";
+                        const album = s.albumTitle ?? "";
 
                         return (
                           <div key={songId ?? idx} className={styles.songRow}>

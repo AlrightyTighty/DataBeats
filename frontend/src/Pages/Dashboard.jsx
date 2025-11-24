@@ -11,12 +11,9 @@ import "./Events.css";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { me, loading: authLoading } = useMe();
-  const userId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
-  const musicianId = useMemo(
-    () => me?.musicianId ?? me?.MusicianId ?? null,
-    [me]
-  );
-  const username = useMemo(() => me?.username ?? me?.Username ?? "there", [me]);
+  const userId = useMemo(() => me?.userId ?? null, [me]);
+  const musicianId = useMemo(() => me?.musicianId ?? null, [me]);
+  const username = useMemo(() => me?.username, [me]);
 
   const [playlists, setPlaylists] = useState([]);
   const [events, setEvents] = useState([]);
@@ -107,27 +104,19 @@ export default function Dashboard() {
           : [];
 
         // Playlists
-        const owned =
-          playlistResponse.ownedPlaylists ??
-          playlistResponse.OwnedPlaylists ??
-          [];
-        const contrib =
-          playlistResponse.contributorPlaylists ??
-          playlistResponse.ContributorPlaylists ??
-          [];
+        const owned = playlistResponse.ownedPlaylists ?? [];
+        const contrib = playlistResponse.contributorPlaylists ?? [];
         const allPlaylists = [...owned, ...contrib];
 
         const likedName = "Your Liked Playlist";
-        const liked = allPlaylists.find(
-          (p) => (p.playlistName ?? p.PlaylistName) === likedName
-        );
+        const liked = allPlaylists.find((p) => p.playlistName === likedName);
         const others = allPlaylists.filter((p) => p !== liked);
         const playlistsToShow = liked
           ? [liked, ...others.slice(0, 4)]
           : allPlaylists.slice(0, 5);
 
         const playlistsWithContext = playlistsToShow.map((playlist) => {
-          const id = playlist.playlistId ?? playlist.PlaylistId;
+          const id = playlist.playlistId;
           return {
             ...playlist,
             functions: [
@@ -142,9 +131,12 @@ export default function Dashboard() {
         setPlaylists(playlistsWithContext);
 
         // Events
-        setEvents(
-          (Array.isArray(eventsResponse) ? eventsResponse : []).slice(0, 4)
-        );
+        const rawEvents = Array.isArray(eventsResponse) ? eventsResponse : [];
+
+        const sortedEvents = rawEvents.sort((a, b) => {
+          return new Date(b.eventTime) - new Date(a.eventTime);
+        });
+        setEvents(sortedEvents.slice(0, 4));
 
         // New uploads
         const albumsArr = Array.isArray(albumsResponse) ? albumsResponse : [];
@@ -154,8 +146,7 @@ export default function Dashboard() {
 
         const recent = albumsArr
           .filter((a) => {
-            const raw =
-              a.releaseDate ?? a.ReleaseDate ?? a.timestampReleased ?? null;
+            const raw = a.releaseDate ?? null;
             if (!raw) return false;
             const d = new Date(raw);
             return d >= monthAgo && d <= now;
@@ -182,11 +173,9 @@ export default function Dashboard() {
         const following = Array.isArray(followingResponse)
           ? followingResponse
           : [];
-        const followingIds = new Set(
-          following.map((u) => u.userId ?? u.UserId)
-        );
+        const followingIds = new Set(following.map((u) => u.userId));
         const friendsList = followers
-          .filter((u) => followingIds.has(u.userId ?? u.UserId))
+          .filter((u) => followingIds.has(u.userId))
           .slice(0, 6);
         setFriends(friendsList);
       } catch (err) {
@@ -353,24 +342,17 @@ export default function Dashboard() {
 
                   const priceStr = `$${Number(e.ticketPrice ?? 0).toFixed(2)}`;
 
-                  const artistDisplay =
-                    e.musicianName ??
-                    e.MusicianName ??
-                    e.musician?.musicianName ??
-                    e.musician?.MusicianName ??
-                    "Artist";
+                  const artistDisplay = e.musicianName ?? "Artist";
 
                   return (
                     <div
                       key={e.eventId ?? e.EventId}
                       className="event-card"
-                      onClick={() =>
-                        navigate(`/event/${e.eventId ?? e.EventId}`)
-                      }
+                      onClick={() => navigate(`/event/${e.eventId}`)}
                       tabIndex={0}
                       onKeyDown={(ev) => {
                         if (ev.key === "Enter" || ev.key === " ") {
-                          navigate(`/event/${e.eventId ?? e.EventId}`);
+                          navigate(`/event/${e.eventId}`);
                         }
                       }}
                     >
@@ -396,7 +378,7 @@ export default function Dashboard() {
                       <div className="event-card-content">
                         <div className="event-card-header">
                           <div className="event-title">
-                            {e.title ?? e.EventTitle ?? "Event"}
+                            {e.title ?? "Event"}
                           </div>
                           <div className="event-artist">{artistDisplay}</div>
                         </div>
@@ -434,16 +416,14 @@ export default function Dashboard() {
             ) : (
               <div className={styles.cardGrid}>
                 {newAlbums.map((a) => {
-                  const albumId = a.albumId ?? a.AlbumId;
-                  const artFileId =
-                    a.albumOrSongArtFileId ?? a.AlbumOrSongArtFileId;
+                  const albumId = a.albumId;
+                  const artFileId = a.albumOrSongArtFileId;
                   const coverSrc = artFileId
                     ? `${API}/api/art/view/${artFileId}`
                     : null;
-                  const title = a.albumTitle ?? a.AlbumTitle ?? "Album";
+                  const title = a.albumTitle ?? "Album";
                   const artistName =
                     a.musicianName ??
-                    a.MusicianName ??
                     (Array.isArray(a.artists) && a.artists.length > 0
                       ? a.artists.map((x) => x.artistName).join(", ")
                       : "New release");
@@ -489,15 +469,12 @@ export default function Dashboard() {
               <div className={styles.friendsGrid}>
                 {friends.map((f) => (
                   <button
-                    key={f.userId ?? f.UserId}
+                    key={f.userId}
                     type="button"
                     className={styles.friendCard}
-                    onClick={() => navigate(`/user/${f.userId ?? f.UserId}`)}
+                    onClick={() => navigate(`/user/${f.userId}`)}
                   >
-                    <div className={styles.friendAvatar} />
-                    <div className={styles.friendName}>
-                      @{f.username ?? f.Username}
-                    </div>
+                    <div className={styles.friendName}>@{f.username}</div>
                   </button>
                 ))}
               </div>
@@ -516,19 +493,11 @@ export default function Dashboard() {
             ) : (
               <div className={styles.songList}>
                 {randomSongs.map((s, i) => {
-                  const title = s.songName ?? s.SongName;
-                  const artist =
-                    s.artistName ??
-                    s.ArtistName ??
-                    s.musicianName ??
-                    s.MusicianName ??
-                    "Unknown";
-                  const album = s.albumTitle ?? s.AlbumTitle ?? "";
+                  const title = s.songName;
+                  const artist = s.artistName ?? "Unknown";
+                  const album = s.albumTitle ?? "";
                   return (
-                    <div
-                      key={s.songId ?? s.SongId ?? i}
-                      className={styles.songRow}
-                    >
+                    <div key={s.songId ?? i} className={styles.songRow}>
                       <div className={styles.songInfo}>
                         <span className={styles.songIndex}>{i + 1}.</span>
                         <div>

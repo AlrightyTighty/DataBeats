@@ -131,7 +131,6 @@
 }
 
 /* Top songs list */
-
 .songList {
   display: flex;
   flex-direction: column;
@@ -236,7 +235,6 @@
 }
 
 /* Albums */
-
 .album {
   display: flex;
   align-items: center;
@@ -270,7 +268,7 @@
   display: flex;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 950px) {
   .middle {
     flex-direction: column;
   }

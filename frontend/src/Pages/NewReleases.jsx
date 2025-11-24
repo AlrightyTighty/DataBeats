@@ -30,29 +30,14 @@ export default function NewReleases() {
 
         const recent = list
           .filter((a) => {
-            const raw =
-              a.releaseDate ??
-              a.ReleaseDate ??
-              a.timestampReleased ??
-              a.TimestampReleased ??
-              null;
+            const raw = a.releaseDate ?? null;
             if (!raw) return false;
             const d = new Date(raw);
             return d >= cutoff && d <= now;
           })
           .sort((a, b) => {
-            const ra =
-              a.releaseDate ??
-              a.ReleaseDate ??
-              a.timestampReleased ??
-              a.TimestampReleased ??
-              null;
-            const rb =
-              b.releaseDate ??
-              b.ReleaseDate ??
-              b.timestampReleased ??
-              b.TimestampReleased ??
-              null;
+            const ra = a.releaseDate ?? null;
+            const rb = b.releaseDate ?? null;
             return new Date(rb) - new Date(ra); // latest to oldest
           });
 
@@ -82,21 +67,15 @@ export default function NewReleases() {
           ) : (
             <div className={styles.grid}>
               {albums.map((a) => {
-                const albumId = a.albumId ?? a.AlbumId;
-                const albumTitle = a.albumTitle ?? a.AlbumTitle;
+                const albumId = a.albumId;
+                const albumTitle = a.albumTitle;
 
-                const coverId =
-                  a.albumOrSongArtFileId ?? a.AlbumOrSongArtFileId ?? null;
+                const coverId = a.albumOrSongArtFileId ?? null;
                 const coverSrc = coverId
                   ? `${API}/api/art/view/${coverId}`
                   : null;
 
-                const rawDate =
-                  a.releaseDate ??
-                  a.ReleaseDate ??
-                  a.timestampReleased ??
-                  a.TimestampReleased ??
-                  null;
+                const rawDate = a.releaseDate ?? null;
 
                 const dateStr = rawDate
                   ? new Date(rawDate).toLocaleDateString(undefined, {
@@ -106,12 +85,10 @@ export default function NewReleases() {
                     })
                   : "—";
 
-                const rawArtists = a.artists ?? a.Artists ?? [];
+                const rawArtists = a.artists ?? [];
                 const artistLine =
                   Array.isArray(rawArtists) && rawArtists.length > 0
-                    ? rawArtists
-                        .map((x) => x.artistName ?? x.ArtistName)
-                        .join(", ")
+                    ? rawArtists.map((x) => x.artistName).join(", ")
                     : "Unknown Artist";
 
                 return (

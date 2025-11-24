@@ -46,7 +46,6 @@ export default function ArtistEvents() {
   }, [id]);
 
   useEffect(() => {
-    //use to load page rightly
     window.scrollTo({
       top: 0,
       left: 0,
@@ -57,8 +56,6 @@ export default function ArtistEvents() {
   const artistDisplay = useMemo(() => {
     for (const e of events) {
       if (e.musicianName) return e.musicianName;
-      if (e.musician?.musicianName) return e.musician.musicianName;
-      if (e.musician?.MusicianName) return e.musician.MusicianName;
     }
     return "Artist";
   }, [events]);
