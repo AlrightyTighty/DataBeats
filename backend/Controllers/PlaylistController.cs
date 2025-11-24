@@ -192,7 +192,7 @@ namespace backend.Controllers
             playlistToDelete.TimestampDeleted = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
-            return Created(uri: null as string, adminAction);
+            return Ok();
         }
 
         [HttpDelete("{id}")]

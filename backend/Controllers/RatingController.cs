@@ -131,7 +131,7 @@ namespace backend.Controllers
             ratingToDelete.TimestampDeleted = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            return Created(uri: null as string, adminAction);
+            return Ok();
         }
 
         [HttpDelete("{ratingId}")]

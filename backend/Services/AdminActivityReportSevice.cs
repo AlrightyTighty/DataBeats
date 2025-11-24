@@ -11,7 +11,7 @@ namespace backend.Services
     public interface IAdminReportService
     {
         Task<AdminReportDto> GenerateReportAsync(DateTime from, DateTime to);
-        
+
         Task<AdminUserActivityReportDto> GetUserReportByUsernameAsync(string username, DateTime from, DateTime to);
 
         Task<IEnumerable<AdminUserRowDto>> GetUsersAsync(DateTime from, DateTime to, string search);
@@ -40,14 +40,14 @@ namespace backend.Services
 
             var report = new AdminReportDto
             {
-                From      = from,
-                To        = to,
-                Users     = await GetUserSummaryAsync(conn, parameters),
+                From = from,
+                To = to,
+                Users = await GetUserSummaryAsync(conn, parameters),
                 Musicians = await GetMusicianSummaryAsync(conn, parameters),
                 Playlists = await GetPlaylistSummaryAsync(conn, parameters),
-                Albums    = await GetAlbumSummaryAsync(conn, parameters),
-                Events    = await GetEventSummaryAsync(conn, parameters),
-                Songs     = await GetSongSummaryAsync(conn, parameters)
+                Albums = await GetAlbumSummaryAsync(conn, parameters),
+                Events = await GetEventSummaryAsync(conn, parameters),
+                Songs = await GetSongSummaryAsync(conn, parameters)
             };
 
             return report;
@@ -165,7 +165,7 @@ namespace backend.Services
             }
 
             row.From = from;
-            row.To   = to;
+            row.To = to;
             return row;
         }
 

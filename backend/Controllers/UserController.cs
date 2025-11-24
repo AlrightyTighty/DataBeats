@@ -171,7 +171,7 @@ namespace backend.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Created(uri: null as string, adminAction);
+            return Ok();
         }
 
         // SOFT DELETE: lock account "forever" so user can't log in anymore

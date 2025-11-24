@@ -192,6 +192,20 @@ namespace backend.Controllers
                                                                     Comment = action.Reason
                                                                 })
                                                                 .ToArrayAsync();
+            AdminAction[] eventDeletes = await _context.AdminDeletesEvents
+                                                                .Include(action => action.Admin)
+                                                                .ThenInclude(admin => admin.User)
+                                                                .Select(action => new AdminAction
+                                                                {
+                                                                    Action = "Delete",
+                                                                    AdminId = action.AdminId,
+                                                                    AdminName = action.Admin.User.Username,
+                                                                    TargetEntity = "EVENT",
+                                                                    TargetId = action.EventId,
+                                                                    TimeStamp = action.DeletedAt,
+                                                                    Comment = action.Reason
+                                                                })
+                                                                .ToArrayAsync();
 
             AdminAction[] adminReviews = await _context.Reviews
                                                                 .Include(action => action.Admin!)
@@ -208,7 +222,7 @@ namespace backend.Controllers
                                                                 })
                                                                 .ToArrayAsync();
 
-            return Ok(songDeletes.Concat(userDeletes).Concat(playlistDeletes).Concat(albumDeletes).Concat(ratingDeletes).Concat(musicianDeletes).Concat(adminReviews).OrderByDescending(action => action.TimeStamp));
+            return Ok(songDeletes.Concat(userDeletes).Concat(playlistDeletes).Concat(albumDeletes).Concat(ratingDeletes).Concat(musicianDeletes).Concat(eventDeletes).Concat(adminReviews).OrderByDescending(action => action.TimeStamp));
         }
 
         [HttpGet]
@@ -223,6 +237,7 @@ namespace backend.Controllers
             GenrePopularityReportData[] genres;
             ArtistPopularityReportData[] artists;
             AlbumPopularityReportData[] albums;
+            SongPopularityReportData[] songs;
 
             IQueryable<Song> songBaseQuery = _context.Songs.Where(song => song.TimestampDeleted == null);
             IQueryable<Musician> artistsBaseQuery = _context.Musicians.Where(musician => musician.TimestampDeleted == null);
@@ -307,8 +322,158 @@ namespace backend.Controllers
                         .Take(50)
                         .ToArrayAsync();
 
+            songs = await songBaseQuery
+                        .Join(_context.Albums, s => s.AlbumId, a => a.AlbumId, (s, a) => new { s.SongId, s.SongName, s.Streams, a.AlbumTitle })
+                        .GroupJoin(
+                            _context.SongGenres,
+                            s => s.SongId,
+                            g => g.SongId,
+                            (s, genres) => new { s, genres }
+                        )
+                        .SelectMany(
+                            x => x.genres.DefaultIfEmpty(),
+                            (x, genre) => new { x.s.SongId, x.s.SongName, x.s.Streams, x.s.AlbumTitle, Genre = genre != null ? genre.Genre : null }
+                        )
+                        .Join(_context.MusicianWorksOnSongs, s => s.SongId, ms => ms.SongId, (s, ms) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genre, ms.MusicianId })
+                        .Join(_context.Musicians, s => s.MusicianId, m => m.MusicianId, (s, m) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genre, m.MusicianName })
+                        .GroupBy(x => new { x.SongId, x.SongName, x.AlbumTitle })
+                        .Select(g => new SongPopularityReportData
+                        {
+                            SongId = g.Key.SongId,
+                            SongName = g.Key.SongName,
+                            AlbumName = g.Key.AlbumTitle,
+                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Artists = g.Select(x => x.MusicianName).Distinct().ToArray(),
+                            Streams = g.Sum(x => x.Streams)
+                        })
+                        .Where(info => info.Streams >= minArtistStreams)
+                        .OrderByDescending(info => info.Streams)
+                        .Take(50)
+                        .ToArrayAsync();
 
-            return Ok(new { GenreReport = genres, artistReport = artists, albumReport = albums });
+
+            return Ok(new { GenreReport = genres, artistReport = artists, albumReport = albums, songReport = songs });
+        }
+
+        [HttpGet]
+        [Route("songReport/{songName}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetSongStreamReportAsync([FromRoute] string songName, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? username = null, [FromQuery] string orderBy = "desc")
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            if (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId) == null)
+                return NotFound();
+
+            // Base query for song streams
+            var query = _context.UserListensToSongs
+                .Include(uls => uls.User)
+                .Include(uls => uls.Song)
+                .Where(uls => uls.Song.SongName.ToLower() == songName.ToLower())
+                .AsQueryable();
+
+            // Filter by username if provided
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                query = query.Where(uls => uls.User.Username.ToLower() == username.ToLower());
+            }
+
+            // Get total count for pagination metadata
+            int totalCount = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            // Apply sorting by time
+            query = orderBy.ToLower() == "asc"
+                ? query.OrderBy(uls => uls.TimeListened)
+                : query.OrderByDescending(uls => uls.TimeListened);
+
+            // Apply pagination and select data
+            var streams = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(uls => new SongStreamReportEntry
+                {
+                    StreamId = uls.UserListensToSongId,
+                    Username = uls.User.Username,
+                    SongName = uls.Song.SongName,
+                    TimeListened = uls.TimeListened
+                })
+                .ToArrayAsync();
+
+            return Ok(new PaginatedResponse<SongStreamReportEntry>
+            {
+                Data = streams,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                PageSize = pageSize
+            });
+        }
+
+        [HttpGet]
+        [Route("songReport")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> GetSongsOverviewReportAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? artistName = null, [FromQuery] string? albumName = null, [FromQuery] string? genre = null, [FromQuery] string orderBy = "desc")
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            if (await _context.Admins.FirstOrDefaultAsync(admin => admin.UserId == userId) == null)
+                return NotFound();
+
+            // Start with all songs (including soft-deleted)
+            var query = _context.Songs
+                .Include(s => s.Album)
+                .Include(s => s.SongGenres)
+                .Include(s => s.MusicianWorksOnSongs)
+                    .ThenInclude(mws => mws.Musician)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrWhiteSpace(genre))
+            {
+                query = query.Where(s => s.SongGenres.Any(sg => sg.Genre.ToLower() == genre.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(albumName))
+            {
+                query = query.Where(s => s.Album.AlbumTitle.ToLower() == albumName.ToLower());
+            }
+
+            if (!string.IsNullOrWhiteSpace(artistName))
+            {
+                query = query.Where(s => s.MusicianWorksOnSongs.Any(mws => mws.Musician.MusicianName.ToLower() == artistName.ToLower()));
+            }
+
+            // Get total count for pagination metadata
+            int totalCount = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            // Apply sorting by creation time
+            query = orderBy.ToLower() == "asc"
+                ? query.OrderBy(s => s.TimestampCreated)
+                : query.OrderByDescending(s => s.TimestampCreated);
+
+            // Apply pagination and select data
+            var songs = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(s => new SongOverviewReportEntry
+                {
+                    SongId = s.SongId,
+                    SongName = s.SongName,
+                    AlbumName = s.Album.AlbumTitle,
+                    Artists = s.MusicianWorksOnSongs.Select(mws => mws.Musician.MusicianName).ToArray(),
+                    Genres = s.SongGenres.Select(sg => sg.Genre).ToArray(),
+                    TotalStreams = s.Streams
+                })
+                .ToArrayAsync();
+
+            return Ok(new PaginatedResponse<SongOverviewReportEntry>
+            {
+                Data = songs,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                PageSize = pageSize
+            });
         }
     }
 
@@ -333,6 +498,16 @@ namespace backend.Controllers
         public int Streams { get; set; }
         public string[]? Genres { get; set; }
         public string[] Artists { get; set; } = null!;
+    }
+
+    public class SongPopularityReportData
+    {
+        public ulong SongId { get; set; }
+        public string SongName { get; set; } = null!;
+        public string AlbumName { get; set; } = null!;
+        public string[] Artists { get; set; } = null!;
+        public string[]? Genres { get; set; }
+        public int Streams { get; set; }
     }
 
 
@@ -365,5 +540,32 @@ namespace backend.Controllers
         public DateTime TimeStamp { get; set; }
 
         public string Comment { get; set; } = null!;
+    }
+
+    public class SongStreamReportEntry
+    {
+        public ulong StreamId { get; set; }
+        public string Username { get; set; } = null!;
+        public string SongName { get; set; } = null!;
+        public DateTime TimeListened { get; set; }
+    }
+
+    public class SongOverviewReportEntry
+    {
+        public ulong SongId { get; set; }
+        public string SongName { get; set; } = null!;
+        public string AlbumName { get; set; } = null!;
+        public string[] Artists { get; set; } = null!;
+        public string[] Genres { get; set; } = null!;
+        public int TotalStreams { get; set; }
+    }
+
+    public class PaginatedResponse<T>
+    {
+        public T[] Data { get; set; } = null!;
+        public int TotalCount { get; set; }
+        public int TotalPages { get; set; }
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
     }
 }

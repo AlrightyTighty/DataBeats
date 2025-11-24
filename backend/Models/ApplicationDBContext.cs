@@ -20,6 +20,8 @@ public partial class ApplicationDBContext : DbContext
 
     public virtual DbSet<AdminDeletesAlbum> AdminDeletesAlbums { get; set; }
 
+    public virtual DbSet<AdminDeletesEvent> AdminDeletesEvents { get; set; }
+
     public virtual DbSet<AdminDeletesMusician> AdminDeletesMusicians { get; set; }
 
     public virtual DbSet<AdminDeletesPlaylist> AdminDeletesPlaylists { get; set; }
@@ -222,6 +224,45 @@ public partial class ApplicationDBContext : DbContext
                 .HasForeignKey(d => d.UpdatedBy)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("admin_deletes_album_ibfk_4");
+        });
+
+        modelBuilder.Entity<AdminDeletesEvent>(entity =>
+        {
+            entity.HasKey(e => e.AdminDeletesEventId).HasName("PRIMARY");
+
+            entity.ToTable("admin_deletes_event");
+
+            entity.HasIndex(e => e.AdminId, "ib_fk_admin_deletes_event_1_idx");
+
+            entity.HasIndex(e => e.EventId, "ib_fk_admin_deletes_event_1_idx1");
+
+            entity.HasIndex(e => e.DeletedBy, "ib_fk_admin_deletes_event_3_idx");
+
+            entity.Property(e => e.AdminDeletesEventId).HasColumnName("admin_deletes_event_id");
+            entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("deleted_at");
+            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.Reason)
+                .HasColumnType("text")
+                .HasColumnName("reason");
+
+            entity.HasOne(d => d.Admin).WithMany(p => p.AdminDeletesEventAdmins)
+                .HasForeignKey(d => d.AdminId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ib_fk_admin_deletes_event_1");
+
+            entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.AdminDeletesEventDeletedByNavigations)
+                .HasForeignKey(d => d.DeletedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ib_fk_admin_deletes_event_3");
+
+            entity.HasOne(d => d.Event).WithMany(p => p.AdminDeletesEvents)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ib_fk_admin_deletes_event_2");
         });
 
         modelBuilder.Entity<AdminDeletesMusician>(entity =>

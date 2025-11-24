@@ -29,6 +29,10 @@ public partial class Admin
 
     public virtual ICollection<AdminDeletesAlbum> AdminDeletesAlbumUpdatedByNavigations { get; set; } = new List<AdminDeletesAlbum>();
 
+    public virtual ICollection<AdminDeletesEvent> AdminDeletesEventAdmins { get; set; } = new List<AdminDeletesEvent>();
+
+    public virtual ICollection<AdminDeletesEvent> AdminDeletesEventDeletedByNavigations { get; set; } = new List<AdminDeletesEvent>();
+
     public virtual ICollection<AdminDeletesMusician> AdminDeletesMusicianAdmins { get; set; } = new List<AdminDeletesMusician>();
 
     public virtual ICollection<AdminDeletesMusician> AdminDeletesMusicianDeletedByNavigations { get; set; } = new List<AdminDeletesMusician>();

@@ -18,9 +18,11 @@ namespace backend.Middleware
         public async Task InvokeAsync(HttpContext context, ApplicationDBContext dbContext)
         {
             Console.WriteLine("Middlewaring!");
+            Console.WriteLine(context.Request.Headers["X-UserId"]);
 
             if (context.Request.Headers["X-UserId"].Count > 0)
             {
+                Console.WriteLine("Skipped!");
                 await next(context);
                 return;
             }
@@ -43,6 +45,8 @@ namespace backend.Middleware
                 await context.Response.WriteAsync("Unauthorized");
                 return;
             }
+
+            Console.WriteLine("UserId: " + session.UserId.ToString());
 
             context.Request.Headers.Append("X-UserId", session.UserId.ToString());
             await next(context);

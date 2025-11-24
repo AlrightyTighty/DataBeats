@@ -27,6 +27,8 @@ public partial class Event
 
     public ulong? DeletedBy { get; set; }
 
+    public virtual ICollection<AdminDeletesEvent> AdminDeletesEvents { get; set; } = new List<AdminDeletesEvent>();
+
     public virtual User? DeletedByNavigation { get; set; }
 
     public virtual EventPictureFile EventPictureFile { get; set; } = null!;

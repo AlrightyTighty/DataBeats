@@ -256,7 +256,7 @@ namespace backend.Controllers
             musicianToDelete.TimestampDeleted = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            return Created(uri: null as string, adminAction);
+            return Ok();
         }
 
         [HttpDelete("{id}")]

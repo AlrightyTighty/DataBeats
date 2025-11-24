@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.DTOs.Admin;
 using backend.DTOs.Event;
 using backend.Mappers;
 using backend.Models;
@@ -52,13 +53,13 @@ namespace backend.Controllers
         [HttpGet("by-musician/{musicianId}")]
         public async Task<IActionResult> GetByMusician([FromRoute] ulong musicianId)
         {
-            var events = await _context.Events                      
-                .Where(e => e.MusicianId == musicianId)           
-                .Include(e => e.EventPictureFile)                   
-                .Include(e => e.Musician)                          
+            var events = await _context.Events
+                .Where(e => e.MusicianId == musicianId)
+                .Include(e => e.EventPictureFile)
+                .Include(e => e.Musician)
                 .Where(e => e.TimestampDeleted == null)
-                .OrderByDescending(e => e.EventTime)            
-                .ToListAsync();                                    
+                .OrderByDescending(e => e.EventTime)
+                .ToListAsync();
 
             if (!events.Any())
                 return NotFound(new { message = "No events found for this musician." });
@@ -74,14 +75,14 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-             if (!Request.Headers.TryGetValue("X-UserId", out var headerVals) ||
-                string.IsNullOrEmpty(headerVals.FirstOrDefault()) ||
-                !ulong.TryParse(headerVals.FirstOrDefault(), out var userId))
+            if (!Request.Headers.TryGetValue("X-UserId", out var headerVals) ||
+               string.IsNullOrEmpty(headerVals.FirstOrDefault()) ||
+               !ulong.TryParse(headerVals.FirstOrDefault(), out var userId))
             {
                 return Unauthorized("Missing or invalid X-UserId header.");
             }
 
-    // Check that this user has a musician account
+            // Check that this user has a musician account
             var musician = await _context.Musicians
                 .FirstOrDefaultAsync(m => m.UserId == userId);
 
@@ -165,6 +166,63 @@ namespace backend.Controllers
             await _context.Entry(evt).Reference(e => e.EventPictureFile).LoadAsync();
 
             return Ok(evt.ToEventDto());
+        }
+
+        [HttpPost("/admin/delete/event/{id}")]
+        [EnableCors("AllowSpecificOrigins")]
+        public async Task<IActionResult> AdminDeleteByIdAsync([FromRoute] ulong id, [FromBody] AdminDeleteRequest request)
+        {
+            ulong userId = ulong.Parse(Request.Headers["X-UserId"]!);
+            User deletingUser = (await _context.Users.FindAsync(userId))!;
+            Event? eventToDelete = await _context.Events.FindAsync(id);
+
+            if (eventToDelete == null || eventToDelete.TimestampDeleted != null)
+                return NotFound();
+
+            // ADMIN CHECK
+            if (deletingUser.AdminId == null)
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            ulong? adminId = deletingUser.AdminId;
+
+            // RESOLVE ASSOCIATED REPORTS IF REQUESTED
+            if (request.ResolveReports)
+            {
+                var unresolvedComplaints = await _context.Complaints
+                    .Include(c => c.Reviews)
+                    .Where(c => c.ComplaintType == "EVENT" && c.ComplaintTargetId == id && c.Reviews.Count == 0)
+                    .ToListAsync();
+
+                foreach (var complaint in unresolvedComplaints)
+                {
+                    Review autoReview = new Review
+                    {
+                        AdminId = adminId.Value,
+                        ComplaintId = complaint.ComplaintId,
+                        TimestampCreated = DateTime.Now,
+                        CreatedBy = userId,
+                        ReviewComment = "Automatically resolved after deletion of offending content"
+                    };
+                    await _context.Reviews.AddAsync(autoReview);
+                }
+            }
+
+            // CREATE TRACKING ENTITY
+            AdminDeletesEvent adminAction = new AdminDeletesEvent
+            {
+                AdminId = adminId.Value,
+                EventId = id,
+                DeletedAt = DateTime.Now,
+                DeletedBy = userId,
+                Reason = request.Reason
+            };
+
+            // SAVE TRACKING AND SOFT DELETE
+            await _context.AdminDeletesEvents.AddAsync(adminAction);
+            eventToDelete.TimestampDeleted = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpDelete("{id}")] // soft delete
