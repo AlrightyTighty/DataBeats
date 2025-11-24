@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import { PlaylistSection } from "../Components/PlaylistSection";
@@ -11,9 +11,10 @@ import "./Events.css";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { me, loading: authLoading } = useMe();
-  const userId = useMemo(() => me?.userId ?? null, [me]);
-  const musicianId = useMemo(() => me?.musicianId ?? null, [me]);
-  const username = useMemo(() => me?.username, [me]);
+
+  const userId = me?.userId ?? null;
+  const musicianId = me?.musicianId ?? null;
+  const username = me?.username ?? "Listener";
 
   const [playlists, setPlaylists] = useState([]);
   const [events, setEvents] = useState([]);
@@ -54,14 +55,15 @@ export default function Dashboard() {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
     if (authLoading) return;
     if (!userId) return;
+
+    const controller = new AbortController();
+    let mounted = true;
 
     (async () => {
       try {
@@ -75,18 +77,30 @@ export default function Dashboard() {
           resFollowers,
           resFollowing,
         ] = await Promise.all([
-          fetch(`${API}/api/playlist/me`, { credentials: "include" }),
-          fetch(`${API}/api/event`, { credentials: "include" }),
-          fetch(`${API}/api/album`, { credentials: "include" }),
+          fetch(`${API}/api/playlist/me`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
+          fetch(`${API}/api/event`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
+          fetch(`${API}/api/album`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
           fetch(`${API}/api/history/top-songs?limit=50`, {
             credentials: "include",
             headers: { "X-UserId": String(userId) },
+            signal: controller.signal,
           }),
           fetch(`${API}/api/follow/followers/${userId}`, {
             credentials: "include",
+            signal: controller.signal,
           }),
           fetch(`${API}/api/follow/following/${userId}`, {
             credentials: "include",
+            signal: controller.signal,
           }),
         ]);
 
@@ -103,9 +117,15 @@ export default function Dashboard() {
           ? await resFollowing.json()
           : [];
 
+        if (!mounted) return;
+
         // Playlists
-        const owned = playlistResponse.ownedPlaylists ?? [];
-        const contrib = playlistResponse.contributorPlaylists ?? [];
+        const owned = Array.isArray(playlistResponse.ownedPlaylists)
+          ? playlistResponse.ownedPlaylists
+          : [];
+        const contrib = Array.isArray(playlistResponse.contributorPlaylists)
+          ? playlistResponse.contributorPlaylists
+          : [];
         const allPlaylists = [...owned, ...contrib];
 
         const likedName = "Your Liked Playlist";
@@ -132,16 +152,15 @@ export default function Dashboard() {
 
         // Events
         const rawEvents = Array.isArray(eventsResponse) ? eventsResponse : [];
-
-        const sortedEvents = rawEvents.sort((a, b) => {
-          return new Date(b.eventTime) - new Date(a.eventTime);
-        });
+        const sortedEvents = rawEvents.sort(
+          (a, b) => new Date(b.eventTime) - new Date(a.eventTime)
+        );
         setEvents(sortedEvents.slice(0, 4));
 
         // New uploads
         const albumsArr = Array.isArray(albumsResponse) ? albumsResponse : [];
         const now = new Date();
-        const monthAgo = new Date();
+        const monthAgo = new Date(now);
         monthAgo.setMonth(now.getMonth() - 1);
 
         const recent = albumsArr
@@ -179,20 +198,35 @@ export default function Dashboard() {
           .slice(0, 6);
         setFriends(friendsList);
       } catch (err) {
+        if (err.name === "AbortError") {
+          return;
+        }
         console.error("Error loading dashboard:", err);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [authLoading, userId, navigate]);
 
-  const gotoPlaylists = () => navigate("/playlists");
+  const gotoPlaylists = useCallback(() => navigate("/playlists"), [navigate]);
+  const gotoRecentPlays = useCallback(() => {
+    if (!userId) {
+      navigate("/recent-plays");
+    } else {
+      navigate(`/recent-plays/${userId}`);
+    }
+  }, [navigate, userId]);
 
   return (
     <>
       <Topnav />
       <ContextMenu
-        ref={contextMenuRef}
+        menuRef={contextMenuRef}
         items={contextMenu.items}
         functions={contextMenu.functions}
         x={contextMenu.x}
@@ -271,7 +305,7 @@ export default function Dashboard() {
 
             <button
               type="button"
-              onClick={() => navigate("/recent-plays/${profileUserId})")}
+              onClick={gotoRecentPlays}
               className={styles.btn}
             >
               <div className={styles.btnHighlight} />
@@ -283,7 +317,12 @@ export default function Dashboard() {
           <section className={styles.section}>
             <div className={styles.sectionHead}>
               <h2>Playlists</h2>
-              <span className={styles.viewAll} onClick={gotoPlaylists}>
+              <span
+                className={styles.viewAll}
+                onClick={gotoPlaylists}
+                role="button"
+                tabIndex={0}
+              >
                 View All
               </span>
             </div>
@@ -303,6 +342,8 @@ export default function Dashboard() {
               <span
                 className={styles.viewAll}
                 onClick={() => navigate("/events")}
+                role="button"
+                tabIndex={0}
               >
                 View All
               </span>
@@ -314,6 +355,7 @@ export default function Dashboard() {
             ) : (
               <div className="events-grid">
                 {events.map((e) => {
+                  const id = e.eventId;
                   const inlineImg = e.imageBase64
                     ? `data:image/${e.imageFileExtension || "jpeg"};base64,${
                         e.imageBase64
@@ -346,23 +388,33 @@ export default function Dashboard() {
 
                   return (
                     <div
-                      key={e.eventId ?? e.EventId}
+                      key={id}
                       className="event-card"
-                      onClick={() => navigate(`/event/${e.eventId}`)}
+                      role="button"
                       tabIndex={0}
+                      onClick={() => navigate(`/event/${id}`)}
                       onKeyDown={(ev) => {
-                        if (ev.key === "Enter" || ev.key === " ") {
-                          navigate(`/event/${e.eventId}`);
+                        if (
+                          ev.key === "Enter" ||
+                          ev.key === " " ||
+                          ev.key === "Spacebar"
+                        ) {
+                          ev.preventDefault();
+                          navigate(`/event/${id}`);
                         }
                       }}
                     >
                       <div className="media">
                         <div className="media-inner">
                           {imgSrc ? (
-                            <img src={imgSrc} alt={e.title} loading="lazy" />
+                            <img
+                              src={imgSrc}
+                              alt={e.title ?? "Event image"}
+                              loading="lazy"
+                            />
                           ) : (
                             <img
-                              alt={e.title}
+                              alt={e.title ?? "Event image"}
                               loading="lazy"
                               style={{
                                 background: "#e5e7eb",
@@ -493,7 +545,7 @@ export default function Dashboard() {
             ) : (
               <div className={styles.songList}>
                 {randomSongs.map((s, i) => {
-                  const title = s.songName;
+                  const title = s.songName ?? "Unknown";
                   const artist = s.artistName ?? "Unknown";
                   const album = s.albumTitle ?? "";
                   return (

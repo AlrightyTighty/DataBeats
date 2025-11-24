@@ -1,10 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router";
 import Topnav from "../Components/Topnav";
 import styles from "./ArtistEvents.module.css";
 import "./Events.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
+
+function formatEventDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso).split("T")[0] || String(iso);
+  return d.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatEventTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 
 export default function ArtistEvents() {
   const navigate = useNavigate();
@@ -14,58 +36,109 @@ export default function ArtistEvents() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
-  useEffect(() => {
-    if (!id) return;
-    (async () => {
-      try {
-        setErr(null);
-        setLoading(true);
-        const res = await fetch(`${API}/api/event/by-musician/${id}`);
-        if (!res.ok) {
-          if (res.status === 404) {
-            setEvents([]);
-            setErr("No events found for this artist.");
-          } else {
-            throw new Error(
-              `GET /api/event/by-musician/${id} failed (${res.status})`
-            );
-          }
-        } else {
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : [];
-          list.sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime));
-          setEvents(list);
-        }
-      } catch (e) {
-        setErr(e.message || String(e));
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    })();
+  const musicianId = useMemo(() => {
+    const n = id ? Number(id) : null;
+    return Number.isNaN(n) ? id : n;
   }, [id]);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "instant",
-    });
+    if (!musicianId) return;
+
+    const controller = new AbortController();
+    let alive = true;
+
+    (async () => {
+      setErr(null);
+      setLoading(true);
+      try {
+        const res = await fetch(`${API}/api/event/by-musician/${musicianId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            if (alive) {
+              setEvents([]);
+              setErr("No events found for this artist.");
+            }
+          } else {
+            const body = await res.text().catch(() => "");
+            throw new Error(
+              body ||
+                `GET /api/event/by-musician/${musicianId} failed (${res.status})`
+            );
+          }
+          return;
+        }
+
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+
+        // sort newest to oldest
+        list.sort((a, b) => {
+          const ta = a && a.eventTime ? new Date(a.eventTime).getTime() : 0;
+          const tb = b && b.eventTime ? new Date(b.eventTime).getTime() : 0;
+          return tb - ta;
+        });
+
+        if (alive) setEvents(list);
+      } catch (e) {
+        if (e.name === "AbortError") {
+          console.info("ArtistEvents fetch aborted for", musicianId);
+          return;
+        }
+        console.error("Error loading events:", e);
+        if (alive) {
+          setErr(e.message || String(e));
+          setEvents([]);
+        }
+      } finally {
+        setTimeout(() => {
+          if (alive) setLoading(false);
+        }, 100);
+      }
+    })();
+
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [musicianId]);
+
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    } catch {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   const artistDisplay = useMemo(() => {
     for (const e of events) {
       if (e.musicianName) return e.musicianName;
+      if (e.MusicianName) return e.MusicianName;
     }
     return "Artist";
   }, [events]);
+
+  const handleCardKeyDown = useCallback(
+    (ev, eventId) => {
+      const key = ev.key;
+      if (key === "Enter" || key === " " || key === "Spacebar") {
+        ev.preventDefault();
+        navigate(`/event/${eventId}`);
+      }
+    },
+    [navigate]
+  );
 
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          {/*title*/}
+          {/* title */}
           <h1 className={styles.title}>
             <button
               type="button"
@@ -99,6 +172,7 @@ export default function ArtistEvents() {
           ) : (
             <div className="events-grid">
               {events.map((e) => {
+                const eventId = e.eventId ?? e.EventId ?? e.id;
                 const inlineImg = e.imageBase64
                   ? `data:image/${e.imageFileExtension || "jpeg"};base64,${
                       e.imageBase64
@@ -109,44 +183,31 @@ export default function ArtistEvents() {
                   : null;
                 const imgSrc = inlineImg || viewUrl;
 
-                const dateStr = e.eventTime
-                  ? new Date(e.eventTime).toLocaleDateString(undefined, {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : "—";
-
-                const timeStr = e.eventTime
-                  ? new Date(e.eventTime).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })
-                  : "";
-
+                const dateStr = formatEventDate(e.eventTime);
+                const timeStr = formatEventTime(e.eventTime);
                 const priceStr = `$${Number(e.ticketPrice ?? 0).toFixed(2)}`;
+
+                const artistName =
+                  e.musicianName ?? e.MusicianName ?? artistDisplay;
+                const title = e.title ?? "Event";
 
                 return (
                   <div
-                    key={e.eventId}
+                    key={eventId ?? Math.random().toString(36).slice(2, 9)} // fallback key to avoid React warnings
                     className="event-card"
-                    onClick={() => navigate(`/event/${e.eventId}`)}
+                    role="button"
                     tabIndex={0}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter" || ev.key === " ") {
-                        navigate(`/event/${e.eventId}`);
-                      }
-                    }}
+                    onClick={() => navigate(`/event/${eventId}`)}
+                    onKeyDown={(ev) => handleCardKeyDown(ev, eventId)}
+                    aria-label={`Open event ${title}`}
                   >
                     <div className="media">
                       <div className="media-inner">
                         {imgSrc ? (
-                          <img src={imgSrc} alt={e.title} loading="lazy" />
+                          <img src={imgSrc} alt={title} loading="lazy" />
                         ) : (
-                          <img
-                            alt={e.title}
-                            loading="lazy"
+                          <div
+                            aria-hidden
                             style={{
                               background: "#e5e7eb",
                               width: "100%",
@@ -160,10 +221,8 @@ export default function ArtistEvents() {
 
                     <div className="event-card-content">
                       <div className="event-card-header">
-                        <div className="event-title">{e.title}</div>
-                        <div className="event-artist">
-                          {e.musicianName ?? e.MusicianName ?? artistDisplay}
-                        </div>
+                        <div className="event-title">{title}</div>
+                        <div className="event-artist">{artistName}</div>
                       </div>
 
                       <div className="event-card-divider" />

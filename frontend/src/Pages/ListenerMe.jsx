@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import verifiedBadge from "../assets/graphics/musician_verification.png";
@@ -8,13 +8,31 @@ import useFollow from "../hooks/useFollow.js";
 import API from "../lib/api.js";
 import styles from "./ListenerMe.module.css";
 
+async function fetchImageDataUrl(fileId) {
+  if (!fileId) return null;
+  try {
+    const res = await fetch(`${API}/api/images/profile-picture/${fileId}`, {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const fileData = data.fileData;
+    const fileExt = data.fileExtension || "jpeg";
+    if (!fileData) return null;
+    return `data:image/${fileExt};base64,${fileData}`;
+  } catch (err) {
+    console.error("fetchImageDataUrl error:", err);
+    return null;
+  }
+}
+
 export default function ListenerMe({ setPlaybarState }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const profileUserId = useMemo(() => Number(id), [id]);
+  const profileUserId = Number(id);
 
   const { me, loading: authLoading } = useMe();
-  const currentUserId = useMemo(() => me?.userId ?? null, [me]);
+  const currentUserId = me?.userId ?? null;
 
   useEffect(() => {
     if (!authLoading && !me) {
@@ -23,20 +41,16 @@ export default function ListenerMe({ setPlaybarState }) {
   }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
-  const musicianId = user?.musicianId ?? null;
-  const hasMusician = !!musicianId;
+  const [musician, setMusician] = useState(null);
+  const [userAvatarSrc, setUserAvatarSrc] = useState(null);
+  const [musicianAvatarSrc, setMusicianAvatarSrc] = useState(null);
+
   const [isVerifiedMusician, setIsVerifiedMusician] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
-
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
-  const [userAvatarSrc, setUserAvatarSrc] = useState(null);
-  const [musician, setMusician] = useState(null);
-  const [musicianAvatarSrc, setMusicianAvatarSrc] = useState(null);
+  const [follows, setFollows] = useState({ followers: 0, following: 0 });
 
   const [topSongs, setTopSongs] = useState([]);
-
   const {
     label: followLabel,
     act: followAct,
@@ -50,52 +64,67 @@ export default function ListenerMe({ setPlaybarState }) {
 
   const loadCounts = useCallback(async () => {
     if (!profileUserId) return;
+    const controller = new AbortController();
     try {
       const [followersRes, followingRes] = await Promise.all([
-        fetch(`${API}/api/follow/followers/${profileUserId}`),
-        fetch(`${API}/api/follow/following/${profileUserId}`),
+        fetch(`${API}/api/follow/followers/${profileUserId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        }),
+        fetch(`${API}/api/follow/following/${profileUserId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        }),
       ]);
 
-      if (followersRes.ok) {
-        const f = await followersRes.json();
-        setFollowerCount(Array.isArray(f) ? f.length : 0);
-      } else {
-        setFollowerCount(0);
-      }
-
-      if (followingRes.ok) {
-        const g = await followingRes.json();
-        setFollowingCount(Array.isArray(g) ? g.length : 0);
-      } else {
-        setFollowingCount(0);
-      }
-    } catch {
-      setFollowerCount(0);
-      setFollowingCount(0);
+      const followers = followersRes.ok
+        ? (await followersRes.json()).length
+        : 0;
+      const following = followingRes.ok
+        ? (await followingRes.json()).length
+        : 0;
+      setFollows({ followers, following });
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      console.error("loadCounts error:", err);
+      setFollows({ followers: 0, following: 0 });
+    } finally {
     }
   }, [profileUserId]);
 
   useEffect(() => {
     if (!profileUserId) return;
+    const controller = new AbortController();
+    let mounted = true;
 
     (async () => {
+      setLoadingUser(true);
+      setError("");
       try {
-        setLoadingUser(true);
-        setError("");
-        const res = await fetch(`${API}/api/user/${profileUserId}`);
+        const res = await fetch(`${API}/api/user/${profileUserId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
         if (!res.ok) {
           setError("Could not load user.");
           setUser(null);
           return;
         }
         const data = await res.json();
-        setUser(data);
-      } catch {
-        setError("Error loading user.");
+        if (mounted) setUser(data);
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        console.error("Error loading user:", err);
+        if (mounted) setError("Error loading user.");
       } finally {
-        setLoadingUser(false);
+        if (mounted) setLoadingUser(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [profileUserId]);
 
   useEffect(() => {
@@ -103,35 +132,23 @@ export default function ListenerMe({ setPlaybarState }) {
   }, [loadCounts]);
 
   useEffect(() => {
+    let mounted = true;
     if (!user?.profilePictureFileId) {
       setUserAvatarSrc(null);
       return;
     }
-
     (async () => {
-      try {
-        const res = await fetch(
-          `${API}/api/images/profile-picture/${user.profilePictureFileId}`
-        );
-        if (!res.ok) {
-          setUserAvatarSrc(null);
-          return;
-        }
-        const data = await res.json();
-        const fileData = data.fileData;
-        const fileExt = data.fileExtension;
-        if (!fileData) {
-          setUserAvatarSrc(null);
-          return;
-        }
-        setUserAvatarSrc(`data:image/${fileExt};base64,${fileData}`);
-      } catch {
-        setUserAvatarSrc(null);
-      }
+      const src = await fetchImageDataUrl(user.profilePictureFileId);
+      if (mounted) setUserAvatarSrc(src);
     })();
+    return () => {
+      mounted = false;
+    };
   }, [user?.profilePictureFileId]);
 
-  // musician
+  const musicianId = user?.musicianId ?? null;
+  const hasMusician = !!musicianId;
+
   useEffect(() => {
     if (!musicianId) {
       setMusician(null);
@@ -140,118 +157,147 @@ export default function ListenerMe({ setPlaybarState }) {
       return;
     }
 
+    const controller = new AbortController();
+    let mounted = true;
+
     (async () => {
       try {
-        // If this user is a musician, fetch musician record to check verification
-        const res = await fetch(`${API}/api/musician/${musicianId}`);
+        const res = await fetch(`${API}/api/musician/${musicianId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
         if (!res.ok) {
-          setMusician(null);
-          setIsVerifiedMusician(false);
+          if (mounted) {
+            setMusician(null);
+            setIsVerifiedMusician(false);
+          }
           return;
         }
         const m = await res.json();
-        setMusician(m);
-        setIsVerifiedMusician(!!m.isVerified);
-      } catch {
-        setMusician(null);
-        setIsVerifiedMusician(false);
+        if (mounted) {
+          setMusician(m);
+          setIsVerifiedMusician(!!m.isVerified);
+        }
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        console.error("Error loading musician:", err);
+        if (mounted) {
+          setMusician(null);
+          setIsVerifiedMusician(false);
+        }
       }
     })();
+
+    return () => {
+      controller.abort();
+    };
   }, [musicianId]);
 
-  // load musician avatar
   useEffect(() => {
     if (!musician?.profilePictureFileId) {
       setMusicianAvatarSrc(null);
       return;
     }
-
+    let mounted = true;
     (async () => {
-      try {
-        const res = await fetch(
-          `${API}/api/images/profile-picture/${musician.profilePictureFileId}`
-        );
-        if (!res.ok) {
-          setMusicianAvatarSrc(null);
-          return;
-        }
-        const data = await res.json();
-        const fileData = data.fileData;
-        const fileExt = data.fileExtension;
-        if (!fileData) {
-          setMusicianAvatarSrc(null);
-          return;
-        }
-        setMusicianAvatarSrc(`data:image/${fileExt};base64,${fileData}`);
-      } catch {
-        setMusicianAvatarSrc(null);
-      }
+      const src = await fetchImageDataUrl(musician.profilePictureFileId);
+      if (mounted) setMusicianAvatarSrc(src);
     })();
+    return () => {
+      mounted = false;
+    };
   }, [musician?.profilePictureFileId]);
 
-  // load top songs
   useEffect(() => {
     if (!profileUserId) return;
-
+    const controller = new AbortController();
+    let mounted = true;
     (async () => {
       try {
         const res = await fetch(`${API}/api/history/top-songs?limit=5`, {
-          headers: {
-            "X-UserId": String(profileUserId),
-          },
+          headers: { "X-UserId": String(profileUserId) },
+          credentials: "include",
+          signal: controller.signal,
         });
         if (!res.ok) {
-          setTopSongs([]);
+          if (mounted) setTopSongs([]);
           return;
         }
         const data = await res.json();
         const items = Array.isArray(data.items) ? data.items : [];
-        setTopSongs(items);
-      } catch {
-        setTopSongs([]);
+        if (mounted) setTopSongs(items);
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        console.error("Error loading top songs:", err);
+        if (mounted) setTopSongs([]);
       }
     })();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [profileUserId]);
 
   const shareUrl = `${window.location.origin}/user/${profileUserId}`;
 
-  function onShare() {
-    navigator.share?.({
-      title: user?.username ?? "User",
-      url: shareUrl,
-    }) || navigator.clipboard?.writeText(shareUrl);
-  }
+  const onShare = useCallback(async () => {
+    const title = user?.username ?? "User";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url: shareUrl });
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        return;
+      }
+      window.prompt("Copy this link:", shareUrl);
+    } catch (err) {
+      console.error("Share failed:", err);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+      } catch (e) {
+        window.prompt("Copy this link:", shareUrl);
+      }
+    }
+  }, [shareUrl, user]);
 
-  function onReport() {
+  const onReport = useCallback(() => {
     location.href = `/report?type=USER&id=${profileUserId}`;
-  }
+  }, [profileUserId]);
 
-  function goToConnections() {
+  const goToConnections = useCallback(() => {
     navigate(`/follows/${profileUserId}`);
-  }
+  }, [navigate, profileUserId]);
 
-  async function handleFollowClick() {
+  const handleFollowClick = useCallback(async () => {
     if (!canFollow) return;
-    await followAct();
-    await loadCounts();
-  }
+    try {
+      await followAct();
+      await loadCounts();
+    } catch (err) {
+      console.error("Follow action failed:", err);
+    }
+  }, [canFollow, followAct, loadCounts]);
 
-  function handlePlaySong(song) {
-    if (!setPlaybarState) return;
-    const songId = song.songId;
-    const albumId = song.albumId ?? null;
+  const handlePlaySong = useCallback(
+    (song) => {
+      if (!setPlaybarState) return;
+      const songId = song.songId;
+      const albumId = song.albumId ?? null;
+      setPlaybarState({
+        songId,
+        albumId,
+        playlistId: null,
+        visible: true,
+      });
+    },
+    [setPlaybarState]
+  );
 
-    setPlaybarState({
-      songId,
-      albumId,
-      playlistId: null,
-      visible: true,
-    });
-  }
-
-  function goToPlaylists() {
+  const goToPlaylists = useCallback(() => {
     navigate(`/user-playlists/${profileUserId}`);
-  }
+  }, [navigate, profileUserId]);
 
   const showFollowButton =
     me && currentUserId && profileUserId && currentUserId !== profileUserId;
@@ -266,7 +312,9 @@ export default function ListenerMe({ setPlaybarState }) {
               Loading profile...
             </p>
           )}
+
           {error && <p className={styles.error}>{error}</p>}
+
           {!loadingUser && !user && (
             <p style={{ textAlign: "center", color: "#fff" }}>
               User not found.
@@ -282,9 +330,13 @@ export default function ListenerMe({ setPlaybarState }) {
                 </div>
 
                 {userAvatarSrc ? (
-                  <img src={userAvatarSrc} alt="User" className={styles.pic} />
+                  <img
+                    src={userAvatarSrc}
+                    alt={`${user.username ?? "User"} avatar`}
+                    className={styles.pic}
+                  />
                 ) : (
-                  <div className={styles.pic} />
+                  <div className={styles.pic} aria-hidden />
                 )}
 
                 <div className={styles.info}>
@@ -303,8 +355,8 @@ export default function ListenerMe({ setPlaybarState }) {
                   </p>
 
                   <div className={styles.stats}>
-                    <span>{followerCount} Followers</span>
-                    <span>{followingCount} Following</span>
+                    <span>{follows.followers} Followers</span>
+                    <span>{follows.following} Following</span>
                   </div>
 
                   <div className={styles.buttonsRow}>
@@ -325,6 +377,7 @@ export default function ListenerMe({ setPlaybarState }) {
                             : styles.follow
                         }
                         disabled={followLoading}
+                        aria-label={followLabel ?? "Follow"}
                       >
                         {followLoading ? "..." : followLabel || "Follow"}
                       </button>
@@ -341,12 +394,13 @@ export default function ListenerMe({ setPlaybarState }) {
                       {musicianAvatarSrc ? (
                         <img
                           src={musicianAvatarSrc}
-                          alt={musician.musicianName}
+                          alt={`${musician.musicianName ?? "Artist"} avatar`}
                           className={styles.musicianPic}
                         />
                       ) : (
-                        <div className={styles.musicianPic} />
+                        <div className={styles.musicianPic} aria-hidden />
                       )}
+
                       <div>
                         <h2 className={styles.musicianName}>
                           {musician.musicianName}
@@ -410,6 +464,7 @@ export default function ListenerMe({ setPlaybarState }) {
                             <button
                               type="button"
                               className={styles.playButton}
+                              aria-label={`Play ${title}`}
                               onClick={() => handlePlaySong(s)}
                             >
                               ▶
@@ -422,7 +477,7 @@ export default function ListenerMe({ setPlaybarState }) {
                 </div>
               </div>
 
-              {/*Playlists */}
+              {/* Playlists */}
               <div className={styles.bottomRow}>
                 <button
                   type="button"
