@@ -7,6 +7,7 @@ import API from "../lib/api";
 import useMe from "../Components/UseMe";
 import { usePlaybar } from "../contexts/PlaybarContext";
 import styles from "./Dashboard.module.css";
+import { useMemo } from "react";
 import "./Events.css";
 
 export default function Dashboard() {
