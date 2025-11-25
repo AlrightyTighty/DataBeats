@@ -36,6 +36,28 @@ export default function Settings() {
     const [oldPwd, setOldPwd] = useState('');
     const [newPwd, setNewPwd] = useState('');
     const [confirmNew, setConfirmNew] = useState('');
+    const [passwordErrors, setPasswordErrors] = useState([]);
+
+    // Password validation requirements
+    const requirementChecks = [
+        { test: (p) => p.length >= 8, label: "At least 8 characters" },
+        { test: (p) => /[a-z]/.test(p), label: "1 lowercase letter" },
+        { test: (p) => /[A-Z]/.test(p), label: "1 uppercase letter" },
+        { test: (p) => /\d/.test(p), label: "1 number" },
+        { test: (p) => /[^A-Za-z0-9]/.test(p), label: "1 symbol" },
+    ];
+
+    const validatePassword = (password) => {
+        return requirementChecks
+            .filter((req) => !req.test(password))
+            .map((r) => r.label);
+    };
+
+    const onPasswordChange = (e) => {
+        const value = e.target.value;
+        setNewPwd(value);
+        setPasswordErrors(validatePassword(value));
+    };
 
     // load values for temp states
     useEffect(() => {
@@ -165,6 +187,9 @@ export default function Settings() {
             if (newPwd !== confirmNew) {
                 console.log("Passwords do not match.");
             }
+            else if (validatePassword(newPwd).length > 0) {
+                console.log("Password does not meet requirements.");
+            }
             else {
                 const response = await fetch(`${API}/api/user/password/${userInfo.userId}`, {
                     method: "PATCH",
@@ -185,6 +210,7 @@ export default function Settings() {
                     setOldPwd('');
                     setNewPwd('');
                     setConfirmNew('');
+                    setPasswordErrors([]);
                 }
             }
         }
@@ -283,9 +309,24 @@ export default function Settings() {
                                 type="password"
                                 placeholder="Enter new password"
                                 value={newPwd}
-                                onChange={(e) => setNewPwd(e.target.value)}
+                                onChange={onPasswordChange}
+                                aria-describedby="password-requirements"
                             />
                         </label>
+
+                        {newPwd.length > 0 && passwordErrors.length > 0 && (
+                            <ul
+                                id="password-requirements"
+                                className={styles.passwordRules}
+                                aria-live="polite"
+                            >
+                                {passwordErrors.map((error) => (
+                                    <li key={error} className={styles.invalid}>
+                                        {error}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
 
                         <label>
                             Confirm Password
