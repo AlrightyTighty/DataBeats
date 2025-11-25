@@ -5,7 +5,7 @@ public class MusicianReportResponse
     public string AlbumTitle { get; set; } = null!;
     public string SongName { get; set; } = null!;
     public string Genres { get; set; } = null!;
-    public float? AvgRating { get; set; }
-    public int? Likes { get; set; }
-    public int? Streams { get; set; }
+    public double? AvgRating { get; set; }
+    public long? Likes { get; set; }
+    public long? Streams { get; set; }
 }

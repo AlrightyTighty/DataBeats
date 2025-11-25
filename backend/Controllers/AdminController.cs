@@ -286,7 +286,7 @@ namespace backend.Controllers
                         {
                             MusicianId = g.Key.MusicianId,
                             MusicianName = g.Key.MusicianName,
-                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Genres = g.Select(x => x.Genre).Where(g => g != null).Select(g => g!).Distinct().ToArray(),
                             Streams = g.Sum(x => x.Streams)
                         })
                         .Where(info => info.Streams >= minArtistStreams)
@@ -313,7 +313,7 @@ namespace backend.Controllers
                         {
                             AlbumName = g.Key.AlbumTitle,
                             AlbumId = g.Key.AlbumId,
-                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Genres = g.Select(x => x.Genre).Where(g => g != null).Select(g => g!).Distinct().ToArray(),
                             Artists = g.Select(x => x.MusicianName).Distinct().ToArray(),
                             Streams = g.Sum(x => x.Streams)
                         })
