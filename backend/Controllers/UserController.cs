@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using backend.DTOs.Admin;
+using backend.DTOs.Authentication;
 using backend.DTOs.User;
 using backend.Mappers;
 using backend.Models;
@@ -92,7 +93,12 @@ namespace backend.Controllers
                 return NotFound();
 
             if (!string.IsNullOrWhiteSpace(dto.Username))
+            {
+                var existingUser = await _context.Users.AnyAsync(u => u.Username == dto.Username && u.UserId != id);
+                if (existingUser) return Conflict("Username taken.");
+
                 user.Username = dto.Username;
+            }
 
             if (!string.IsNullOrWhiteSpace(dto.Fname))
                 user.Fname = dto.Fname;
@@ -106,6 +112,31 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(user.ToUserDtoFromUser());
+        }
+
+        [HttpPatch("password/{id}")]
+        public async Task<IActionResult> UpdateAuth([FromRoute] ulong id, [FromBody] UpdateAuthDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.OldPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                return BadRequest(new { message = "Both old and new passwords are required." });
+
+            var user = await _context.Users
+                .Include(u => u.AuthenticationInformation)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null || user.AuthenticationInformation == null)
+                return NotFound("User or authentication info could not be found.");
+
+            if (user.AuthenticationInformation.Password != dto.OldPassword)
+                return BadRequest("Old password incorrect.");
+            
+            string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$";
+            if (!Regex.IsMatch(dto.NewPassword, passwordPattern))
+                return BadRequest("Password requirements not met.");
+            user.AuthenticationInformation.Password = dto.NewPassword;
+
+            await _context.SaveChangesAsync();
+            return Ok("Password successfully updated.");
         }
 
         [HttpPost("/admin/delete/user/{id}")]
