@@ -257,7 +257,7 @@ export default function Dashboard() {
           <div className={styles.topRow}>
             <div>
               <h1 className={styles.welcome}>
-                Welcome to DataBeats, {username}!
+                Welcome to DataBeats, {displayName}!
               </h1>
               <p className={styles.welcomeSub}>
                 Jump back into your music, discover new releases, and see what
