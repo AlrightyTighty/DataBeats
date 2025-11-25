@@ -245,7 +245,7 @@ export default function ArtistProfileUser({ setPlaybarState }) {
                     to={`/user/${artist.userId}`}
                     className={styles.secondaryButton}
                   >
-                    View User Profile
+                    User Profile
                   </Link>
                 )}
 
