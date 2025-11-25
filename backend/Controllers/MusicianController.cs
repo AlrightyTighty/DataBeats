@@ -220,6 +220,8 @@ namespace backend.Controllers
 
             ulong? adminId = deletingUser.AdminId;
 
+            DateTime now = DateTime.UtcNow;
+
             // RESOLVE ASSOCIATED REPORTS IF REQUESTED
             if (request.ResolveReports)
             {
@@ -242,6 +244,41 @@ namespace backend.Controllers
                 }
             }
 
+            // CASCADE SOFT DELETE MUSICIAN'S CONTENT
+
+            // Soft delete all songs created by the musician
+            var songs = await _context.Songs
+                .Where(s => s.CreatedBy == id && s.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var song in songs)
+            {
+                song.TimestampDeleted = now;
+                song.DeletedBy = userId;
+            }
+
+            // Soft delete all albums created by the musician
+            var albums = await _context.Albums
+                .Where(a => a.CreatedBy == id && a.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var album in albums)
+            {
+                album.TimestampDeleted = now;
+                album.DeletedBy = userId;
+            }
+
+            // Soft delete all events created by the musician
+            var events = await _context.Events
+                .Where(e => e.MusicianId == id && e.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var evt in events)
+            {
+                evt.TimestampDeleted = now;
+                evt.DeletedBy = userId;
+            }
+
             // CREATE TRACKING ENTITY
             AdminDeletesMusician adminAction = new AdminDeletesMusician
             {
@@ -253,7 +290,8 @@ namespace backend.Controllers
 
             // SAVE TRACKING AND SOFT DELETE
             await _context.AdminDeletesMusicians.AddAsync(adminAction);
-            musicianToDelete.TimestampDeleted = DateTime.Now;
+            musicianToDelete.TimestampDeleted = now;
+            musicianToDelete.DeletedBy = userId;
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -276,7 +314,45 @@ namespace backend.Controllers
             if (!isAdmin && user.MusicianId != id)
                 return StatusCode(StatusCodes.Status403Forbidden);
 
-            musicianToDelete.TimestampDeleted = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
+
+            // CASCADE SOFT DELETE MUSICIAN'S CONTENT
+
+            // Soft delete all songs created by the musician
+            var songs = await _context.Songs
+                .Where(s => s.CreatedBy == id && s.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var song in songs)
+            {
+                song.TimestampDeleted = now;
+                song.DeletedBy = userId;
+            }
+
+            // Soft delete all albums created by the musician
+            var albums = await _context.Albums
+                .Where(a => a.CreatedBy == id && a.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var album in albums)
+            {
+                album.TimestampDeleted = now;
+                album.DeletedBy = userId;
+            }
+
+            // Soft delete all events created by the musician
+            var events = await _context.Events
+                .Where(e => e.MusicianId == id && e.TimestampDeleted == null)
+                .ToListAsync();
+
+            foreach (var evt in events)
+            {
+                evt.TimestampDeleted = now;
+                evt.DeletedBy = userId;
+            }
+
+            musicianToDelete.TimestampDeleted = now;
+            musicianToDelete.DeletedBy = userId;
             await _context.SaveChangesAsync();
 
             return NoContent();

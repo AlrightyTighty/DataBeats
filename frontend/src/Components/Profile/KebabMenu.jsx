@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import barMenu from "../../assets/barMenu.svg";
 import styles from "./KebabMenu.module.css";
 
-export default function KebabMenu({ onShare, onReport }) {
+export default function KebabMenu({ onShare, onReport, onDelete }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -50,6 +50,20 @@ export default function KebabMenu({ onShare, onReport }) {
           >
             Report
           </button>
+
+          {onDelete && (
+            <button
+              type="button"
+              className={styles.btn}
+              onClick={() => {
+                setOpen(false);
+                onDelete?.();
+              }}
+              role="menuitem"
+            >
+              Delete (as admin)
+            </button>
+          )}
         </div>
       )}
     </div>

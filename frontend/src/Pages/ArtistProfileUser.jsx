@@ -182,6 +182,10 @@ export default function ArtistProfileUser() {
     location.href = `/report?type=MUSICIAN&id=${musicianId}`;
   }
 
+  function onDelete() {
+    navigate(`/admin/delete?type=MUSICIAN&id=${musicianId}`);
+  }
+
   async function handleFollowClick() {
     if (!canFollow || !artist) return;
     await followAct();
@@ -212,7 +216,11 @@ export default function ArtistProfileUser() {
         <div className={styles.container}>
           <div className={styles.header}>
             <div className={styles.kebabSlot}>
-              <KebabMenu onShare={onShare} onReport={onReport} />
+              <KebabMenu
+                onShare={onShare}
+                onReport={onReport}
+                onDelete={me?.adminId != null ? onDelete : undefined}
+              />
             </div>
 
             {avatarSrc ? (

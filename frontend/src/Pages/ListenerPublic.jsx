@@ -249,6 +249,10 @@ export default function ListenerPublic() {
     location.href = `/report?type=USER&id=${profileUserId}`;
   }
 
+  function onDelete() {
+    navigate(`/admin/delete?type=USER&id=${profileUserId}`);
+  }
+
   async function handleFollowClick() {
     if (!canFollow) return;
     await followAct();
@@ -296,7 +300,11 @@ export default function ListenerPublic() {
             <>
               <div className={styles.header}>
                 <div className={styles.kebabSlot}>
-                  <KebabMenu onShare={onShare} onReport={onReport} />
+                  <KebabMenu
+                    onShare={onShare}
+                    onReport={onReport}
+                    onDelete={me?.adminId != null ? onDelete : undefined}
+                  />
                 </div>
 
                 {userAvatarSrc ? (

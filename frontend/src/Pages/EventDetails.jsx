@@ -4,6 +4,7 @@ import API from '../lib/api.js';
 import Topnav from '../Components/Topnav';
 import EditButton from '../Components/EditButton';
 import DeleteButton from '../Components/DeleteButton';
+import ContextMenuButton from '../Components/ContextMenuButton';
 import '../css/EventDetails.css';
 import useAuthentication from '../hooks/useAuthentication.js';
 
@@ -235,6 +236,26 @@ export default function EventDetails() {
         }
     }, [paramsEventId, userInfo]);
 
+    // context menu for non-musicians (report and admin delete)
+    const eventContextItems = [];
+    const eventContextFunctions = [];
+
+    // Add "Report" option if user is not the event owner
+    if (userInfo && userInfo.musicianId !== event.musicianId) {
+        eventContextItems.push("Report");
+        eventContextFunctions.push(() => {
+            navigate(`/report?type=EVENT&id=${paramsEventId}`);
+        });
+    }
+
+    // Add "Delete (as admin)" option if user is an admin
+    if (userInfo && userInfo.adminId != null) {
+        eventContextItems.push("Delete (as admin)");
+        eventContextFunctions.push(() => {
+            navigate(`/admin/delete?type=EVENT&id=${paramsEventId}`);
+        });
+    }
+
     // conditional render depending on whether user is the event's hosting musician - regular listeners cannot edit or delete
     if (!isMusician) {
         return <div className="event-details">
@@ -257,6 +278,12 @@ export default function EventDetails() {
                         Admission: ${event.ticketPrice}
                     </h2>
                 </div>
+                {eventContextItems.length > 0 && (
+                    <ContextMenuButton
+                        items={eventContextItems}
+                        functions={eventContextFunctions}
+                    />
+                )}
             </div>
         </div>
     }

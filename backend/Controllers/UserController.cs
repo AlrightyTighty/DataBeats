@@ -160,6 +160,7 @@ namespace backend.Controllers
 
             ulong? adminId = deletingUser.AdminId;
             DateTime lockExpiration = DateTime.UtcNow.AddDays(100);
+            DateTime now = DateTime.UtcNow;
 
             // RESOLVE ASSOCIATED REPORTS IF REQUESTED
             if (request.ResolveReports)
@@ -183,6 +184,58 @@ namespace backend.Controllers
                 }
             }
 
+            // CASCADE SOFT DELETE USER'S CONTENT
+
+            // Soft delete musician if exists
+            if (userToDelete.MusicianId != null)
+            {
+                var musician = await _context.Musicians.FindAsync(userToDelete.MusicianId.Value);
+                if (musician != null && musician.TimestampDeleted == null)
+                {
+                    musician.TimestampDeleted = now;
+                    musician.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all songs created by the user's musician
+            if (userToDelete.MusicianId != null)
+            {
+                var songs = await _context.Songs
+                    .Where(s => s.CreatedBy == userToDelete.MusicianId.Value && s.TimestampDeleted == null)
+                    .ToListAsync();
+
+                foreach (var song in songs)
+                {
+                    song.TimestampDeleted = now;
+                    song.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all events created by the user's musician
+            if (userToDelete.MusicianId != null)
+            {
+                var events = await _context.Events
+                    .Where(e => e.MusicianId == userToDelete.MusicianId.Value && e.TimestampDeleted == null)
+                    .ToListAsync();
+
+                foreach (var evt in events)
+                {
+                    evt.TimestampDeleted = now;
+                    evt.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all reviews created by the user
+            var reviews = await _context.Reviews
+                .Where(r => r.CreatedBy == id && r.TimestampDelted == null)
+                .ToListAsync();
+
+            foreach (var review in reviews)
+            {
+                review.TimestampDelted = now;
+                review.DeletedBy = userId;
+            }
+
             // CREATE TRACKING ENTITY
             AdminManagesUser adminAction = new AdminManagesUser
             {
@@ -198,7 +251,7 @@ namespace backend.Controllers
             await _context.AdminManagesUsers.AddAsync(adminAction);
             userToDelete.AuthenticationInformation.Locked = true;
             userToDelete.AuthenticationInformation.LockExpiration = lockExpiration;
-            userToDelete.TimeDeleted = DateTime.UtcNow;
+            userToDelete.TimeDeleted = now;
 
             await _context.SaveChangesAsync();
 
@@ -227,11 +280,65 @@ namespace backend.Controllers
             if (user.AuthenticationInformation == null)
                 return BadRequest("No authentication record for this user.");
 
+            DateTime now = DateTime.UtcNow;
+
+            // CASCADE SOFT DELETE USER'S CONTENT
+
+            // Soft delete musician if exists
+            if (user.MusicianId != null)
+            {
+                var musician = await _context.Musicians.FindAsync(user.MusicianId.Value);
+                if (musician != null && musician.TimestampDeleted == null)
+                {
+                    musician.TimestampDeleted = now;
+                    musician.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all songs created by the user's musician
+            if (user.MusicianId != null)
+            {
+                var songs = await _context.Songs
+                    .Where(s => s.CreatedBy == user.MusicianId.Value && s.TimestampDeleted == null)
+                    .ToListAsync();
+
+                foreach (var song in songs)
+                {
+                    song.TimestampDeleted = now;
+                    song.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all events created by the user's musician
+            if (user.MusicianId != null)
+            {
+                var events = await _context.Events
+                    .Where(e => e.MusicianId == user.MusicianId.Value && e.TimestampDeleted == null)
+                    .ToListAsync();
+
+                foreach (var evt in events)
+                {
+                    evt.TimestampDeleted = now;
+                    evt.DeletedBy = userId;
+                }
+            }
+
+            // Soft delete all reviews created by the user
+            var reviews = await _context.Reviews
+                .Where(r => r.CreatedBy == id && r.TimestampDelted == null)
+                .ToListAsync();
+
+            foreach (var review in reviews)
+            {
+                review.TimestampDelted = now;
+                review.DeletedBy = userId;
+            }
+
             user.AuthenticationInformation.Locked = true;
             user.AuthenticationInformation.LockExpiration = DateTime.UtcNow.AddDays(100);
 
             // mark user as deleted for reporting
-            user.TimeDeleted = DateTime.UtcNow;
+            user.TimeDeleted = now;
 
             await _context.SaveChangesAsync();
             return NoContent();

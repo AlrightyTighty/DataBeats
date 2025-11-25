@@ -29,6 +29,7 @@ export default function AdminDelete() {
       USER: "user",
       RATING: "rating",
       MUSICIAN: "musician",
+      EVENT: "event",
     };
 
     const endpoint = entityTypeMap[entityType];
