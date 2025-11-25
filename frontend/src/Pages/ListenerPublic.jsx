@@ -4,10 +4,12 @@ import Topnav from "../Components/Topnav";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import API from "../lib/api.js";
 import styles from "./ListenerPublic.module.css";
 
-export default function ListenerPublic({ setPlaybarState }) {
+export default function ListenerPublic() {
+  const { setPlaybarState } = usePlaybar();
   const { id } = useParams();
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
@@ -30,6 +32,7 @@ export default function ListenerPublic({ setPlaybarState }) {
 
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [areFriends, setAreFriends] = useState(false);
 
   const [userAvatarSrc, setUserAvatarSrc] = useState(null);
   const [musician, setMusician] = useState(null);
@@ -41,6 +44,7 @@ export default function ListenerPublic({ setPlaybarState }) {
     act: followAct,
     loading: followLoading,
     canFollow,
+    isFollowing,
   } = useFollow({
     viewerId: currentUserId,
     targetId: profileUserId,
@@ -78,6 +82,27 @@ export default function ListenerPublic({ setPlaybarState }) {
     }
   }, [profileUserId]);
 
+  const checkFriendship = useCallback(async () => {
+    if (!currentUserId || !profileUserId) {
+      setAreFriends(false);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${API}/api/follow/are-friends/${currentUserId}/${profileUserId}`,
+        { credentials: "include" }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAreFriends(data.areFriends);
+      } else {
+        setAreFriends(false);
+      }
+    } catch {
+      setAreFriends(false);
+    }
+  }, [currentUserId, profileUserId]);
+
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -105,7 +130,8 @@ export default function ListenerPublic({ setPlaybarState }) {
 
   useEffect(() => {
     loadCounts();
-  }, [loadCounts]);
+    checkFriendship();
+  }, [loadCounts, checkFriendship]);
 
   useEffect(() => {
     if (!user?.profilePictureFileId) {
@@ -227,6 +253,7 @@ export default function ListenerPublic({ setPlaybarState }) {
     if (!canFollow) return;
     await followAct();
     await loadCounts();
+    await checkFriendship();
   }
 
   function handlePlaySong(song) {
@@ -237,6 +264,7 @@ export default function ListenerPublic({ setPlaybarState }) {
     setPlaybarState({
       songId,
       albumId,
+      songList: topSongs,
       playlistId: null,
       visible: true,
     });
@@ -286,6 +314,9 @@ export default function ListenerPublic({ setPlaybarState }) {
                   <div className={styles.stats}>
                     <span>{followerCount} Followers</span>
                     <span>{followingCount} Following</span>
+                    {areFriends && (
+                      <span className={styles.friendsBadge}>⭐ Friends</span>
+                    )}
                   </div>
 
                   <div className={styles.buttons}>

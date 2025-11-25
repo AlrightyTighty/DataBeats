@@ -256,12 +256,14 @@ namespace backend.Controllers
             }
 
             genres = await songBaseQuery
-                        .Join(_context.SongGenres, song => song.SongId, genre => genre.SongId, (song, genre) => new { genre.Genre, song.Streams })
-                        .GroupBy(genre => genre.Genre)
+                        .Join(_context.SongGenres, song => song.SongId, genre => genre.SongId, (song, genre) => new { genre.Genre, song.SongId, song.Streams })
+                        .GroupBy(x => new { x.Genre, x.SongId, x.Streams })
+                        .Select(g => new { g.Key.Genre, g.Key.SongId, g.Key.Streams })
+                        .GroupBy(x => x.Genre)
                         .Select(group => new GenrePopularityReportData
                         {
                             GenreName = group.Key,
-                            Streams = group.Sum(genre => genre.Streams)
+                            Streams = group.Sum(x => x.Streams)
                         })
                         .Where(info => info.Streams >= minArtistStreams)
                         .OrderByDescending(info => info.Streams)
@@ -271,22 +273,20 @@ namespace backend.Controllers
             artists = await artistsBaseQuery
                         .Join(_context.MusicianWorksOnSongs, a => a.MusicianId, sa => sa.MusicianId, (a, sa) => new { a.MusicianName, a.MusicianId, sa.SongId })
                         .Join(_context.Songs, a => a.SongId, s => s.SongId, (a, s) => new { a.MusicianId, a.MusicianName, s.SongId, s.Streams })
+                        .GroupBy(x => new { x.MusicianId, x.MusicianName, x.SongId, x.Streams })
+                        .Select(g => new { g.Key.MusicianId, g.Key.MusicianName, g.Key.SongId, g.Key.Streams })
                         .GroupJoin(
                             _context.SongGenres,
                             a => a.SongId,
                             s => s.SongId,
-                            (a, genres) => new { a, genres }
-                        )
-                        .SelectMany(
-                            x => x.genres.DefaultIfEmpty(),
-                            (x, genre) => new { x.a.MusicianId, x.a.MusicianName, Genre = genre != null ? genre.Genre : null, x.a.Streams }
+                            (a, genres) => new { a.MusicianId, a.MusicianName, a.SongId, a.Streams, Genres = genres.Select(g => g.Genre).ToArray() }
                         )
                         .GroupBy(x => new { x.MusicianId, x.MusicianName })
                         .Select(g => new ArtistPopularityReportData
                         {
                             MusicianId = g.Key.MusicianId,
                             MusicianName = g.Key.MusicianName,
-                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Genres = g.SelectMany(x => x.Genres).Distinct().ToArray(),
                             Streams = g.Sum(x => x.Streams)
                         })
                         .Where(info => info.Streams >= minArtistStreams)
@@ -296,24 +296,22 @@ namespace backend.Controllers
 
             albums = await albumsBaseQuery
                         .Join(_context.Songs, a => a.AlbumId, s => s.AlbumId, (a, s) => new { a.AlbumId, a.AlbumTitle, s.SongId, s.Streams })
+                        .GroupBy(x => new { x.AlbumId, x.AlbumTitle, x.SongId, x.Streams })
+                        .Select(g => new { g.Key.AlbumId, g.Key.AlbumTitle, g.Key.SongId, g.Key.Streams })
                         .GroupJoin(
                             _context.SongGenres,
                             a => a.SongId,
                             g => g.SongId,
-                            (a, genres) => new { a, genres }
+                            (a, genres) => new { a.AlbumId, a.AlbumTitle, a.SongId, a.Streams, Genres = genres.Select(g => g.Genre).ToArray() }
                         )
-                        .SelectMany(
-                            x => x.genres.DefaultIfEmpty(),
-                            (x, genre) => new { x.a.AlbumId, x.a.AlbumTitle, x.a.Streams, Genre = genre != null ? genre.Genre : null, x.a.SongId }
-                        )
-                        .Join(_context.MusicianWorksOnAlbums, a => a.AlbumId, aa => aa.AlbumId, (a, aa) => new { a.AlbumId, a.AlbumTitle, a.Streams, a.Genre, a.SongId, aa.MusicianId })
-                        .Join(_context.Musicians, a => a.MusicianId, m => m.MusicianId, (a, m) => new { a.AlbumId, a.AlbumTitle, a.Streams, a.Genre, m.MusicianName })
+                        .Join(_context.MusicianWorksOnAlbums, a => a.AlbumId, aa => aa.AlbumId, (a, aa) => new { a.AlbumId, a.AlbumTitle, a.SongId, a.Streams, a.Genres, aa.MusicianId })
+                        .Join(_context.Musicians, a => a.MusicianId, m => m.MusicianId, (a, m) => new { a.AlbumId, a.AlbumTitle, a.SongId, a.Streams, a.Genres, m.MusicianName })
                         .GroupBy(x => new { x.AlbumId, x.AlbumTitle })
                         .Select(g => new AlbumPopularityReportData
                         {
                             AlbumName = g.Key.AlbumTitle,
                             AlbumId = g.Key.AlbumId,
-                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Genres = g.SelectMany(x => x.Genres).Distinct().ToArray(),
                             Artists = g.Select(x => x.MusicianName).Distinct().ToArray(),
                             Streams = g.Sum(x => x.Streams)
                         })
@@ -324,34 +322,32 @@ namespace backend.Controllers
 
             songs = await songBaseQuery
                         .Join(_context.Albums, s => s.AlbumId, a => a.AlbumId, (s, a) => new { s.SongId, s.SongName, s.Streams, a.AlbumTitle })
+                        .GroupBy(x => new { x.SongId, x.SongName, x.Streams, x.AlbumTitle })
+                        .Select(g => new { g.Key.SongId, g.Key.SongName, g.Key.Streams, g.Key.AlbumTitle })
                         .GroupJoin(
                             _context.SongGenres,
                             s => s.SongId,
                             g => g.SongId,
-                            (s, genres) => new { s, genres }
+                            (s, genres) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, Genres = genres.Select(g => g.Genre).ToArray() }
                         )
-                        .SelectMany(
-                            x => x.genres.DefaultIfEmpty(),
-                            (x, genre) => new { x.s.SongId, x.s.SongName, x.s.Streams, x.s.AlbumTitle, Genre = genre != null ? genre.Genre : null }
-                        )
-                        .Join(_context.MusicianWorksOnSongs, s => s.SongId, ms => ms.SongId, (s, ms) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genre, ms.MusicianId })
-                        .Join(_context.Musicians, s => s.MusicianId, m => m.MusicianId, (s, m) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genre, m.MusicianName })
+                        .Join(_context.MusicianWorksOnSongs, s => s.SongId, ms => ms.SongId, (s, ms) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genres, ms.MusicianId })
+                        .Join(_context.Musicians, s => s.MusicianId, m => m.MusicianId, (s, m) => new { s.SongId, s.SongName, s.Streams, s.AlbumTitle, s.Genres, m.MusicianName })
                         .GroupBy(x => new { x.SongId, x.SongName, x.AlbumTitle })
                         .Select(g => new SongPopularityReportData
                         {
                             SongId = g.Key.SongId,
                             SongName = g.Key.SongName,
                             AlbumName = g.Key.AlbumTitle,
-                            Genres = g.Select(x => x.Genre).Where(g => g != null).Distinct().ToArray(),
+                            Genres = g.SelectMany(x => x.Genres).Distinct().ToArray(),
                             Artists = g.Select(x => x.MusicianName).Distinct().ToArray(),
-                            Streams = g.Sum(x => x.Streams)
+                            Streams = g.First().Streams
                         })
                         .Where(info => info.Streams >= minArtistStreams)
                         .OrderByDescending(info => info.Streams)
                         .Take(50)
                         .ToArrayAsync();
 
-
+   
             return Ok(new { GenreReport = genres, artistReport = artists, albumReport = albums, songReport = songs });
         }
 

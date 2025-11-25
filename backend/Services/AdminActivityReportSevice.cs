@@ -24,7 +24,7 @@ namespace backend.Services
 
     public class AdminReportService : IAdminReportService
     {
-        private readonly string _connectionString;
+        private readonly string? _connectionString;
 
         public AdminReportService(IConfiguration configuration)
         {

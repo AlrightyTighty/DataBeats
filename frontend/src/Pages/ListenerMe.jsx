@@ -5,6 +5,7 @@ import verifiedBadge from "../assets/graphics/musician_verification.png";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import API from "../lib/api.js";
 import styles from "./ListenerMe.module.css";
 
@@ -26,7 +27,8 @@ async function fetchImageDataUrl(fileId) {
   }
 }
 
-export default function ListenerMe({ setPlaybarState }) {
+export default function ListenerMe() {
+  const { setPlaybarState } = usePlaybar();
   const { id } = useParams();
   const navigate = useNavigate();
   const profileUserId = Number(id);
@@ -49,6 +51,7 @@ export default function ListenerMe({ setPlaybarState }) {
   const [loadingUser, setLoadingUser] = useState(true);
   const [error, setError] = useState("");
   const [follows, setFollows] = useState({ followers: 0, following: 0 });
+  const [areFriends, setAreFriends] = useState(false);
 
   const [topSongs, setTopSongs] = useState([]);
   const {
@@ -56,6 +59,7 @@ export default function ListenerMe({ setPlaybarState }) {
     act: followAct,
     loading: followLoading,
     canFollow,
+    isFollowing,
   } = useFollow({
     viewerId: currentUserId,
     targetId: profileUserId,
@@ -91,6 +95,27 @@ export default function ListenerMe({ setPlaybarState }) {
     } finally {
     }
   }, [profileUserId]);
+
+  const checkFriendship = useCallback(async () => {
+    if (!currentUserId || !profileUserId) {
+      setAreFriends(false);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${API}/api/follow/are-friends/${currentUserId}/${profileUserId}`,
+        { credentials: "include" }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAreFriends(data.areFriends);
+      } else {
+        setAreFriends(false);
+      }
+    } catch {
+      setAreFriends(false);
+    }
+  }, [currentUserId, profileUserId]);
 
   useEffect(() => {
     if (!profileUserId) return;
@@ -129,7 +154,8 @@ export default function ListenerMe({ setPlaybarState }) {
 
   useEffect(() => {
     loadCounts();
-  }, [loadCounts]);
+    checkFriendship();
+  }, [loadCounts, checkFriendship]);
 
   useEffect(() => {
     let mounted = true;
@@ -275,25 +301,24 @@ export default function ListenerMe({ setPlaybarState }) {
     try {
       await followAct();
       await loadCounts();
+      await checkFriendship();
     } catch (err) {
       console.error("Follow action failed:", err);
     }
-  }, [canFollow, followAct, loadCounts]);
+  }, [canFollow, followAct, loadCounts, checkFriendship]);
 
-  const handlePlaySong = useCallback(
-    (song) => {
-      if (!setPlaybarState) return;
-      const songId = song.songId;
-      const albumId = song.albumId ?? null;
-      setPlaybarState({
-        songId,
-        albumId,
-        playlistId: null,
-        visible: true,
-      });
-    },
-    [setPlaybarState]
-  );
+  function handlePlaySong(song) {
+    const songId = song.songId ?? song.SongId;
+    const albumId = song.albumId ?? song.AlbumId ?? null;
+
+    setPlaybarState({
+      songId,
+      albumId,
+      songList: topSongs,
+      playlistId: null,
+      visible: true,
+    });
+  }
 
   const goToPlaylists = useCallback(() => {
     navigate(`/user-playlists/${profileUserId}`);
@@ -357,6 +382,9 @@ export default function ListenerMe({ setPlaybarState }) {
                   <div className={styles.stats}>
                     <span>{follows.followers} Followers</span>
                     <span>{follows.following} Following</span>
+                    {areFriends && (
+                      <span className={styles.friendsBadge}>⭐ Friends</span>
+                    )}
                   </div>
 
                   <div className={styles.buttonsRow}>

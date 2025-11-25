@@ -213,22 +213,28 @@ export default function Follows({ defaultTab = "followers" }) {
 
                   <div className={styles.list} role="list">
                     {followers.map((f) => (
-                      <button
-                        key={f.userId}
-                        type="button"
-                        className={styles.card}
-                        onClick={() => openUser(f.userId)}
-                        aria-label={`Open profile for ${f.username}`}
-                      >
-                        <div className={styles.text}>
-                          <span className={styles.username}>@{f.username}</span>
-                          {(f.fname || f.lname) && (
-                            <span className={styles.name}>
-                              {[f.fname, f.lname].filter(Boolean).join(" ")}
-                            </span>
-                          )}
-                        </div>
-                      </button>
+                      <div key={f.userId} className={styles.row}>
+                        <button
+                          type="button"
+                          className={styles.card}
+                          onClick={() => openUser(f.userId)}
+                          aria-label={`Open profile for ${f.username}`}
+                        >
+                          <div className={styles.text}>
+                            <span className={styles.username}>@{f.username}</span>
+                            {(f.fname || f.lname) && (
+                              <span className={styles.name}>
+                                {[f.fname, f.lname].filter(Boolean).join(" ")}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                        {f.isFriend && (
+                          <div className={styles.friendsBadge}>
+                            ⭐ Friends
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </>
@@ -270,6 +276,12 @@ export default function Follows({ defaultTab = "followers" }) {
                           )}
                         </div>
                       </button>
+
+                      {u.isFriend && (
+                        <div className={styles.friendsBadge}>
+                          ⭐ Friends
+                        </div>
+                      )}
 
                       {u.hasMusicianProfile && u.musicianId && (
                         <button

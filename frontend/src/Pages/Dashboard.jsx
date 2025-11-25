@@ -5,16 +5,35 @@ import { PlaylistSection } from "../Components/PlaylistSection";
 import ContextMenu from "../Components/ContextMenu";
 import API from "../lib/api";
 import useMe from "../Components/UseMe";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import styles from "./Dashboard.module.css";
+import { useMemo } from "react";
 import "./Events.css";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { me, loading: authLoading } = useMe();
+  const { setPlaybarState } = usePlaybar();
+  const userId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+  const musicianId = useMemo(
+    () => me?.musicianId ?? me?.MusicianId ?? null,
+    [me]
+  );
+  const username = useMemo(() => me?.username ?? me?.Username ?? "there", [me]);
 
-  const userId = me?.userId ?? null;
-  const musicianId = me?.musicianId ?? null;
-  const username = me?.username ?? "Listener";
+  // Display firstname + lastname if available, otherwise fallback to username
+  const displayName = useMemo(() => {
+    const fname = me?.fname ?? me?.Fname;
+    const lname = me?.lname ?? me?.Lname;
+    
+    if (fname && lname) {
+      return `${fname} ${lname}`;
+    } else if (fname) {
+      return fname;
+    } else {
+      return username;
+    }
+  }, [me, username]);
 
   const [playlists, setPlaylists] = useState([]);
   const [events, setEvents] = useState([]);
@@ -222,6 +241,19 @@ export default function Dashboard() {
     }
   }, [navigate, userId]);
 
+  const handlePlaySong = (song, songList = []) => {
+    const songId = song.songId ?? song.SongId;
+    const albumId = song.albumId ?? song.AlbumId ?? null;
+
+    setPlaybarState({
+      songId,
+      albumId,
+      songList: songList.length > 0 ? songList : [song],
+      playlistId: null,
+      visible: true,
+    });
+  };
+
   return (
     <>
       <Topnav />
@@ -239,7 +271,7 @@ export default function Dashboard() {
           <div className={styles.topRow}>
             <div>
               <h1 className={styles.welcome}>
-                Welcome to DataBeats, {username}!
+                Welcome to DataBeats, {displayName}!
               </h1>
               <p className={styles.welcomeSub}>
                 Jump back into your music, discover new releases, and see what
@@ -549,7 +581,12 @@ export default function Dashboard() {
                   const artist = s.artistName ?? "Unknown";
                   const album = s.albumTitle ?? "";
                   return (
-                    <div key={s.songId ?? i} className={styles.songRow}>
+                    <div
+                      key={s.songId ?? s.SongId ?? i}
+                      className={styles.songRow}
+                      onClick={() =>   handlePlaySong(s, randomSongs)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <div className={styles.songInfo}>
                         <span className={styles.songIndex}>{i + 1}.</span>
                         <div>
@@ -560,6 +597,16 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        className={styles.playButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySong(s, randomSongs);
+                        }}
+                      >
+                        ▶
+                      </button>
                     </div>
                   );
                 })}

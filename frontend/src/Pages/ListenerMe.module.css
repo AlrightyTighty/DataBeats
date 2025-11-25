@@ -82,6 +82,22 @@
   display: flex;
   gap: 20px;
   opacity: 0.9;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.friendsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffd700;
+  opacity: 1;
 }
 
 .statButton {
