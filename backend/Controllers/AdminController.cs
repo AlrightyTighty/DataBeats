@@ -347,7 +347,7 @@ namespace backend.Controllers
                         .Take(50)
                         .ToArrayAsync();
 
-
+   
             return Ok(new { GenreReport = genres, artistReport = artists, albumReport = albums, songReport = songs });
         }
 
