@@ -21,6 +21,20 @@ export default function Dashboard() {
   );
   const username = useMemo(() => me?.username ?? me?.Username ?? "there", [me]);
 
+  // Display firstname + lastname if available, otherwise fallback to username
+  const displayName = useMemo(() => {
+    const fname = me?.fname ?? me?.Fname;
+    const lname = me?.lname ?? me?.Lname;
+    
+    if (fname && lname) {
+      return `${fname} ${lname}`;
+    } else if (fname) {
+      return fname;
+    } else {
+      return username;
+    }
+  }, [me, username]);
+
   const [playlists, setPlaylists] = useState([]);
   const [events, setEvents] = useState([]);
   const [newAlbums, setNewAlbums] = useState([]);
@@ -257,7 +271,7 @@ export default function Dashboard() {
           <div className={styles.topRow}>
             <div>
               <h1 className={styles.welcome}>
-                Welcome to DataBeats, {username}!
+                Welcome to DataBeats, {displayName}!
               </h1>
               <p className={styles.welcomeSub}>
                 Jump back into your music, discover new releases, and see what
@@ -570,7 +584,7 @@ export default function Dashboard() {
                     <div
                       key={s.songId ?? s.SongId ?? i}
                       className={styles.songRow}
-                      onClick={() => handlePlaySong(s, randomSongs)}
+                      onClick={() =>   handlePlaySong(s, randomSongs)}
                       style={{ cursor: "pointer" }}
                     >
                       <div className={styles.songInfo}>
