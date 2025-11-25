@@ -33,7 +33,7 @@ export default function RecentPlays({ setPlaybarState }) {
             throw new Error("Could not determine current user.");
           }
           const me = await meRes.json();
-          effectiveUserId = me.userId ?? me.UserId ?? null;
+          effectiveUserId = me.userId ?? null;
           if (!effectiveUserId) {
             throw new Error("No user id found on current user.");
           }
@@ -77,8 +77,8 @@ export default function RecentPlays({ setPlaybarState }) {
 
   function handlePlay(song) {
     if (!setPlaybarState) return;
-    const songId = song.songId ?? song.SongId;
-    const albumId = song.albumId ?? song.AlbumId ?? null;
+    const songId = song.songId;
+    const albumId = song.albumId ?? null;
     if (!songId) return;
 
     setPlaybarState({
@@ -118,16 +118,11 @@ export default function RecentPlays({ setPlaybarState }) {
 
               <div className={styles.list}>
                 {songs.map((s, i) => {
-                  const key = s.songId ?? s.SongId ?? i;
-                  const title = s.songName ?? s.SongName ?? "Untitled";
-                  const artist =
-                    s.artistName ??
-                    s.ArtistName ??
-                    s.musicianName ??
-                    s.MusicianName ??
-                    "Unknown artist";
-                  const album = s.albumTitle ?? s.AlbumTitle ?? "";
-                  const duration = s.duration ?? s.Duration ?? "";
+                  const key = s.songId ?? i;
+                  const title = s.songName ?? "Untitled";
+                  const artist = s.artistName ?? "Unknown artist";
+                  const album = s.albumTitle ?? "";
+                  const duration = s.duration ?? "";
                   const metaLine = album ? `${artist} • ${album}` : artist;
 
                   return (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router";
 import Topnav from "../Components/Topnav";
 import { PlaylistSection } from "../Components/PlaylistSection";
@@ -59,14 +59,15 @@ export default function Dashboard() {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
     if (authLoading) return;
     if (!userId) return;
+
+    const controller = new AbortController();
+    let mounted = true;
 
     (async () => {
       try {
@@ -80,18 +81,30 @@ export default function Dashboard() {
           resFollowers,
           resFollowing,
         ] = await Promise.all([
-          fetch(`${API}/api/playlist/me`, { credentials: "include" }),
-          fetch(`${API}/api/event`, { credentials: "include" }),
-          fetch(`${API}/api/album`, { credentials: "include" }),
+          fetch(`${API}/api/playlist/me`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
+          fetch(`${API}/api/event`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
+          fetch(`${API}/api/album`, {
+            credentials: "include",
+            signal: controller.signal,
+          }),
           fetch(`${API}/api/history/top-songs?limit=50`, {
             credentials: "include",
             headers: { "X-UserId": String(userId) },
+            signal: controller.signal,
           }),
           fetch(`${API}/api/follow/followers/${userId}`, {
             credentials: "include",
+            signal: controller.signal,
           }),
           fetch(`${API}/api/follow/following/${userId}`, {
             credentials: "include",
+            signal: controller.signal,
           }),
         ]);
 
@@ -108,28 +121,26 @@ export default function Dashboard() {
           ? await resFollowing.json()
           : [];
 
+        if (!mounted) return;
+
         // Playlists
-        const owned =
-          playlistResponse.ownedPlaylists ??
-          playlistResponse.OwnedPlaylists ??
-          [];
-        const contrib =
-          playlistResponse.contributorPlaylists ??
-          playlistResponse.ContributorPlaylists ??
-          [];
+        const owned = Array.isArray(playlistResponse.ownedPlaylists)
+          ? playlistResponse.ownedPlaylists
+          : [];
+        const contrib = Array.isArray(playlistResponse.contributorPlaylists)
+          ? playlistResponse.contributorPlaylists
+          : [];
         const allPlaylists = [...owned, ...contrib];
 
         const likedName = "Your Liked Playlist";
-        const liked = allPlaylists.find(
-          (p) => (p.playlistName ?? p.PlaylistName) === likedName
-        );
+        const liked = allPlaylists.find((p) => p.playlistName === likedName);
         const others = allPlaylists.filter((p) => p !== liked);
         const playlistsToShow = liked
           ? [liked, ...others.slice(0, 4)]
           : allPlaylists.slice(0, 5);
 
         const playlistsWithContext = playlistsToShow.map((playlist) => {
-          const id = playlist.playlistId ?? playlist.PlaylistId;
+          const id = playlist.playlistId;
           return {
             ...playlist,
             functions: [
@@ -144,20 +155,21 @@ export default function Dashboard() {
         setPlaylists(playlistsWithContext);
 
         // Events
-        setEvents(
-          (Array.isArray(eventsResponse) ? eventsResponse : []).slice(0, 4)
+        const rawEvents = Array.isArray(eventsResponse) ? eventsResponse : [];
+        const sortedEvents = rawEvents.sort(
+          (a, b) => new Date(b.eventTime) - new Date(a.eventTime)
         );
+        setEvents(sortedEvents.slice(0, 4));
 
         // New uploads
         const albumsArr = Array.isArray(albumsResponse) ? albumsResponse : [];
         const now = new Date();
-        const monthAgo = new Date();
+        const monthAgo = new Date(now);
         monthAgo.setMonth(now.getMonth() - 1);
 
         const recent = albumsArr
           .filter((a) => {
-            const raw =
-              a.releaseDate ?? a.ReleaseDate ?? a.timestampReleased ?? null;
+            const raw = a.releaseDate ?? null;
             if (!raw) return false;
             const d = new Date(raw);
             return d >= monthAgo && d <= now;
@@ -184,22 +196,35 @@ export default function Dashboard() {
         const following = Array.isArray(followingResponse)
           ? followingResponse
           : [];
-        const followingIds = new Set(
-          following.map((u) => u.userId ?? u.UserId)
-        );
+        const followingIds = new Set(following.map((u) => u.userId));
         const friendsList = followers
-          .filter((u) => followingIds.has(u.userId ?? u.UserId))
+          .filter((u) => followingIds.has(u.userId))
           .slice(0, 6);
         setFriends(friendsList);
       } catch (err) {
+        if (err.name === "AbortError") {
+          return;
+        }
         console.error("Error loading dashboard:", err);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [authLoading, userId, navigate]);
 
-  const gotoPlaylists = () => navigate("/playlists");
+  const gotoPlaylists = useCallback(() => navigate("/playlists"), [navigate]);
+  const gotoRecentPlays = useCallback(() => {
+    if (!userId) {
+      navigate("/recent-plays");
+    } else {
+      navigate(`/recent-plays/${userId}`);
+    }
+  }, [navigate, userId]);
 
   const handlePlaySong = (song, songList = []) => {
     const songId = song.songId ?? song.SongId;
@@ -218,7 +243,7 @@ export default function Dashboard() {
     <>
       <Topnav />
       <ContextMenu
-        ref={contextMenuRef}
+        menuRef={contextMenuRef}
         items={contextMenu.items}
         functions={contextMenu.functions}
         x={contextMenu.x}
@@ -297,7 +322,7 @@ export default function Dashboard() {
 
             <button
               type="button"
-              onClick={() => navigate("/recent-plays/${profileUserId})")}
+              onClick={gotoRecentPlays}
               className={styles.btn}
             >
               <div className={styles.btnHighlight} />
@@ -309,7 +334,12 @@ export default function Dashboard() {
           <section className={styles.section}>
             <div className={styles.sectionHead}>
               <h2>Playlists</h2>
-              <span className={styles.viewAll} onClick={gotoPlaylists}>
+              <span
+                className={styles.viewAll}
+                onClick={gotoPlaylists}
+                role="button"
+                tabIndex={0}
+              >
                 View All
               </span>
             </div>
@@ -329,6 +359,8 @@ export default function Dashboard() {
               <span
                 className={styles.viewAll}
                 onClick={() => navigate("/events")}
+                role="button"
+                tabIndex={0}
               >
                 View All
               </span>
@@ -340,6 +372,7 @@ export default function Dashboard() {
             ) : (
               <div className="events-grid">
                 {events.map((e) => {
+                  const id = e.eventId;
                   const inlineImg = e.imageBase64
                     ? `data:image/${e.imageFileExtension || "jpeg"};base64,${
                         e.imageBase64
@@ -368,34 +401,37 @@ export default function Dashboard() {
 
                   const priceStr = `$${Number(e.ticketPrice ?? 0).toFixed(2)}`;
 
-                  const artistDisplay =
-                    e.musicianName ??
-                    e.MusicianName ??
-                    e.musician?.musicianName ??
-                    e.musician?.MusicianName ??
-                    "Artist";
+                  const artistDisplay = e.musicianName ?? "Artist";
 
                   return (
                     <div
-                      key={e.eventId ?? e.EventId}
+                      key={id}
                       className="event-card"
-                      onClick={() =>
-                        navigate(`/event/${e.eventId ?? e.EventId}`)
-                      }
+                      role="button"
                       tabIndex={0}
+                      onClick={() => navigate(`/event/${id}`)}
                       onKeyDown={(ev) => {
-                        if (ev.key === "Enter" || ev.key === " ") {
-                          navigate(`/event/${e.eventId ?? e.EventId}`);
+                        if (
+                          ev.key === "Enter" ||
+                          ev.key === " " ||
+                          ev.key === "Spacebar"
+                        ) {
+                          ev.preventDefault();
+                          navigate(`/event/${id}`);
                         }
                       }}
                     >
                       <div className="media">
                         <div className="media-inner">
                           {imgSrc ? (
-                            <img src={imgSrc} alt={e.title} loading="lazy" />
+                            <img
+                              src={imgSrc}
+                              alt={e.title ?? "Event image"}
+                              loading="lazy"
+                            />
                           ) : (
                             <img
-                              alt={e.title}
+                              alt={e.title ?? "Event image"}
                               loading="lazy"
                               style={{
                                 background: "#e5e7eb",
@@ -411,7 +447,7 @@ export default function Dashboard() {
                       <div className="event-card-content">
                         <div className="event-card-header">
                           <div className="event-title">
-                            {e.title ?? e.EventTitle ?? "Event"}
+                            {e.title ?? "Event"}
                           </div>
                           <div className="event-artist">{artistDisplay}</div>
                         </div>
@@ -449,16 +485,14 @@ export default function Dashboard() {
             ) : (
               <div className={styles.cardGrid}>
                 {newAlbums.map((a) => {
-                  const albumId = a.albumId ?? a.AlbumId;
-                  const artFileId =
-                    a.albumOrSongArtFileId ?? a.AlbumOrSongArtFileId;
+                  const albumId = a.albumId;
+                  const artFileId = a.albumOrSongArtFileId;
                   const coverSrc = artFileId
                     ? `${API}/api/art/view/${artFileId}`
                     : null;
-                  const title = a.albumTitle ?? a.AlbumTitle ?? "Album";
+                  const title = a.albumTitle ?? "Album";
                   const artistName =
                     a.musicianName ??
-                    a.MusicianName ??
                     (Array.isArray(a.artists) && a.artists.length > 0
                       ? a.artists.map((x) => x.artistName).join(", ")
                       : "New release");
@@ -504,15 +538,12 @@ export default function Dashboard() {
               <div className={styles.friendsGrid}>
                 {friends.map((f) => (
                   <button
-                    key={f.userId ?? f.UserId}
+                    key={f.userId}
                     type="button"
                     className={styles.friendCard}
-                    onClick={() => navigate(`/user/${f.userId ?? f.UserId}`)}
+                    onClick={() => navigate(`/user/${f.userId}`)}
                   >
-                    <div className={styles.friendAvatar} />
-                    <div className={styles.friendName}>
-                      @{f.username ?? f.Username}
-                    </div>
+                    <div className={styles.friendName}>@{f.username}</div>
                   </button>
                 ))}
               </div>
@@ -531,14 +562,9 @@ export default function Dashboard() {
             ) : (
               <div className={styles.songList}>
                 {randomSongs.map((s, i) => {
-                  const title = s.songName ?? s.SongName;
-                  const artist =
-                    s.artistName ??
-                    s.ArtistName ??
-                    s.musicianName ??
-                    s.MusicianName ??
-                    "Unknown";
-                  const album = s.albumTitle ?? s.AlbumTitle ?? "";
+                  const title = s.songName ?? "Unknown";
+                  const artist = s.artistName ?? "Unknown";
+                  const album = s.albumTitle ?? "";
                   return (
                     <div
                       key={s.songId ?? s.SongId ?? i}

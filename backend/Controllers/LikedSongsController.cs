@@ -145,7 +145,7 @@ namespace backend.Controllers
 
                 if (entry != null)
                 {
-                    _context.PlaylistEntries.Remove(entry);
+                    _context.PlaylistEntries.Remove(entry!);
                     likedPlaylist.NumOfSongs = Math.Max(0, likedPlaylist.NumOfSongs - 1);
                 }
 

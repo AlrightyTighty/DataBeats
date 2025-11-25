@@ -5,6 +5,19 @@ import styles from "./NewReleases.module.css";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:5062";
 
+function formatReleaseDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+  return String(iso).split("T")[0] || String(iso);
+}
+
 export default function ArtistAlbum() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -14,64 +27,122 @@ export default function ArtistAlbum() {
   const [err, setErr] = useState(null);
   const [artistName, setArtistName] = useState("Artist");
 
+  const musicianId = useMemo(() => {
+    const n = id ? Number(id) : null;
+    return Number.isNaN(n) ? null : n;
+  }, [id]);
+
   useEffect(() => {
-    if (!id) return;
+    if (!musicianId) return;
+
+    const controller = new AbortController();
+    let alive = true;
+
     (async () => {
+      setErr(null);
+      setLoading(true);
       try {
-        setErr(null);
-        setLoading(true);
-        const res = await fetch(`${API}/api/album/by-musician/${id}`);
+        const res = await fetch(`${API}/api/album/by-musician/${musicianId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
         if (!res.ok) {
           if (res.status === 404) {
-            setAlbums([]);
-            setErr("No albums found for this artist.");
+            if (alive) {
+              setAlbums([]);
+              setErr("No albums found for this artist.");
+            }
           } else {
+            const body = await res.text().catch(() => "");
             throw new Error(
-              `GET /api/album/by-musician/${id} failed (${res.status})`
+              body ||
+                `GET /api/album/by-musician/${musicianId} failed (${res.status})`
             );
           }
-        } else {
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : [];
-          // newest to oldest
-          list.sort(
-            (a, b) => new Date(b.releaseDate) - new Date(a.releaseDate)
-          );
+          return;
+        }
+
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+
+        // newest to oldest
+        list.sort((a, b) => {
+          const ta = a && a.releaseDate ? new Date(a.releaseDate).getTime() : 0;
+          const tb = b && b.releaseDate ? new Date(b.releaseDate).getTime() : 0;
+          return tb - ta;
+        });
+
+        if (alive) {
           setAlbums(list);
         }
       } catch (e) {
-        setErr(e.message || String(e));
-        setAlbums([]);
+        if (e.name === "AbortError") {
+          console.info("Album fetch aborted for musician", musicianId);
+          return;
+        }
+        console.error("Error loading albums:", e);
+        if (alive) {
+          setErr(e.message || String(e));
+          setAlbums([]);
+        }
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          if (alive) setLoading(false);
+        }, 120);
       }
     })();
-  }, [id]);
+
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [musicianId]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!musicianId) return;
+
+    const controller = new AbortController();
+    let alive = true;
 
     (async () => {
       try {
-        const res = await fetch(`${API}/api/musician/${id}`);
-        if (res.ok) {
-          const data = await res.json();
+        const res = await fetch(`${API}/api/musician/${musicianId}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          console.warn("Failed to load musician name:", res.status, text);
+          return;
+        }
+        const data = await res.json();
+        if (alive) {
           setArtistName(data.musicianName || "Artist");
         }
       } catch (e) {
+        if (e.name === "AbortError") {
+          console.info("Musician fetch aborted:", musicianId);
+          return;
+        }
         console.warn("Failed to load musician name", e);
       }
     })();
-  }, [id]);
 
-  const artistDisplay = artistName;
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [musicianId]);
+
+  const artistDisplay = artistName || "Artist";
 
   return (
     <>
       <Topnav />
       <div className={styles.page}>
         <div className={styles.container}>
-          {/* Title row with artist link */}
+          {/* Title row*/}
           <h1 style={{ textAlign: "center", margin: 0 }}>
             <button
               type="button"
@@ -114,38 +185,37 @@ export default function ArtistAlbum() {
                   : null;
 
                 const dateStr = a.releaseDate
-                  ? new Date(a.releaseDate).toLocaleDateString(undefined, {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })
+                  ? formatReleaseDate(a.releaseDate)
                   : "—";
-
                 const artistLine =
                   Array.isArray(a.artists) && a.artists.length > 0
                     ? a.artists.map((x) => x.artistName).join(", ")
                     : artistDisplay;
+
+                const title = a.albumTitle || "Untitled";
 
                 return (
                   <button
                     key={a.albumId}
                     type="button"
                     className={styles.card}
-                    title={a.albumTitle}
+                    title={title}
                     onClick={() => navigate(`/album/${a.albumId}`)}
+                    aria-label={`Open album ${title}`}
                   >
                     {coverSrc ? (
                       <img
                         src={coverSrc}
-                        alt={a.albumTitle}
+                        alt={title}
                         className={styles.cover}
                         loading="lazy"
                       />
                     ) : (
-                      <div className={styles.cover} />
+                      <div className={styles.cover} aria-hidden />
                     )}
+
                     <div className={styles.text}>
-                      <h3>{a.albumTitle}</h3>
+                      <h3>{title}</h3>
                       <p>
                         {artistLine} • {dateStr}
                       </p>

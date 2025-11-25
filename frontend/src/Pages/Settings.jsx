@@ -4,27 +4,47 @@ import Topnav from "../Components/Topnav";
 import styles from "./Settings.module.css";
 import useAuthentication from "../hooks/useAuthentication.js";
 import DeleteButton from "../Components/DeleteButton.jsx";
-import { useNavigate } from "react-router";
+import { useNavigate, useResolvedPath } from "react-router";
 
 export default function Settings() {
 
     const navigate = useNavigate();
 
-    // state for profile details
+    // state for profile/auth details
     const [fname, setFname] = useState('');
     const [lname, setLname] = useState('');
     const [pfp, setPfp] = useState(null);
+    const [username, setUsername] = useState('');
 
     // user info pulled from auth
     const userInfo = useAuthentication();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         if (userInfo === null) return;
-        setLoading(false);
         setFname(userInfo.fname);
         setLname(userInfo.lname);
         setPfp(userInfo.profilePictureFileId);
+        setUsername(userInfo.username);
+        setLoading(false);
     }, [userInfo]);
+
+    // temp states while editing
+    const [editFname, setEditFname] = useState(fname);
+    const [editLname, setEditLname] = useState(lname);
+    const [editPfp, setEditPfp] = useState(pfp);
+    const [editUsername, setEditUsername] = useState('');
+    const [oldPwd, setOldPwd] = useState('');
+    const [newPwd, setNewPwd] = useState('');
+    const [confirmNew, setConfirmNew] = useState('');
+
+    // load values for temp states
+    useEffect(() => {
+        if (userInfo === null) return;
+        setEditFname(fname);
+        setEditLname(lname);
+        setEditPfp(pfp);
+        setEditUsername(username);
+    }, [userInfo, fname, lname, pfp, username])
 
     // load image
     const [imgSrc, setImgSrc] = useState(null);
@@ -44,10 +64,6 @@ export default function Settings() {
         }
     }, [pfp]);
 
-    // temp states while editing
-    const [editFname, setEditFname] = useState(fname);
-    const [editLname, setEditLname] = useState(lname);
-    const [editPfp, setEditPfp] = useState(pfp);
     const saveProfile = async () => {
         let changed = false;
 
@@ -121,43 +137,62 @@ export default function Settings() {
             console.log("Nothing to save!");
         }
     }
-    
-    // --
-    const [auth, setAuth] = useState({
-        email: "",
-        password: "",
-    });
-    const [message, setMessage] = useState("");
-    async function uploadProfilePic() {
-        if (!file) return null;
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await fetch(`${API}/api/file/upload`, {
-            method: "POST",
-            body: formData,
-        });
-        if (res.ok) {
-            const { fileId } = await res.json();
-            return fileId;
-        }
-        return null;
-    }
-    async function saveAuth() {
-        setMessage("");
-        const res = await fetch(`${API}/api/authentication/${userInfo.userId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: auth.email,
-                password: auth.password,
-            }),
-        });
 
-        setMessage(
-            res.ok ? "Account info updated." : "Error updating account info."
-        );
+    async function saveAuth() {
+        let changed = false;
+
+        if (editUsername != username) {
+            const response = await fetch(`${API}/api/user/${userInfo.userId}`, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: editUsername}),
+                credentials: "include"
+            });
+            if (response.status === 409) {
+                console.log("Username taken...");
+            }
+            else if (!response.ok) {
+                console.log("Error updating username...");
+            }
+            else {
+                changed = true;
+                console.log("Username updated!");
+                setUsername(editUsername);
+            }
+        }
+
+        if (oldPwd && newPwd && confirmNew) {
+            if (newPwd !== confirmNew) {
+                console.log("Passwords do not match.");
+            }
+            else {
+                const response = await fetch(`${API}/api/user/password/${userInfo.userId}`, {
+                    method: "PATCH",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        OldPassword: oldPwd,
+                        NewPassword: newPwd
+                    }),
+                    credentials: "include"
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    console.log("Error changing password:", data.message);
+                }
+                else {
+                    changed = true;
+                    console.log("Password changed!");
+                    setOldPwd('');
+                    setNewPwd('');
+                    setConfirmNew('');
+                }
+            }
+        }
+        
+        if (!changed) {
+            console.log("Nothing to save!");
+        }
     }
-    // --
 
     // state for opening/closing delete modal
     const [showDelete, setShowDelete] = useState(false);
@@ -173,7 +208,7 @@ export default function Settings() {
                 <div className={styles.container}>
                     {/* Left side: Profile */}
                     <div className={styles.left}>
-                        <h2>Profile Info</h2>
+                        <h2>Profile Details</h2>
 
                         <div className={styles.picWrap}>
                             <img src={imgSrc} className={styles.pic} alt="Profile" />
@@ -191,6 +226,7 @@ export default function Settings() {
                             First Name
                             <input
                                 className={styles.input}
+                                placeholder={userInfo.fname}
                                 value={editFname}
                                 onChange={(e) =>
                                     setEditFname(e.target.value)
@@ -202,6 +238,7 @@ export default function Settings() {
                             Last Name
                             <input
                                 className={styles.input}
+                                placeholder={userInfo.lname}
                                 value={editLname}
                                 onChange={(e) =>
                                     setEditLname(e.target.value)
@@ -216,36 +253,55 @@ export default function Settings() {
 
                     {/* Right side: Authentication */}
                     <div className={styles.right}>
-                        <h2>Account (Authentication)</h2>
+                        <h2>Login Credentials</h2>
                         <label>
-                            Email
+                            Username
                             <input
                                 className={styles.input}
-                                type="email"
-                                value={auth.email}
-                                onChange={(e) => setAuth({ ...auth, email: e.target.value })}
+                                type="text"
+                                placeholder={userInfo.username}
+                                value={editUsername}
+                                onChange={(e) => setEditUsername(e.target.value)}
                             />
                         </label>
 
                         <label>
-                            Password
+                            Old Password
                             <input
                                 className={styles.input}
                                 type="password"
-                                value={auth.password}
-                                onChange={(e) => setAuth({ ...auth, password: e.target.value })}
+                                placeholder="Enter old password"
+                                value={oldPwd}
+                                onChange={(e) => setOldPwd(e.target.value)}
+                            />
+                        </label>
+                        
+                        <label>
+                            New Password
+                            <input
+                                className={styles.input}
+                                type="password"
                                 placeholder="Enter new password"
+                                value={newPwd}
+                                onChange={(e) => setNewPwd(e.target.value)}
+                            />
+                        </label>
+
+                        <label>
+                            Confirm Password
+                            <input
+                                className={styles.input}
+                                type="password"
+                                placeholder="Re-enter new password"
+                                value={confirmNew}
+                                onChange={(e) => setConfirmNew(e.target.value)}
                             />
                         </label>
 
                         <button className={styles.save} onClick={saveAuth}>
                             Save Account
                         </button>
-
-                        {/*delete account button */}
                         <DeleteButton strwhattodelete='account' api={`${API}/api/user/${userInfo.userId}`} state={showDelete} clickFunction={toggleDeleteModal} styles={styles.delete}/>
-
-                        {message && <p style={{ marginTop: "10px" }}>{message}</p>}
                     </div>
                 </div>
             </div>

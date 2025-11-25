@@ -16,7 +16,7 @@ export default function ArtistProfileUser() {
 
   const musicianId = useMemo(() => Number(id), [id]);
   const { me, loading: authLoading } = useMe();
-  const viewerId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+  const viewerId = useMemo(() => me?.userId ?? null, [me]);
 
   useEffect(() => {
     if (!authLoading && !me) {
@@ -127,8 +127,8 @@ export default function ArtistProfileUser() {
         }
 
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
 
         if (!fileData) {
           setAvatarSrc(null);
@@ -185,7 +185,6 @@ export default function ArtistProfileUser() {
   async function handleFollowClick() {
     if (!canFollow || !artist) return;
     await followAct();
-    // Reload the actual follower count from the backend
     await loadFollowerCount();
   }
 
@@ -248,7 +247,7 @@ export default function ArtistProfileUser() {
                     to={`/user/${artist.userId}`}
                     className={styles.secondaryButton}
                   >
-                    View User Profile
+                    User Profile
                   </Link>
                 )}
 
@@ -280,17 +279,12 @@ export default function ArtistProfileUser() {
               ) : (
                 <div className={styles.songList}>
                   {topSongs.map((s, idx) => {
-                    const songId = s.songId ?? s.SongId ?? idx;
-                    const title = s.songName ?? s.SongName ?? "Untitled";
+                    const songId = s.songId ?? idx;
+                    const title = s.songName ?? "Untitled";
 
-                    const artistName =
-                      s.artistName ??
-                      s.ArtistName ??
-                      s.musicianName ??
-                      artist.musicianName ??
-                      "Unknown";
+                    const artistName = artist.musicianName ?? "Unknown";
 
-                    const albumTitle = s.albumTitle ?? s.AlbumTitle ?? "";
+                    const albumTitle = s.albumTitle ?? "";
 
                     return (
                       <div key={songId} className={styles.songRow}>

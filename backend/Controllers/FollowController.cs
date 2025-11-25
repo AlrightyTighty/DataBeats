@@ -86,6 +86,27 @@ namespace backend.Controllers
             return Ok(new { isFollowing });
         }
 
+        [HttpGet("are-friends/{userId1}/{userId2}")]
+        public async Task<IActionResult> AreFriends([FromRoute] ulong userId1, [FromRoute] ulong userId2)
+        {
+            // Check if both users are following each other (mutual follow = friends)
+            var user1FollowsUser2 = await _context.UserFollowsUsers
+                .AnyAsync(f => 
+                    f.Follower == userId1 && 
+                    f.Followee == userId2 && 
+                    f.TimeUnfollowed == null);
+
+            var user2FollowsUser1 = await _context.UserFollowsUsers
+                .AnyAsync(f => 
+                    f.Follower == userId2 && 
+                    f.Followee == userId1 && 
+                    f.TimeUnfollowed == null);
+
+            var areFriends = user1FollowsUser2 && user2FollowsUser1;
+
+            return Ok(new { areFriends });
+        }
+
         [HttpGet("followers/{userId}")]
         public async Task<IActionResult> GetFollowers([FromRoute] ulong userId)
         {
@@ -94,6 +115,20 @@ namespace backend.Controllers
                 .ThenInclude(u => u.Musicians)
                 .Where(f => f.Followee == userId && f.TimeUnfollowed == null)
                 .ToListAsync();
+
+            // Get all follower user IDs
+            var followerIds = followers.Select(f => f.FollowerNavigation.UserId).ToList();
+
+            // Check mutual follows in a single query
+            var mutualFollows = await _context.UserFollowsUsers
+                .Where(f => 
+                    f.Follower == userId && 
+                    followerIds.Contains(f.Followee) && 
+                    f.TimeUnfollowed == null)
+                .Select(f => f.Followee)
+                .ToListAsync();
+
+            var mutualFollowSet = new HashSet<ulong>(mutualFollows);
 
             var result = followers.Select(f =>
             {
@@ -109,7 +144,8 @@ namespace backend.Controllers
                     HasMusicianProfile = musician != null,
                     MusicianId = musician != null ? musician.MusicianId : (ulong?)null,
                     MusicianName = musician != null ? musician.MusicianName : null,
-                    f.TimeFollowed
+                    f.TimeFollowed,
+                    IsFriend = mutualFollowSet.Contains(user.UserId)
                 };
             });
 
@@ -125,6 +161,20 @@ namespace backend.Controllers
                 .Where(f => f.Follower == userId && f.TimeUnfollowed == null)
                 .ToListAsync();
 
+            // Get all followee user IDs
+            var followeeIds = following.Select(f => f.FolloweeNavigation.UserId).ToList();
+
+            // Check mutual follows in a single query
+            var mutualFollows = await _context.UserFollowsUsers
+                .Where(f => 
+                    followeeIds.Contains(f.Follower) && 
+                    f.Followee == userId && 
+                    f.TimeUnfollowed == null)
+                .Select(f => f.Follower)
+                .ToListAsync();
+
+            var mutualFollowSet = new HashSet<ulong>(mutualFollows);
+
             var result = following.Select(f =>
             {
                 var user = f.FolloweeNavigation;
@@ -139,7 +189,8 @@ namespace backend.Controllers
                     HasMusicianProfile = musician != null,
                     MusicianId = musician != null ? musician.MusicianId : (ulong?)null,
                     MusicianName = musician != null ? musician.MusicianName : null,
-                    f.TimeFollowed
+                    f.TimeFollowed,
+                    IsFriend = mutualFollowSet.Contains(user.UserId)
                 };
             });
 

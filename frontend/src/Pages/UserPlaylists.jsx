@@ -28,7 +28,7 @@ export default function UserPlaylists() {
           });
           if (userRes.ok) {
             const u = await userRes.json();
-            setUsername(u.username ?? u.userName ?? "User");
+            setUsername(u.username ?? "User");
           }
         } catch (e) {
           console.warn("Failed to load user info:", e);
@@ -97,10 +97,9 @@ export default function UserPlaylists() {
           ) : (
             <div className={styles.grid}>
               {playlists.map((pl) => {
-                const playlistId = pl.playlistId ?? pl.PlaylistId;
-                const playlistTitle =
-                  pl.playlistTitle ?? pl.PlaylistTitle ?? "Playlist";
-                const imgData = pl.playlistImage ?? pl.PlaylistImage;
+                const playlistId = pl.playlistId;
+                const playlistTitle = pl.playlistTitle ?? "Playlist";
+                const imgData = pl.playlistImage;
 
                 const coverSrc =
                   imgData && imgData.length

@@ -15,7 +15,7 @@ export default function ListenerPublic() {
   const profileUserId = useMemo(() => Number(id), [id]);
 
   const { me, loading: authLoading } = useMe();
-  const currentUserId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
+  const currentUserId = useMemo(() => me?.userId ?? null, [me]);
 
   useEffect(() => {
     if (!authLoading && !me) {
@@ -24,7 +24,7 @@ export default function ListenerPublic() {
   }, [authLoading, me, navigate]);
 
   const [user, setUser] = useState(null);
-  const musicianId = user?.musicianId ?? user?.MusicianId ?? null;
+  const musicianId = user?.musicianId ?? null;
   const hasMusician = !!musicianId;
 
   const [loadingUser, setLoadingUser] = useState(true);
@@ -32,6 +32,7 @@ export default function ListenerPublic() {
 
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [areFriends, setAreFriends] = useState(false);
 
   const [userAvatarSrc, setUserAvatarSrc] = useState(null);
   const [musician, setMusician] = useState(null);
@@ -43,6 +44,7 @@ export default function ListenerPublic() {
     act: followAct,
     loading: followLoading,
     canFollow,
+    isFollowing,
   } = useFollow({
     viewerId: currentUserId,
     targetId: profileUserId,
@@ -80,6 +82,27 @@ export default function ListenerPublic() {
     }
   }, [profileUserId]);
 
+  const checkFriendship = useCallback(async () => {
+    if (!currentUserId || !profileUserId) {
+      setAreFriends(false);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${API}/api/follow/are-friends/${currentUserId}/${profileUserId}`,
+        { credentials: "include" }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAreFriends(data.areFriends);
+      } else {
+        setAreFriends(false);
+      }
+    } catch {
+      setAreFriends(false);
+    }
+  }, [currentUserId, profileUserId]);
+
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -107,7 +130,8 @@ export default function ListenerPublic() {
 
   useEffect(() => {
     loadCounts();
-  }, [loadCounts]);
+    checkFriendship();
+  }, [loadCounts, checkFriendship]);
 
   useEffect(() => {
     if (!user?.profilePictureFileId) {
@@ -125,8 +149,8 @@ export default function ListenerPublic() {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setUserAvatarSrc(null);
           return;
@@ -176,8 +200,8 @@ export default function ListenerPublic() {
           return;
         }
         const data = await res.json();
-        const fileData = data.fileData ?? data.FileData;
-        const fileExt = data.fileExtension ?? data.FileExtension ?? "png";
+        const fileData = data.fileData;
+        const fileExt = data.fileExtension;
         if (!fileData) {
           setMusicianAvatarSrc(null);
           return;
@@ -229,11 +253,13 @@ export default function ListenerPublic() {
     if (!canFollow) return;
     await followAct();
     await loadCounts();
+    await checkFriendship();
   }
 
   function handlePlaySong(song) {
-    const songId = song.songId ?? song.SongId;
-    const albumId = song.albumId ?? song.AlbumId ?? null;
+    if (!setPlaybarState) return;
+    const songId = song.songId;
+    const albumId = song.albumId ?? null;
 
     setPlaybarState({
       songId,
@@ -288,6 +314,9 @@ export default function ListenerPublic() {
                   <div className={styles.stats}>
                     <span>{followerCount} Followers</span>
                     <span>{followingCount} Following</span>
+                    {areFriends && (
+                      <span className={styles.friendsBadge}>⭐ Friends</span>
+                    )}
                   </div>
 
                   <div className={styles.buttons}>
@@ -361,14 +390,10 @@ export default function ListenerPublic() {
                   ) : (
                     <div className={styles.songList}>
                       {topSongs.map((s, idx) => {
-                        const songId = s.songId ?? s.SongId;
-                        const title = s.songName ?? s.SongName;
-                        const artist =
-                          s.artistName ??
-                          s.ArtistName ??
-                          s.musicianName ??
-                          "Unknown";
-                        const album = s.albumTitle ?? s.AlbumTitle ?? "";
+                        const songId = s.songId;
+                        const title = s.songName;
+                        const artist = s.artistName ?? "Unknown";
+                        const album = s.albumTitle ?? "";
 
                         return (
                           <div key={songId ?? idx} className={styles.songRow}>
