@@ -5,12 +5,14 @@ import { PlaylistSection } from "../Components/PlaylistSection";
 import ContextMenu from "../Components/ContextMenu";
 import API from "../lib/api";
 import useMe from "../Components/UseMe";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import styles from "./Dashboard.module.css";
 import "./Events.css";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { me, loading: authLoading } = useMe();
+  const { setPlaybarState } = usePlaybar();
   const userId = useMemo(() => me?.userId ?? me?.UserId ?? null, [me]);
   const musicianId = useMemo(
     () => me?.musicianId ?? me?.MusicianId ?? null,
@@ -198,6 +200,19 @@ export default function Dashboard() {
   }, [authLoading, userId, navigate]);
 
   const gotoPlaylists = () => navigate("/playlists");
+
+  const handlePlaySong = (song, songList = []) => {
+    const songId = song.songId ?? song.SongId;
+    const albumId = song.albumId ?? song.AlbumId ?? null;
+
+    setPlaybarState({
+      songId,
+      albumId,
+      songList: songList.length > 0 ? songList : [song],
+      playlistId: null,
+      visible: true,
+    });
+  };
 
   return (
     <>
@@ -528,6 +543,8 @@ export default function Dashboard() {
                     <div
                       key={s.songId ?? s.SongId ?? i}
                       className={styles.songRow}
+                      onClick={() => handlePlaySong(s, randomSongs)}
+                      style={{ cursor: "pointer" }}
                     >
                       <div className={styles.songInfo}>
                         <span className={styles.songIndex}>{i + 1}.</span>
@@ -539,6 +556,16 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        className={styles.playButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySong(s, randomSongs);
+                        }}
+                      >
+                        ▶
+                      </button>
                     </div>
                   );
                 })}

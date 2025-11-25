@@ -6,10 +6,12 @@ import verifiedBadge from "../assets/graphics/musician_verification.png";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import API from "../lib/api.js";
 import styles from "./ListenerMe.module.css";
 
-export default function ListenerMe({ setPlaybarState }) {
+export default function ListenerMe() {
+  const { setPlaybarState } = usePlaybar();
   const { id } = useParams();
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
@@ -248,13 +250,13 @@ export default function ListenerMe({ setPlaybarState }) {
   }
 
   function handlePlaySong(song) {
-    if (!setPlaybarState) return;
     const songId = song.songId ?? song.SongId;
     const albumId = song.albumId ?? song.AlbumId ?? null;
 
     setPlaybarState({
       songId,
       albumId,
+      songList: topSongs,
       playlistId: null,
       visible: true,
     });

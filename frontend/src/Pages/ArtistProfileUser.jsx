@@ -5,10 +5,12 @@ import styles from "./ArtistProfileUser.module.css";
 import API from "../lib/api.js";
 import useMe from "../Components/UseMe.js";
 import useFollow from "../hooks/useFollow.js";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import verifiedBadge from "../assets/graphics/musician_verification.png";
 
-export default function ArtistProfileUser({ setPlaybarState }) {
+export default function ArtistProfileUser() {
+  const { setPlaybarState } = usePlaybar();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -187,22 +189,22 @@ export default function ArtistProfileUser({ setPlaybarState }) {
     await loadFollowerCount();
   }
 
-  function handlePlaySong(song) {
-    if (!setPlaybarState) return;
-    setPlaybarState({
-      songId: song.songId,
-      albumId: song.albumId ?? null,
-      playlistId: null,
-      visible: true,
-    });
-  }
-
   const showFollowButton =
     canFollow && viewerId && artist && viewerId !== artist.userId;
 
   const topSongs = [...songs]
     .sort((a, b) => (b.streams ?? 0) - (a.streams ?? 0))
     .slice(0, 10);
+
+  function handlePlaySong(song) {
+    setPlaybarState({
+      songId: song.songId,
+      albumId: song.albumId ?? null,
+      songList: topSongs,
+      playlistId: null,
+      visible: true,
+    });
+  }
 
   return (
     <>

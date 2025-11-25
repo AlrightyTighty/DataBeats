@@ -4,10 +4,12 @@ import Topnav from "../Components/Topnav";
 import useMe from "../Components/UseMe";
 import KebabMenu from "../Components/Profile/KebabMenu.jsx";
 import useFollow from "../hooks/useFollow.js";
+import { usePlaybar } from "../contexts/PlaybarContext";
 import API from "../lib/api.js";
 import styles from "./ListenerPublic.module.css";
 
-export default function ListenerPublic({ setPlaybarState }) {
+export default function ListenerPublic() {
+  const { setPlaybarState } = usePlaybar();
   const { id } = useParams();
   const navigate = useNavigate();
   const profileUserId = useMemo(() => Number(id), [id]);
@@ -230,13 +232,13 @@ export default function ListenerPublic({ setPlaybarState }) {
   }
 
   function handlePlaySong(song) {
-    if (!setPlaybarState) return;
     const songId = song.songId ?? song.SongId;
     const albumId = song.albumId ?? song.AlbumId ?? null;
 
     setPlaybarState({
       songId,
       albumId,
+      songList: topSongs,
       playlistId: null,
       visible: true,
     });
